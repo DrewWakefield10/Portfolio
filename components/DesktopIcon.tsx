@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { useTheme } from '@/context/ThemeContext'
 import { useWindowManager } from '@/context/WindowContext'
 
 interface DesktopIconProps {
@@ -9,13 +10,23 @@ interface DesktopIconProps {
   onClick?: () => void
 }
 
-const iconMap: Record<string, string> = {
-  about: '/profile.png',
-  works: '/works.png',
-  contact: '/contact.png',
+const iconMap: Record<string, { light: string; dark: string }> = {
+  about: {
+    light: '/profile light.png',
+    dark: '/profile dark.png',
+  },
+  works: {
+    light: '/works light.png',
+    dark: '/works dark.png',
+  },
+  contact: {
+    light: '/contact light.png',
+    dark: '/contact dark.png',
+  },
 }
 
 export function DesktopIcon({ id, label, onClick }: DesktopIconProps) {
+  const { theme } = useTheme()
   const { openWindow } = useWindowManager()
 
   const handleDoubleClick = () => {
@@ -26,6 +37,11 @@ export function DesktopIcon({ id, label, onClick }: DesktopIconProps) {
     onClick?.()
   }
 
+  const icon = iconMap[id] ?? {
+    light: '/placeholder.svg',
+    dark: '/placeholder.svg',
+  }
+
   return (
     <button
       onDoubleClick={handleDoubleClick}
@@ -33,7 +49,7 @@ export function DesktopIcon({ id, label, onClick }: DesktopIconProps) {
     >
       <div className="w-12 h-12 rounded flex items-center justify-center shadow-md overflow-hidden bg-background/80">
         <Image
-          src={iconMap[id] ?? '/placeholder.svg'}
+          src={theme === 'light' ? icon.light : icon.dark}
           alt={label}
           width={48}
           height={48}

@@ -65,7 +65,7 @@ export function Home() {
                 className="group flex flex-col items-center gap-3 rounded-xl p-3 transition-all duration-200 hover:-translate-y-1 hover:bg-accent/10 hover:text-accent"
               >
                 <div className="w-16 h-16 border-2 border-current flex items-center justify-center overflow-hidden rounded bg-background/80 transition-all duration-200 group-hover:border-accent group-hover:bg-accent/10 group-hover:shadow-[0_0_18px_rgba(0,255,255,0.18)]">
-                  <Image src="/profile.png" alt="About" width={72} height={72} className="object-cover" />
+                  <Image src={theme === 'light' ? '/profile light.png' : '/profile dark.png'} alt="About" width={72} height={72} className="object-cover" />
                 </div>
                 <span className="text-base transition-colors duration-200 group-hover:text-accent">about</span>
               </button>
@@ -75,7 +75,7 @@ export function Home() {
                 className="group flex flex-col items-center gap-3 rounded-xl p-3 transition-all duration-200 hover:-translate-y-1 hover:bg-accent/10 hover:text-accent"
               >
                 <div className="w-16 h-16 border-2 border-current flex items-center justify-center overflow-hidden rounded bg-background/80 transition-all duration-200 group-hover:border-accent group-hover:bg-accent/10 group-hover:shadow-[0_0_18px_rgba(0,255,255,0.18)]">
-                  <Image src="/works.png" alt="Work" width={72} height={72} className="object-cover" />
+                  <Image src={theme === 'light' ? '/works light.png' : '/works dark.png'} alt="Work" width={72} height={72} className="object-cover" />
                 </div>
                 <span className="text-base transition-colors duration-200 group-hover:text-accent">work</span>
               </button>
@@ -85,7 +85,7 @@ export function Home() {
                 className="group flex flex-col items-center gap-3 rounded-xl p-3 transition-all duration-200 hover:-translate-y-1 hover:bg-accent/10 hover:text-accent"
               >
                 <div className="w-16 h-16 border-2 border-current flex items-center justify-center overflow-hidden rounded bg-background/80 transition-all duration-200 group-hover:border-accent group-hover:bg-accent/10 group-hover:shadow-[0_0_18px_rgba(0,255,255,0.18)]">
-                  <Image src="/contact.png" alt="Contact" width={72} height={72} className="object-cover" />
+                  <Image src={theme === 'light' ? '/contact light.png' : '/contact dark.png'} alt="Contact" width={72} height={72} className="object-cover" />
                 </div>
                 <span className="text-base transition-colors duration-200 group-hover:text-accent">contact</span>
               </button>

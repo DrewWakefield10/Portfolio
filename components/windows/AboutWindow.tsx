@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import { VT323 } from 'next/font/google'
+import { useTheme } from '@/context/ThemeContext'
 
 const vt323 = VT323({
   weight: '400',
@@ -9,6 +10,8 @@ const vt323 = VT323({
 })
 
 export function AboutWindow() {
+  const { theme } = useTheme()
+
   return (
     <div
       className={`${vt323.className} h-full flex flex-col overflow-hidden bg-window-bg text-foreground`}
@@ -18,7 +21,7 @@ export function AboutWindow() {
         <div className="flex items-center gap-5">
           <div className="relative w-28 h-28 rounded-full overflow-hidden border-2 border-accent">
             <Image
-              src="/profile.png"
+              src={theme === 'light' ? '/profile light.png' : '/profile dark.png'}
               alt="Profile"
               fill
               className="object-cover"
