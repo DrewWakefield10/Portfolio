@@ -3,27 +3,23 @@
 export function ContactWindow() {
   const contacts = [
     {
-      icon: '📧',
       label: 'Email',
-      value: 'hello@example.com',
-      href: 'mailto:hello@example.com',
+      value: 'drew.wakefield.10@gmail.com',
+      href: 'mailto:drew.wakefield.10@gmail.com',
     },
     {
-      icon: '🐙',
       label: 'GitHub',
-      value: 'github.com/yourname',
-      href: 'https://github.com',
+      value: 'https://github.com/DrewWakefield10',
+      href: 'https://github.com/DrewWakefield10',
     },
     {
-      icon: '💼',
       label: 'LinkedIn',
-      value: 'linkedin.com/in/yourname',
-      href: 'https://linkedin.com',
+      value: 'https://www.linkedin.com/in/drew-wakefield-479738333/',
+      href: 'https://www.linkedin.com/in/drew-wakefield-479738333/',
     },
     {
-      icon: '💬',
       label: 'Discord',
-      value: 'your_discord_tag',
+      value: 'drew2004mist',
       href: 'https://discord.com',
     },
   ]
@@ -31,7 +27,7 @@ export function ContactWindow() {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="font-bold text-base mb-3">📞 Get In Touch</h2>
+        <h2 className="font-bold text-base mb-3">Get In Touch</h2>
         <p className="text-xs leading-relaxed mb-4">
           I&apos;d love to hear from you! Feel free to reach out through any of these channels.
         </p>
@@ -46,7 +42,6 @@ export function ContactWindow() {
             rel="noopener noreferrer"
             className="flex items-center gap-2 p-2 rounded hover:bg-accent/20 transition-colors"
           >
-            <span className="text-sm">{contact.icon}</span>
             <div className="text-xs">
               <div className="font-bold">{contact.label}</div>
               <div className="text-foreground/70">{contact.value}</div>

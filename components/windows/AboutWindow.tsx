@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import { VT323 } from 'next/font/google'
 import { useTheme } from '@/context/ThemeContext'
+import { RetroScrollArea } from '@/components/RetroScrollArea'
 
 const vt323 = VT323({
   weight: '400',
@@ -19,9 +20,9 @@ export function AboutWindow() {
       {/* FIXED PROFILE SECTION */}
       <div className="shrink-0 border-b border-accent/30 p-6">
         <div className="flex items-center gap-5">
-          <div className="relative w-28 h-28 rounded-full overflow-hidden border-2 border-accent">
+          <div className="relative w-28 h-28 overflow-hidden border-2 border-accent">
             <Image
-              src={theme === 'light' ? '/profile light.png' : '/profile dark.png'}
+              src={theme === 'light' ? '/profile.jpg' : '/profile.jpg'}
               alt="Profile"
               fill
               className="object-cover"
@@ -41,15 +42,22 @@ export function AboutWindow() {
               Building performant web experiences and interactive applications.
             </p>
 
-            <div className="mt-3 text-lg text-accent/80">
-              📍 Philippines
+            <div className="mt-2 flex items-center gap-0 text-lg text-accent/80">
+              <Image
+                src="/philippine flag.png"
+                alt="Philippines flag"
+                width={22}
+                height={16}
+                className="object-contain"
+              />
+              <span>Philippines</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* SCROLLABLE SECTION ONLY */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-6 space-y-8">
+      <RetroScrollArea contentClassName="space-y-8">
 
         {/* Skills */}
         <section>
@@ -64,11 +72,24 @@ export function AboutWindow() {
               </h3>
 
               <ul className="space-y-1">
-                <li>► React</li>
-                <li>► Next.js</li>
-                <li>► TypeScript</li>
-                <li>► Tailwind CSS</li>
-                <li>► Astro</li>
+                {[
+                  'React',
+                  'Next.js',
+                  'TypeScript',
+                  'Tailwind CSS',
+                  'Astro',
+                ].map((skill) => (
+                  <li key={skill} className="group flex items-center gap-2">
+                    <Image
+                      src={theme === 'light' ? '/pointer light.png' : '/pointer dark.png'}
+                      alt=""
+                      width={16}
+                      height={16}
+                      className="h-4 w-4 shrink-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+                    />
+                    <span>{skill}</span>
+                  </li>
+                ))}
               </ul>
             </div>
 
@@ -78,11 +99,24 @@ export function AboutWindow() {
               </h3>
 
               <ul className="space-y-1">
-                <li>► Node.js</li>
-                <li>► Django</li>
-                <li>► PostgreSQL</li>
-                <li>► REST APIs</li>
-                <li>► Python</li>
+                {[
+                  'Node.js',
+                  'Django',
+                  'PostgreSQL',
+                  'REST APIs',
+                  'Python',
+                ].map((skill) => (
+                  <li key={skill} className="group flex items-center gap-2">
+                    <Image
+                      src={theme === 'light' ? '/pointer light.png' : '/pointer dark.png'}
+                      alt=""
+                      width={16}
+                      height={16}
+                      className="h-4 w-4 shrink-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+                    />
+                    <span>{skill}</span>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
@@ -102,7 +136,7 @@ export function AboutWindow() {
             </p>
 
             <p className="text-foreground/50">
-              Expected Graduation: 2027
+              Graduated: 2026
             </p>
           </div>
         </section>
@@ -185,7 +219,7 @@ export function AboutWindow() {
           </div>
         </section>
 
-      </div>
+      </RetroScrollArea>
     </div>
   )
 }
