@@ -1,0 +1,118 @@
+@import 'tailwindcss';
+
+@theme inline {
+  --font-heading: var(--font-vt323), 'VT323 Fallback';
+  --font-sans: var(--font-vt323), 'VT323 Fallback';
+  --font-mono: var(--font-vt323), 'VT323 Fallback';
+  --font-arcade: var(--font-vt323), 'VT323 Fallback';
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-border: var(--border);
+  --color-window-bg: var(--window-bg);
+  --color-window-border: var(--window-border);
+  --color-taskbar: var(--taskbar);
+}
+
+:root {
+  color-scheme: light;
+  --background: #f5f0e8;
+  --foreground: #1c1c1c;
+  --accent: #0f766e;
+  --accent-hover: #115e59;
+  --border: #0f766e;
+  --window-bg: #f9f4e6;
+  --window-border: #0f766e;
+  --taskbar: #e7dcc3;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #0f1419;
+  --foreground: #e0e0e0;
+  --accent: #00d4ff;
+  --accent-hover: #00a8cc;
+  --border: #00d4ff;
+  --window-bg: #0a2342;
+  --window-border: #00d4ff;
+  --taskbar: #0f1419;
+}
+
+@layer base {
+  * {
+    @apply outline-accent/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+/* Retro window styling */
+@layer components {
+  .retro-window {
+    @apply bg-window-bg border-2 border-window-border shadow-lg;
+    border-style: solid;
+    box-shadow: 
+      inset 1px 1px 0 rgba(255, 255, 255, 0.5),
+      inset -1px -1px 0 rgba(0, 0, 0, 0.3),
+      2px 2px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .retro-window-header {
+    @apply bg-gradient-to-r from-accent to-accent-hover text-foreground px-2 py-1 font-bold text-xs cursor-grab active:cursor-grabbing select-none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.3);
+  }
+
+  .retro-button {
+    @apply px-3 py-1 text-xs font-bold bg-window-bg border-2 border-window-border select-none;
+    box-shadow: 
+      inset 1px 1px 0 rgba(255, 255, 255, 0.5),
+      inset -1px -1px 0 rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: all 0.05s;
+  }
+
+  .retro-button:active {
+    box-shadow: 
+      inset -1px -1px 0 rgba(255, 255, 255, 0.5),
+      inset 1px 1px 0 rgba(0, 0, 0, 0.3);
+    transform: translate(1px, 1px);
+  }
+
+  .retro-button:hover:not(:active) {
+    background-color: var(--accent);
+    color: var(--foreground);
+  }
+
+  .retro-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .taskbar {
+    @apply bg-taskbar border-b-2 border-window-border px-2 py-2 flex items-center gap-2 select-none shadow-lg;
+    box-shadow: 
+      inset 1px 1px 0 rgba(255, 255, 255, 0.3),
+      0 2px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .desktop-icon {
+    @apply flex flex-col items-center gap-1 cursor-pointer select-none p-2 rounded;
+    transition: all 0.1s;
+  }
+
+  .desktop-icon:hover {
+    background-color: rgba(0, 212, 212, 0.2);
+  }
+
+  .desktop-icon:active {
+    transform: scale(0.95);
+  }
+}
