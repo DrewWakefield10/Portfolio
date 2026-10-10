@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1672" height="941" viewBox="0 0 1672 941">
+  <!-- User-confirmed Japanese branding. This overlay is shared by both themes. -->
+  <g font-family="MS Gothic, Yu Gothic, sans-serif" text-anchor="middle" fill="#133340">
+    <path d="M312 242 L372 301 L312 360 L252 301Z" fill="#f46a5e" stroke="#b7443b" stroke-width="2"/>
+    <g font-size="15" font-weight="bold">
+      <text x="312" y="281">ドリュー</text><text x="312" y="298">の</text>
+      <text x="312" y="315">ポート</text><text x="312" y="332">フォリオ</text>
+    </g>
+    <path d="M647 736 H694 V783 H647Z" fill="#435b68"/>
+    <g fill="#f5edcf" font-size="10" font-weight="bold">
+      <text x="670.5" y="747">ドリュー</text><text x="670.5" y="758">の</text>
+      <text x="670.5" y="769">ポート</text><text x="670.5" y="780">フォリオ</text>
+    </g>
+    <path d="M326 711 H607 V757 H326Z" fill="#f6f0d9"/>
+    <text x="466.5" y="750" font-size="43" font-weight="bold">訪客請先登記</text>
+    <path d="M980 348 H1076 V444 H980Z" fill="#faf3df"/>
+    <g fill="#872c34" font-weight="bold">
+      <text x="1028" y="399" font-size="62">23</text>
+      <text x="1028" y="438" font-size="31">星期五</text>
+    </g>
+  </g>
+</svg>

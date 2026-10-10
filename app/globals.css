@@ -16,15 +16,23 @@
 }
 
 :root {
+  /* Daytime colors follow the plant's sage leaves and deeper green stems. */
   color-scheme: light;
-  --background: #f5f0e8;
-  --foreground: #1c1c1c;
-  --accent: #0f766e;
-  --accent-hover: #115e59;
-  --border: #0f766e;
-  --window-bg: #f9f4e6;
-  --window-border: #0f766e;
-  --taskbar: #e7dcc3;
+  --background: #edf1e5;
+  --foreground: #26331f;
+  --accent: #526d45;
+  --accent-hover: #405637;
+  --border: #6d895c;
+  --window-bg: #d7e0c9;
+  --window-border: #6d895c;
+  --taskbar: #dfe6d2;
+  --window-title-start: #87a477;
+  --window-title-end: #749260;
+  --window-title-foreground: #182510;
+  --window-body-opacity: 0.70;
+  --window-glass-rgb: 215, 224, 201;
+  --interest-icon-color: #87a477;
+  --interest-cloud-fill: #e4ecd9;
 }
 
 .dark {
@@ -37,6 +45,12 @@
   --window-bg: #0a2342;
   --window-border: #00d4ff;
   --taskbar: #0f1419;
+  --window-glass-rgb: 10, 35, 66;
+  --window-title-start: #00d4ff;
+  --window-title-end: #00a8cc;
+  --window-title-foreground: #0a2342;
+  --interest-icon-color: #00b9e4;
+  --interest-cloud-fill: #102f50;
 }
 
 @layer base {
@@ -54,7 +68,7 @@
 /* Retro window styling */
 @layer components {
   .retro-window {
-    @apply bg-window-bg border-2 border-window-border shadow-lg;
+    @apply border-2 border-window-border shadow-lg;
     border-style: solid;
     box-shadow: 
       inset 1px 1px 0 rgba(255, 255, 255, 0.5),
@@ -63,7 +77,10 @@
   }
 
   .retro-window-header {
-    @apply bg-gradient-to-r from-accent to-accent-hover text-foreground px-2 py-1 font-bold text-xs cursor-grab active:cursor-grabbing select-none;
+    @apply px-3 py-1 font-bold text-base cursor-grab active:cursor-grabbing select-none;
+    background-image: linear-gradient(to right, var(--window-title-start), var(--window-title-end));
+    color: var(--window-title-foreground);
+    touch-action: none;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -88,7 +105,7 @@
 
   .retro-button:hover:not(:active) {
     background-color: var(--accent);
-    color: var(--foreground);
+    color: var(--window-bg);
   }
 
   .retro-button:disabled {
@@ -140,3 +157,332 @@
 
 }
 
+
+/* Keep wallpaper layers mounted so decoded images can crossfade. */
+.retro-surface {
+  /* Inherit the active green/blue palette; apply one translucent window fill. */
+  background-color: rgba(var(--window-glass-rgb), var(--window-body-opacity));
+  color: var(--foreground);
+}
+.retro-app-window.home-launcher { width: min(480px, calc(100vw - 24px)); }
+.home-launcher .retro-window-body { height: auto; overflow-y: auto; }
+.home-launcher .home-launcher-body { min-height: 0; }
+.retro-window-header .retro-button { color: var(--accent); }
+.retro-window-header .retro-button:hover:not(:active) { color: var(--window-bg); }
+.retro-app-window {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  width: min(750px, calc(100vw - 24px));
+  max-height: calc(100dvh - 24px);
+}
+.retro-window-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: min(600px, calc(100dvh - 72px));
+  overflow: hidden;
+}
+.window-content { min-width: 0; font-size: 20px; line-height: 1.45; overflow-wrap: anywhere; }
+.window-heading { font-size: 32px; line-height: 1.15; color: var(--accent); }
+.window-section-heading { font-size: 24px; line-height: 1.2; color: var(--accent); }
+.window-content .retro-button { font-size: 18px; }
+.desktop-navigation .retro-button,
+.desktop-navigation .retro-button:hover:not(:active) {
+  border: 0;
+  box-shadow: none;
+  background-color: transparent;
+  color: var(--foreground);
+}
+.desktop-navigation .retro-button:hover:not(:active) { background-color: color-mix(in srgb, var(--accent) 15%, transparent); }
+.desktop-navigation .retro-button:active { box-shadow: none; }
+.desktop-navigation .retro-button:focus-visible,
+.home-launcher button:focus-visible,
+.retro-window :is(button, a, input, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.desktop-navigation select.retro-button { background-color: var(--background); }
+.desktop-navigation select.retro-button:hover { background-color: var(--background); }
+/* Let visible artwork receive clicks through the toolbar's empty space. */
+.desktop-navigation { pointer-events: none; }
+.desktop-navigation :is(button, input, select, a, label) { pointer-events: auto; }
+.pixel-pause { display: block; color: var(--accent); }
+html:not(.dark) :is(.launcher-icon, .desktop-navigation) img {
+  filter: hue-rotate(-55deg) saturate(0.6);
+}
+.wallpaper-layer { transition: opacity 600ms ease-in-out; }
+.music-player .retro-button { padding: 0.25rem 0.4rem; }
+.music-player .retro-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .wallpaper-layer { transition: none; }
+}
+
+.store-environment {
+  --fan-duration: 1.45s;
+  --swim-tempo: 1;
+  --swim-distance: 1;
+  --fan-dark: #203541;
+  --fan-light: #b5b9ac;
+  --fan-grille: #89938d;
+  --clock-hand: #172d39;
+}
+.store-environment[data-theme='dark'] {
+  --fan-dark: #0c2335;
+  --fan-light: #315462;
+  --fan-grille: #2c5260;
+  --clock-hand: #112535;
+}
+.environment-paint { transition: opacity 600ms ease-in-out; }
+.fan-rotor { transform-box: view-box; animation: store-fan-spin var(--fan-duration) linear infinite; }
+.swimming-fish { animation: store-fish-swim calc(var(--swim-duration) * var(--swim-tempo)) ease-in-out var(--swim-delay) infinite; }
+/* Flat sprite flips at the slowest point of each turn; no perspective or 3D transforms. */
+.fish-facing {
+  transform-box: view-box;
+  animation: store-fish-turn calc(var(--swim-duration) * var(--swim-tempo)) steps(1, end) var(--swim-delay) infinite;
+}
+.fish-body { animation: store-fish-bob var(--body-duration) ease-in-out var(--fin-delay) infinite; }
+.fish-tail {
+  transform-box: view-box;
+  animation: store-fish-fin var(--fin-duration) ease-in-out var(--fin-delay) infinite;
+}
+.zapper-glow {
+  visibility: hidden;
+  opacity: 0.10;
+  animation: store-zapper-glow 61s linear infinite;
+}
+.store-environment[data-theme='dark'] .zapper-glow { visibility: visible; }
+.store-environment[data-running='false'] .environmental-motion,
+.store-environment[data-active='false'] .environmental-motion { animation-play-state: paused; }
+@keyframes store-fan-spin { to { transform: rotate(360deg); } }
+@keyframes store-fish-swim {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(calc(var(--swim-x) * var(--swim-distance)), calc(var(--swim-y) * var(--swim-distance))); }
+}
+@keyframes store-fish-turn {
+  0%, 100% { transform: scaleX(var(--fish-facing)); }
+  50% { transform: scaleX(calc(var(--fish-facing) * -1)); }
+}
+@keyframes store-fish-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(1px); }
+}
+@keyframes store-fish-fin {
+  0%, 100% { transform: rotate(-2deg) scaleX(0.96); }
+  50% { transform: rotate(2deg) scaleX(1.04); }
+}
+/* Unevenly spaced, local 2D pulses over a long seamless cycle, without blur or a regular beat. */
+@keyframes store-zapper-glow {
+  0%, 3%, 3.7%, 8.4%, 9.1%, 12.2%, 12.9%, 18.5%, 19.2%,
+  23%, 23.7%, 26.3%, 27%, 32.7%, 33.4%, 36.8%, 37.5%,
+  42.5%, 43.2%, 47.4%, 48.1%, 50.7%, 51.4%, 56.9%, 57.6%,
+  61.3%, 62%, 66.9%, 67.6%, 70.2%, 70.9%, 76.4%, 77.1%,
+  80.6%, 81.3%, 85.8%, 86.5%, 91.6%, 92.3%, 96.7%, 97.4%, 100% { opacity: 0.10; }
+  3.2%, 8.6%, 12.4%, 18.7%, 23.2%, 26.5%, 32.9%, 37%, 42.7%, 47.6%,
+  50.9%, 57.1%, 61.5%, 67.1%, 70.4%, 76.6%, 80.8%, 86%, 91.8%, 96.9% { opacity: 0.055; }
+  3.45%, 8.85%, 12.65%, 23.45%, 26.75%, 33.15%, 37.25%, 47.85%,
+  51.15%, 57.35%, 61.75%, 67.35%, 76.85%, 81.05%, 86.25%, 97.15% { opacity: 0.16; }
+  18.95%, 42.95%, 70.65%, 92.05% { opacity: 0.21; }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Reduced motion keeps continuous gentle travel; extra bobbing and flashing stay off. */
+  .store-environment { --fan-duration: 12s; --swim-tempo: 2; --swim-distance: 0.35; }
+  .store-environment :is(.fish-body, .fish-tail) { animation: none; }
+  .environment-paint { transition: none; }
+  .store-environment .zapper-glow { animation: none !important; opacity: 0 !important; filter: none !important; }
+}
+
+/* Fit the launcher between the toolbar and footer on short landscape screens. */
+@media (max-height: 520px) {
+  .home-launcher-body { padding-block: 12px; gap: 8px; }
+  .home-launcher-body h1 { font-size: 28px; line-height: 1.1; }
+  .home-launcher-body > div { margin-top: 4px; }
+  .home-launcher-body button { padding: 4px 8px; gap: 4px; }
+  .home-launcher .launcher-icon { width: 40px; height: 40px; }
+}
+
+/* About interactions inherit the plant-green/day and cyan/night accents. */
+.skill-item {
+  transition: transform 120ms steps(3, end), background-color 120ms, color 120ms;
+}
+.skill-item:hover, .skill-item:focus-visible {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+  text-shadow: 0 0 5px color-mix(in srgb, var(--accent) 30%, transparent);
+  transform: translateX(2px);
+}
+.interest-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
+  border: 1px solid var(--accent);
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: transform 120ms steps(3, end), background-color 120ms, color 120ms;
+}
+.interest-button:hover, .interest-button:focus-visible {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  transform: translateY(-2px);
+}
+.interest-button:hover .interest-icon, .interest-button:focus-visible .interest-icon {
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--accent) 50%, transparent));
+}
+.interest-button::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-top: 2px dotted var(--accent);
+  opacity: 0;
+  pointer-events: none;
+}
+.interest-button:hover::after, .interest-button:focus-visible::after {
+  animation: interest-pixel-highlight 180ms steps(3, end) both;
+}
+@keyframes interest-pixel-highlight {
+  0% { opacity: 0; }
+  50% { opacity: 0.7; }
+  100% { opacity: 0.3; }
+}
+.experience-scroll-area {
+  height: 250px;
+  max-height: 250px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.experience-scroll-area > .retro-scroll-content {
+  padding: 8px;
+  overscroll-behavior-y: contain;
+}
+.experience-entry {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  background: color-mix(in srgb, var(--background) 20%, transparent);
+  text-align: left;
+}
+.experience-title { display: block; line-height: 1.2; margin-bottom: 4px; }
+.experience-arrow { display: inline-block; transition: transform 120ms steps(2, end); }
+.experience-link { cursor: pointer; transition: background-color 120ms, border-color 120ms; }
+.experience-link:hover, .experience-link:focus-visible {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border-color: var(--accent);
+}
+.experience-link:hover .experience-arrow, .experience-link:focus-visible .experience-arrow { transform: translateX(2px); }
+.retro-mini-window { width: min(360px, calc(100vw - 24px)); }
+.retro-mini-window .retro-window-body { height: auto; max-height: min(360px, calc(100dvh - 72px)); }
+.retro-cloud-window {
+  isolation: isolate;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  width: min(320px, calc(100vw - 24px));
+  padding: 48px 44px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  animation: interest-cloud-appear 140ms steps(4, end);
+}
+.retro-cloud-window:active { cursor: grabbing; }
+.interest-cloud-shape {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.18));
+}
+.interest-cloud-shape path {
+  fill: var(--interest-cloud-fill);
+  fill-opacity: 0.96;
+  stroke: var(--accent);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+.retro-cloud-window .retro-window-header {
+  padding: 0 0 10px;
+  gap: 8px;
+  background: none;
+  box-shadow: none;
+  color: var(--accent);
+  font-size: 22px;
+  line-height: 1.1;
+}
+.retro-cloud-window .retro-window-header .retro-button {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 20px;
+}
+.retro-cloud-window .retro-window-body {
+  height: auto;
+  max-height: none;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) var(--window-bg);
+  font-size: 18px;
+  line-height: 1.35;
+}
+@keyframes interest-cloud-appear { from { opacity: 0; } to { opacity: 1; } }
+
+/* Hotspots share the wallpaper's contain scale and centered letterboxing. */
+.store-hotspot-map { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+.store-hotspot {
+  position: absolute;
+  display: block;
+  pointer-events: auto;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  touch-action: manipulation;
+}
+.store-hotspot:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.hotspot-illumination { position: absolute; pointer-events: none; opacity: 0; transition: opacity 120ms steps(3, end); }
+.hotspot-pc .hotspot-illumination { background: #52eaff; box-shadow: inset 0 0 8px #52eaff, 0 0 6px rgba(82,234,255,0.35); }
+.hotspot-light .hotspot-illumination {
+  inset: 0;
+  background: #ffeab0;
+  clip-path: polygon(39% 2%,61% 2%,65% 28%,100% 79%,62% 84%,57% 98%,43% 98%,38% 84%,0 79%,35% 28%);
+}
+.store-hotspot:hover .hotspot-illumination, .store-hotspot:focus-visible .hotspot-illumination { opacity: 0.14; }
+.pixel-volume {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 80px;
+  height: 12px;
+  border: 1px solid var(--accent);
+  border-radius: 0;
+  cursor: pointer;
+  background: repeating-linear-gradient(to right, transparent 0 6px, var(--window-bg) 6px 8px),
+    linear-gradient(to right, var(--accent) 0 var(--volume), var(--window-bg) var(--volume) 100%);
+}
+.pixel-volume::-webkit-slider-runnable-track { height: 10px; background: transparent; }
+.pixel-volume::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 8px;
+  height: 18px;
+  margin-top: -4px;
+  border: 2px solid var(--accent);
+  border-radius: 0;
+  background: var(--window-title-foreground);
+}
+.pixel-volume::-moz-range-track { height: 10px; background: transparent; }
+.pixel-volume::-moz-range-thumb { width: 6px; height: 14px; border: 2px solid var(--accent); border-radius: 0; background: var(--window-title-foreground); }
+.pixel-volume:hover, .pixel-volume:active { outline: 1px solid var(--accent); outline-offset: 2px; }
+.pixel-volume:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  .hotspot-illumination { transition: none; }
+  .retro-cloud-window { animation: none; }
+  .skill-item, .interest-button, .experience-link, .experience-arrow { transition: none; }
+  .skill-item:hover, .skill-item:focus-visible,
+  .interest-button:hover, .interest-button:focus-visible,
+  .experience-link:hover .experience-arrow, .experience-link:focus-visible .experience-arrow { transform: none; }
+  .interest-button:hover::after, .interest-button:focus-visible::after { animation: none; opacity: 0.3; }
+}

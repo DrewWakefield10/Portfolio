@@ -1,0 +1,67 @@
+[
+  {
+    "id": "day-window-seat",
+    "title": "Window Seat",
+    "theme": "light",
+    "file": "day/window-seat.mp3",
+    "status": "planned",
+    "prompt": "Original instrumental cozy daytime lo-fi, 76 BPM, mellow electric piano seventh chords, brushed soft drums, restrained warm bass, a gentle two-note motif, subtle tape texture. Friendly and productive, no vocals, no sharp snare or busy lead. Duration 120 seconds. Compose an original piece without imitating any existing song or artist. Use subtle evolving sections, consistent perceived level near -20 LUFS and peaks below -2 dBTP. Export stereo MP3 160–192 kbps or Ogg with a natural short tail and smooth loop boundary; no abrupt cutoff or long silence. Supply public-website usage rights."
+  },
+  {
+    "id": "day-paper-lantern",
+    "title": "Paper Lantern",
+    "theme": "light",
+    "file": "day/paper-lantern.mp3",
+    "status": "planned",
+    "prompt": "Original warm café instrumental, 82 BPM, lightly swung jazz-inspired electronic rhythm, soft felt-piano voicings, understated clean guitar accents, gentle bass. Welcoming sunlight mood; no vocals, no solos, no aggressive percussion. Duration 120 seconds. Compose an original piece without imitating any existing song or artist. Use subtle evolving sections, consistent perceived level near -20 LUFS and peaks below -2 dBTP. Export stereo MP3 160–192 kbps or Ogg with a natural short tail and smooth loop boundary; no abrupt cutoff or long silence. Supply public-website usage rights."
+  },
+  {
+    "id": "day-save-point",
+    "title": "Sunny Save Point",
+    "theme": "light",
+    "file": "day/sunny-save-point.mp3",
+    "status": "planned",
+    "prompt": "Original gentle retro-game background instrumental, 88 BPM, rounded sine/plucked synth tones, warm sustained chords and soft syncopated lo-fi drums. Calm, playful and unobtrusive, no recognizable game melodies, no bright square-wave lead. Duration 120 seconds. Compose an original piece without imitating any existing song or artist. Use subtle evolving sections, consistent perceived level near -20 LUFS and peaks below -2 dBTP. Export stereo MP3 160–192 kbps or Ogg with a natural short tail and smooth loop boundary; no abrupt cutoff or long silence. Supply public-website usage rights."
+  },
+  {
+    "id": "day-slow-saturday",
+    "title": "Slow Saturday",
+    "theme": "light",
+    "file": "day/slow-saturday.mp3",
+    "status": "planned",
+    "prompt": "Original relaxed daytime ambient instrumental, 70 BPM, soft electric piano, airy warm pads, sparse delicate shaker and tiny bell accents. Peaceful café productivity atmosphere, no vocals, no distracting melody or intense bass. Duration 120 seconds. Compose an original piece without imitating any existing song or artist. Use subtle evolving sections, consistent perceived level near -20 LUFS and peaks below -2 dBTP. Export stereo MP3 160–192 kbps or Ogg with a natural short tail and smooth loop boundary; no abrupt cutoff or long silence. Supply public-website usage rights."
+  },
+  {
+    "id": "night-blue-hour",
+    "title": "Blue Hour",
+    "theme": "dark",
+    "file": "night/blue-hour.mp3",
+    "status": "planned",
+    "prompt": "Original mellow nighttime synthwave instrumental, 78 BPM, dreamy analog pads, subdued electric-piano chords, a rounded soft bass pulse and restrained electronic drums. Calm futuristic shop ambience, no dramatic rise or bright lead. Duration 120 seconds. Compose an original piece without imitating any existing song or artist. Use subtle evolving sections, consistent perceived level near -20 LUFS and peaks below -2 dBTP. Export stereo MP3 160–192 kbps or Ogg with a natural short tail and smooth loop boundary; no abrupt cutoff or long silence. Supply public-website usage rights."
+  },
+  {
+    "id": "night-neon-rain",
+    "title": "Neon Rain",
+    "theme": "dark",
+    "file": "night/neon-rain.mp3",
+    "status": "planned",
+    "prompt": "Original atmospheric electronic nighttime instrumental, 72 BPM, muted plucked synthesizer, warm broad pads, gentle filtered rhythm, restrained bass and subtle rain-like synthesized texture. Soft cyberpunk atmosphere, no vocals, no thunder or intense bass. Duration 120 seconds. Compose an original piece without imitating any existing song or artist. Use subtle evolving sections, consistent perceived level near -20 LUFS and peaks below -2 dBTP. Export stereo MP3 160–192 kbps or Ogg with a natural short tail and smooth loop boundary; no abrupt cutoff or long silence. Supply public-website usage rights."
+  },
+  {
+    "id": "night-after-hours",
+    "title": "After Hours",
+    "theme": "dark",
+    "file": "night/after-hours.mp3",
+    "status": "planned",
+    "prompt": "Original cozy late-night ambient electronic instrumental, 66 BPM, sparse felt-piano notes, slowly changing gentle synth harmonies, minimal percussion and quiet analog warmth. Immersive and restful, no dramatic arrangement changes or recognizable melodies. Duration 120 seconds. Compose an original piece without imitating any existing song or artist. Use subtle evolving sections, consistent perceived level near -20 LUFS and peaks below -2 dBTP. Export stereo MP3 160–192 kbps or Ogg with a natural short tail and smooth loop boundary; no abrupt cutoff or long silence. Supply public-website usage rights."
+  },
+  {
+    "id": "night-last-train",
+    "title": "Last Train Home",
+    "theme": "dark",
+    "file": "night/last-train-home.mp3",
+    "status": "planned",
+    "prompt": "Original dreamy retro electronic instrumental, 84 BPM, mellow glassy keys, gentle analog arpeggio at low volume, smooth warm bass and a soft understated beat. Peaceful night journey mood, no vocals, no aggressive percussion or heroic synth lead. Duration 120 seconds. Compose an original piece without imitating any existing song or artist. Use subtle evolving sections, consistent perceived level near -20 LUFS and peaks below -2 dBTP. Export stereo MP3 160–192 kbps or Ogg with a natural short tail and smooth loop boundary; no abrupt cutoff or long silence. Supply public-website usage rights."
+  }
+]
+

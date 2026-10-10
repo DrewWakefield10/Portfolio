@@ -1,53 +1,54 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useRef, useState } from 'react'
+import type { CSSProperties } from 'react'
+import { Shuffle, SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-react'
+import { useAudio } from '@/context/AudioContext'
 
 export function AudioPlayer() {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const musicRef = useRef<HTMLAudioElement | null>(null)
-  const clickRef = useRef<HTMLAudioElement | null>(null)
-
-  useEffect(() => {
-    if (!musicRef.current) return
-
-    musicRef.current.volume = 0.18
-    musicRef.current.loop = true
-  }, [])
-
-  useEffect(() => {
-    if (!musicRef.current) return
-
-    if (isPlaying) {
-      musicRef.current.play().catch(() => {})
-    } else {
-      musicRef.current.pause()
-    }
-  }, [isPlaying])
-
-  const toggleAudio = () => {
-    clickRef.current?.play().catch(() => {})
-    setIsPlaying((prev) => !prev)
-  }
-
+  const { player, theme, track, playing, volume, muted, shuffle, effects, message } = useAudio()
+  const trackLabel = track ? `${track.title}${track.artist ? ` — ${track.artist}` : ''}` : 'No tracks'
   return (
-    <>
-      <audio ref={musicRef} src="/music.mp3" />
-      <audio ref={clickRef} src="/click.mp3" />
-      <button
-        onClick={toggleAudio}
-        className="retro-button flex items-center justify-center"
-        title={isPlaying ? 'Stop music' : 'Play music'}
-        aria-label={isPlaying ? 'Stop music' : 'Play music'}
-      >
-        <Image
-          src="/radio-waves.png"
-          alt={isPlaying ? 'Music on' : 'Music off'}
-          width={18}
-          height={18}
-          className={isPlaying ? 'object-contain' : 'object-contain opacity-50'}
-        />
+    <div className="music-player flex flex-wrap items-center gap-1.5 max-w-full" role="group" aria-label="Background music" data-music-controls>
+      <button type="button" onClick={() => playing ? player.pause() : player.play()}
+        className="retro-button flex items-center justify-center" title={playing ? 'Pause music' : 'Play music'}
+        aria-label={playing ? 'Pause music' : 'Play music'}>
+        {playing ? <svg className="pixel-pause" width="18" height="18" viewBox="0 0 16 16" fill="currentColor" shapeRendering="crispEdges" aria-hidden="true">
+          <path d="M2 2h5v12H2zM9 2h5v12H9z" />
+          <path d="M3 3h1v10H3zM10 3h1v10h-1z" fill="var(--window-bg)" />
+        </svg> : <Image src="/radio-waves.png" alt="" width={18} height={18} className="object-contain opacity-60" />}
       </button>
-    </>
+      <button type="button" onClick={() => player.step(-1)} className="retro-button" title="Previous track" aria-label="Previous track">
+        <SkipBack size={14} aria-hidden />
+      </button>
+      <button type="button" onClick={() => player.step(1)} className="retro-button" title="Next track" aria-label="Next track">
+        <SkipForward size={14} aria-hidden />
+      </button>
+      <span className="w-32 min-w-0 leading-tight text-xs" title={trackLabel}>
+        <span className="block text-accent">{theme === 'light' ? 'daytime radio' : 'nighttime radio'}</span>
+        <span className="block truncate">{trackLabel}</span>
+      </span>
+      <button type="button" onClick={player.toggleMute} className="retro-button" title={muted ? 'Unmute music' : 'Mute music'}
+        aria-label={muted ? 'Unmute music' : 'Mute music'} aria-pressed={muted}>
+        {muted ? <VolumeX size={14} aria-hidden /> : <Volume2 size={14} aria-hidden />}
+      </button>
+      <label className="flex items-center gap-1 text-xs">
+        <span className="sr-only">Music volume</span>
+        <input type="range" min="0" max="100" step="1" value={Math.round(volume * 100)}
+          onChange={event => player.setVolume(Number(event.target.value) / 100)}
+          aria-label="Music volume" aria-valuetext={`${Math.round(volume * 100)} percent`}
+          style={{ '--volume': `${Math.round(volume * 100)}%` } as CSSProperties}
+          className="pixel-volume" />
+      </label>
+      <button type="button" onClick={player.toggleShuffle} className="retro-button" title={shuffle ? 'Disable shuffle' : 'Enable shuffle'}
+        aria-label="Shuffle" aria-pressed={shuffle}>
+        <Shuffle size={14} aria-hidden className={shuffle ? 'text-accent' : 'opacity-50'} />
+      </button>
+      <button type="button" onClick={player.toggleEffects} className="retro-button" data-sound="off"
+        title={effects ? 'Disable UI sounds' : 'Enable UI sounds'} aria-label="UI sounds" aria-pressed={effects}>
+        <span className={effects ? 'text-accent' : 'opacity-50'}>UI FX {effects ? 'ON' : 'OFF'}</span>
+      </button>
+      <span role="status" className="basis-full text-xs text-foreground/80">{message}</span>
+    </div>
   )
 }

@@ -7,9 +7,6 @@ export function ThemeToggle() {
   const { theme, toggleTheme } = useTheme()
 
   const handleToggle = () => {
-    const audio = new Audio('/click.mp3')
-    audio.volume = 0.35
-    audio.play().catch(() => {})
     toggleTheme()
   }
 

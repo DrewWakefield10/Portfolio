@@ -1,0 +1,24 @@
+{
+  "width": 1672,
+  "height": 941,
+  "interactions": {
+    "pc": { "x": 88, "y": 430, "width": 168, "height": 194 },
+    "screen": { "x": 125, "y": 491, "width": 73, "height": 88 },
+    "lights": [
+      { "id": "left", "x": 236, "y": 77, "width": 124, "height": 92 },
+      { "id": "right", "x": 1356, "y": 78, "width": 126, "height": 90 }
+    ]
+  },
+  "fan": { "cx": 871, "cy": 173, "radius": 58, "hubRadius": 22 },
+  "clock": { "cx": 1210, "cy": 153 },
+  "tank": { "x": 1177, "y": 458, "width": 350, "height": 203 },
+  "zapper": { "x": 1040, "y": 808, "width": 65, "height": 84 },
+  "fish": [
+    { "id": "goldfish-left", "x": 1253, "y": 518, "width": 88, "height": 58, "duration": 19, "dx": 23, "dy": 7, "facing": "right", "tailAt": 24, "finDuration": 0.72 },
+    { "id": "goldfish-right", "x": 1385, "y": 486, "width": 87, "height": 57, "duration": 23, "dx": -18, "dy": -6, "facing": "left", "tailAt": 65, "finDuration": 0.83 },
+    { "id": "small-left", "x": 1190, "y": 591, "width": 43, "height": 25, "duration": 17, "dx": 18, "dy": -6, "facing": "left", "tailAt": 18, "finDuration": 0.61 },
+    { "id": "small-low", "x": 1276, "y": 591, "width": 39, "height": 31, "duration": 29, "dx": 17, "dy": 5, "facing": "right", "tailAt": 11, "finDuration": 0.94 },
+    { "id": "small-middle", "x": 1345, "y": 561, "width": 43, "height": 20, "duration": 21, "dx": -21, "dy": -5, "facing": "left", "tailAt": 28, "finDuration": 0.68 },
+    { "id": "small-right", "x": 1374, "y": 591, "width": 38, "height": 22, "duration": 31, "dx": -15, "dy": -7, "facing": "left", "tailAt": 24, "finDuration": 1.03 }
+  ]
+}

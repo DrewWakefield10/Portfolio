@@ -30,9 +30,6 @@ export function DesktopIcon({ id, label, onClick }: DesktopIconProps) {
   const { openWindow } = useWindowManager()
 
   const handleDoubleClick = () => {
-    const audio = new Audio('/click.mp3')
-    audio.volume = 0.3
-    audio.play().catch(() => {})
     openWindow(id)
     onClick?.()
   }

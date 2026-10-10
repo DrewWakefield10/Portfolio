@@ -14,6 +14,7 @@ interface RetroScrollAreaProps {
   children: ReactNode
   className?: string
   contentClassName?: string
+  label?: string
 }
 
 const MIN_THUMB_HEIGHT = 40
@@ -22,8 +23,10 @@ export function RetroScrollArea({
   children,
   className,
   contentClassName,
+  label = 'Window content',
 }: RetroScrollAreaProps) {
   const contentRef = useRef<HTMLDivElement>(null)
+  const innerRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
   const dragRef = useRef<{ startY: number; startScrollTop: number } | null>(null)
 
@@ -64,6 +67,7 @@ export function RetroScrollArea({
 
     const observer = new ResizeObserver(updateThumb)
     observer.observe(el)
+    if (innerRef.current) observer.observe(innerRef.current)
 
     return () => observer.disconnect()
   }, [updateThumb])
@@ -139,16 +143,18 @@ export function RetroScrollArea({
   }, [])
 
   return (
-    <div className={cn('flex min-h-0 flex-1', className)}>
+    <div className={cn('flex min-h-0 min-w-0 flex-1', className)}>
       <div
         ref={contentRef}
         className={cn(
-          'retro-scroll-content min-h-0 flex-1 overflow-y-auto p-6',
-          contentClassName
+          'retro-scroll-content min-h-0 min-w-0 flex-1 overflow-y-auto p-4 sm:p-6'
         )}
         onScroll={updateThumb}
+        tabIndex={0}
+        role="region"
+        aria-label={label}
       >
-        {children}
+        <div ref={innerRef} className={contentClassName}>{children}</div>
       </div>
 
       {scrollable && (

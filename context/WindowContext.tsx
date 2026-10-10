@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useCallback } from 'react'
+import { getProject, type ProjectId } from '@/lib/projects'
 
 export interface WindowState {
   id: string
@@ -12,39 +13,64 @@ export interface WindowState {
 interface WindowContextType {
   windows: Map<string, WindowState>
   openWindow: (id: string) => void
+  toggleWindow: (id: string) => void
   closeWindow: (id: string) => void
   bringToFront: (id: string) => void
   updatePosition: (id: string, x: number, y: number) => void
   getWindow: (id: string) => WindowState | undefined
+  selectedProjectId: ProjectId | null
+  selectProject: (id: ProjectId | null) => void
+  openProject: (id: ProjectId) => boolean
 }
 
 const WindowContext = createContext<WindowContextType | undefined>(undefined)
 
 export function WindowProvider({ children }: { children: React.ReactNode }) {
   const [windows, setWindows] = useState<Map<string, WindowState>>(new Map())
-  const [nextZIndex, setNextZIndex] = useState(100)
+  const [selectedProjectId, setSelectedProjectId] = useState<ProjectId | null>(null)
 
-  const openWindow = useCallback((id: string) => {
+  const showWindow = useCallback((id: string, toggle = false) => {
     setWindows((prev) => {
       const newMap = new Map(prev)
+      const existing = newMap.get(id)
+      if (toggle && existing?.isOpen) {
+        newMap.set(id, { ...existing, isOpen: false })
+        return newMap
+      }
+      const newZIndex = Math.max(100, ...Array.from(newMap.values(), (w) => w.zIndex)) + 1
       if (!newMap.has(id)) {
-        const newZIndex = Math.max(0, ...Array.from(newMap.values(), (w) => w.zIndex)) + 1
         newMap.set(id, {
           id,
           isOpen: true,
-          position: { x: 50 + Math.random() * 100, y: 50 + Math.random() * 100 },
+          position: id === 'home'
+            ? { x: Math.max(12, (window.innerWidth - 480) / 2), y: Math.max(48, (window.innerHeight - 310) / 2) }
+            : { x: 50 + Math.random() * 100, y: 50 + Math.random() * 100 },
           zIndex: newZIndex,
         })
       } else {
-        const existing = newMap.get(id)!
         newMap.set(id, {
-          ...existing,
+          ...existing!,
           isOpen: true,
+          zIndex: newZIndex,
         })
       }
       return newMap
     })
   }, [])
+
+  const openWindow = useCallback((id: string) => showWindow(id), [showWindow])
+  const toggleWindow = useCallback((id: string) => showWindow(id, true), [showWindow])
+
+  const selectProject = useCallback((id: ProjectId | null) => {
+    if (id === null || getProject(id)) setSelectedProjectId(id)
+  }, [])
+
+  const openProject = useCallback((id: ProjectId) => {
+    if (!getProject(id)) return false
+    setSelectedProjectId(id)
+    openWindow('works')
+    return true
+  }, [openWindow])
 
   const closeWindow = useCallback((id: string) => {
     setWindows((prev) => {
@@ -98,10 +124,14 @@ export function WindowProvider({ children }: { children: React.ReactNode }) {
       value={{
         windows,
         openWindow,
+        toggleWindow,
         closeWindow,
         bringToFront,
         updatePosition,
         getWindow,
+        selectedProjectId,
+        selectProject,
+        openProject,
       }}
     >
       {children}

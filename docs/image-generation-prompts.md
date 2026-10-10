@@ -1,0 +1,20 @@
+# Image generation prompts
+
+Tool: built-in image_gen.imagegen. No API/CLI fallback or new image dependencies were used.
+The two uncertain sign texts were reconstructed using docs/wallpaper-signage.svg after the user specified Japanese "Drew portfolio". The same overlay was reapplied after night generation with lighting-only paint changes.
+
+## Daytime generation
+
+Reference/edit target: public/background light.jpg
+
+Use case: precise-object-edit. Asset type: portfolio daytime wallpaper, high-definition pixel-art shop INTERIOR, 3840x2160 if supported. Edit target: supplied original daytime wallpaper. Recreate this exact interior with genuinely newly rendered crisp detailed pixel art, preserving the original restrained retro pixel style, palette, object count, perspective, composition and placement. The original is approximately 1024x734: preserve ALL original scene content and its spatial relationships by minimally extending only the existing plain wall/floor edge backgrounds to a 16:9 canvas; never crop original objects, introduce new objects or redesign. Preserve exact counter, CRT on left, calendar upper left, hanging lamps, plant, fan and radio on shelf, wall telephone, noticeboard, pendulum clock, two thermos dispensers, red bag on counter, cat at bottom left, aquarium and cabinet right. Bright natural warm daytime light, clean defined geometry and coherent textures. Sharp signage is critical: counter front reads exactly "訪客請先登記" (Traditional Chinese, same positioning); right hanging calendar reads exactly "23" and "星期五"; upper left calendar number reads "7." Preserve Roman numerals on clock. For the red diamond sign left and the small label beside counter, preserve the original character shapes faithfully WITHOUT guessing, adding or changing wording: their reading awaits user confirmation. Do not invent any other text or gibberish. Keep the supplied pixel-art illustration medium, not photorealism or smoothing. No excessive sharpening, no redesigned branding, no new scenery. This will serve as the exact structural master for a night lighting edit.
+
+Actual output: 1672 × 941. Shared lettering was composited to form public/wallpapers/store-day-master.png before the night edit.
+
+## Nighttime generation
+
+Reference/edit target: public/wallpapers/store-day-master.png
+
+Use case: lighting-weather. Edit target: the supplied COMPLETED daytime pixel-art shop interior wallpaper is the STRUCTURAL MASTER. Produce its nighttime lighting version at precisely the SAME 1672x941 resolution and identical framing. Change ONLY lighting/colors: relaxing deep teal-blue night ambience, warm hanging-lamp pools and soft warm interior light, aquarium turquoise glow, visible architecture and gentle reflections, readable details. Every edge, silhouette, object, wall marking, cat, fish, shelf, plant, fan, telephone, clock, CRT, red bag, thermos, cabinet, pipes, paper, floorboard MUST stay at the EXACT same pixel coordinates and have identical shapes and proportions as the input. Do NOT redraw or rearrange objects. No camera change, extension, crop, rotation, new structures, people, objects, stars or windows. ALL SIGN TEXT must remain IDENTICAL at identical positions: red diamond and small counter label both have Japanese lines "ドリュー" / "の" / "ポート" / "フォリオ"; counter front reads "訪客請先登記"; right calendar "23" / "星期五"; left calendar "7."; clock Roman numerals unchanged. Preserve these fonts, shapes, line breaks, letter positioning precisely. We will reapply exact source text layers if needed. Night palette should stay readable rather than crushed black, with teal ambience and gentle amber lamplight. Preserve crisp pixel-art drawing style and all original detailed geometry. This is solely a color and illumination edit of the supplied image, never a new composition.
+
+Actual output: 1672 × 941. Shared lettering was reapplied to form public/wallpapers/store-night-master.png. Minor generated texture/detail variations remain; the prompt alone cannot guarantee pixel-identical results.

@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import { VT323 } from 'next/font/google'
 import { ThemeProvider } from '@/context/ThemeContext'
 import { WindowProvider } from '@/context/WindowContext'
+import { AudioProvider } from '@/context/AudioContext'
 import './globals.css'
 
 const vt323 = VT323({
@@ -51,9 +52,11 @@ export default function RootLayout({
     <html lang="en" className={vt323.variable}>
       <body className={`${vt323.className} antialiased bg-background text-foreground`}>
         <ThemeProvider>
-          <WindowProvider>
-            {children}
-          </WindowProvider>
+          <AudioProvider>
+            <WindowProvider>
+              {children}
+            </WindowProvider>
+          </AudioProvider>
         </ThemeProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

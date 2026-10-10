@@ -4,6 +4,10 @@ import Image from 'next/image'
 import { VT323 } from 'next/font/google'
 import { useTheme } from '@/context/ThemeContext'
 import { RetroScrollArea } from '@/components/RetroScrollArea'
+import { InterestIcon } from '@/components/InterestIcon'
+import { useWindowManager } from '@/context/WindowContext'
+import { interests, interestWindowId, experienceLog, type InterestId } from '@/lib/about'
+import { getProject } from '@/lib/projects'
 
 const vt323 = VT323({
   weight: '400',
@@ -12,15 +16,23 @@ const vt323 = VT323({
 
 export function AboutWindow() {
   const { theme } = useTheme()
+  const { openWindow, openProject, getWindow } = useWindowManager()
+
+  const openInterest = (interestId: InterestId) => {
+    const id = interestWindowId(interestId)
+    const alreadyOpen = getWindow(id)?.isOpen
+    openWindow(id)
+    if (alreadyOpen) document.getElementById(`desktop-window-${id}`)?.focus()
+  }
 
   return (
     <div
-      className={`${vt323.className} h-full flex flex-col overflow-hidden bg-window-bg text-foreground`}
+      className={`${vt323.className} h-full min-h-0 flex flex-col overflow-hidden text-foreground`}
     >
       {/* FIXED PROFILE SECTION */}
-      <div className="shrink-0 border-b border-accent/30 p-6">
-        <div className="flex items-center gap-5">
-          <div className="relative w-28 h-28 overflow-hidden border-2 border-accent">
+      <div className="shrink-0 border-b border-accent/30 p-4 sm:p-6">
+        <div className="flex items-center gap-3 sm:gap-5">
+          <div className="relative shrink-0 w-16 h-16 sm:w-28 sm:h-28 overflow-hidden border-2 border-accent">
             <Image
               src={theme === 'light' ? '/profile.jpg' : '/profile.jpg'}
               alt="Profile"
@@ -29,16 +41,16 @@ export function AboutWindow() {
             />
           </div>
 
-          <div>
-            <h1 className="text-5xl text-accent leading-none">
+          <div className="min-w-0">
+            <h1 className="text-3xl sm:text-4xl text-accent leading-none">
               Drew Wakefield
             </h1>
 
-            <p className="mt-2 text-2xl text-foreground/90">
+            <p className="mt-2 text-xl sm:text-2xl text-foreground/90">
               Full-Stack Developer • Web Designer
             </p>
 
-            <p className="text-xl text-foreground/70">
+            <p className="text-xl text-foreground/90 leading-snug">
               Building performant web experiences and interactive applications.
             </p>
 
@@ -57,7 +69,7 @@ export function AboutWindow() {
       </div>
 
       {/* SCROLLABLE SECTION ONLY */}
-      <RetroScrollArea contentClassName="space-y-8">
+      <RetroScrollArea contentClassName="space-y-7 text-[22px]" label="About details">
 
         {/* Skills */}
         <section>
@@ -65,7 +77,7 @@ export function AboutWindow() {
             SKILLS.EXE
           </h2>
 
-          <div className="grid grid-cols-2 gap-8 text-xl">
+          <div className="grid grid-cols-2 gap-4 sm:gap-8">
             <div>
               <h3 className="mb-2 text-accent/90">
                 Frontend
@@ -79,13 +91,13 @@ export function AboutWindow() {
                   'Tailwind CSS',
                   'Astro',
                 ].map((skill) => (
-                  <li key={skill} className="group flex items-center gap-2">
+                  <li key={skill} className="skill-item group flex items-center gap-2" tabIndex={0} data-hover-sound="skill">
                     <Image
                       src={theme === 'light' ? '/pointer light.png' : '/pointer dark.png'}
                       alt=""
                       width={16}
                       height={16}
-                      className="h-4 w-4 shrink-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+                      className="h-4 w-4 shrink-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100"
                     />
                     <span>{skill}</span>
                   </li>
@@ -106,13 +118,13 @@ export function AboutWindow() {
                   'REST APIs',
                   'Python',
                 ].map((skill) => (
-                  <li key={skill} className="group flex items-center gap-2">
+                  <li key={skill} className="skill-item group flex items-center gap-2" tabIndex={0} data-hover-sound="skill">
                     <Image
                       src={theme === 'light' ? '/pointer light.png' : '/pointer dark.png'}
                       alt=""
                       width={16}
                       height={16}
-                      className="h-4 w-4 shrink-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+                      className="h-4 w-4 shrink-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100"
                     />
                     <span>{skill}</span>
                   </li>
@@ -128,14 +140,14 @@ export function AboutWindow() {
             EDUCATION.DAT
           </h2>
 
-          <div className="border-l-2 border-accent pl-4 text-xl">
+          <div className="border-l-2 border-accent pl-4">
             <p>Bachelor of Science in Computer Science</p>
 
-            <p className="text-foreground/70">
+            <p className="text-foreground/90">
               Palawan State University
             </p>
 
-            <p className="text-foreground/50">
+            <p className="text-lg text-foreground/80">
               Graduated: 2026
             </p>
           </div>
@@ -147,7 +159,7 @@ export function AboutWindow() {
             LANGUAGES.SYS
           </h2>
 
-          <div className="space-y-4 text-xl">
+          <div className="space-y-4">
             <div>
               <div className="mb-1 flex justify-between">
                 <span>English</span>
@@ -178,45 +190,63 @@ export function AboutWindow() {
             INTERESTS.INI
           </h2>
 
-          <div className="flex flex-wrap gap-2 text-xl">
-            <span className="border border-accent px-3 py-1">
-              Linux
-            </span>
-
-            <span className="border border-accent px-3 py-1">
-              Retro UI
-            </span>
-
-            <span className="border border-accent px-3 py-1">
-              Game Development
-            </span>
-
-            <span className="border border-accent px-3 py-1">
-              Open Source
-            </span>
-
-            <span className="border border-accent px-3 py-1">
-              Web Design
-            </span>
+          <div className="flex flex-wrap gap-2">
+            {interests.map((interest) => (
+              <button
+                key={interest.id}
+                id={`interest-trigger-${interest.id}`}
+                type="button"
+                className="interest-button inline-flex items-center justify-center gap-2"
+                aria-label={`Open ${interest.title} information`}
+                aria-controls={`desktop-window-${interestWindowId(interest.id)}`}
+                aria-expanded={getWindow(interestWindowId(interest.id))?.isOpen ?? false}
+                onClick={() => openInterest(interest.id)}
+              >
+                <InterestIcon id={interest.id} />
+                <span>{interest.title}</span>
+              </button>
+            ))}
           </div>
         </section>
 
-        {/* Extra Content for Testing Scroll */}
+        {/* Experience Log */}
         <section>
           <h2 className="mb-4 text-3xl text-accent">
             EXPERIENCE.LOG
           </h2>
 
-          <div className="space-y-4 text-xl">
-            <p>Portfolio Development</p>
-            <p>Authentication Dashboard</p>
-            <p>Retro Desktop Website</p>
-            <p>Face Recognition Research</p>
-            <p>Game Development Projects</p>
-            <p>Open Source Contributions</p>
-            <p>Linux Customization</p>
-            <p>Web Design Projects</p>
-          </div>
+          <RetroScrollArea className="experience-scroll-area" contentClassName="space-y-2" label="Experience entries">
+            {experienceLog.map((entry) => {
+              const project = getProject(entry.projectId)
+              const content = (
+                <>
+                  <span className="experience-title text-accent">
+                    <span aria-hidden="true" className="experience-arrow">&gt;</span> {entry.title}
+                  </span>
+                  <span className="block text-xl text-foreground/90">{entry.detail}</span>
+                  <span className="block mt-1 text-base text-accent/80">
+                    {project ? `Open ${project.title}` : 'Project details not added yet'}
+                  </span>
+                </>
+              )
+              return project && entry.projectId ? (
+                <button
+                  key={entry.id}
+                  type="button"
+                  className="experience-entry experience-link"
+                  data-experience-id={entry.id}
+                  onClick={() => openProject(entry.projectId!)}
+                  aria-label={`${entry.title}: open ${project.title}`}
+                >
+                  {content}
+                </button>
+              ) : (
+                <article key={entry.id} className="experience-entry" data-experience-id={entry.id}>
+                  {content}
+                </article>
+              )
+            })}
+          </RetroScrollArea>
         </section>
 
       </RetroScrollArea>
