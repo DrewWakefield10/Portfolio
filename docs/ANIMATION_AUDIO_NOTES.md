@@ -2,6 +2,10 @@
 
 ## Viewing and hearing the changes
 
+Fish travel now runs 60% faster than the preceding version. The shelf fan starts at Low and cycles Low ? Medium ? High ? Off, preserving its speed across themes and reloads. Off stops only its blades. See [Fish and fan notes](FISH_FAN_NOTES.md) for the continuity-preserving controller, accessibility, changed files, and verification.
+
+The telephone now toggles Contact, the bulletin board toggles Works, and the clock/calendar open independent compact live information windows. See [Wallpaper object notes](WALLPAPER_OBJECTS_NOTES.md) for shared local-time behavior, alignment, modified files, and verification.
+
 The running development site is at http://localhost:3000. Refresh the page after updating the source. Startup now shows only the wallpaper and navbar. Click the illustrated PC to open or close Home, and either hanging lamp to switch the shared light/dark theme. The PC and lamp hotspots use subtle glow without visible instructional tooltips; their accessible labels remain. The navbar theme toggle remains available. See [Interactive desktop notes](INTERACTIVE_DESKTOP_NOTES.md) for the current interactions and verification.
 
 Wallpaper animation is permanently enabled during normal use; the old System/On/Off menu and saved motion overrides are no longer used. Reduced-motion preferences keep gentle continuous motion: a 12-second fan rotation and fish travel at half the normal pace over 35% of the normal distance. Extra body/fin motion, transitions, and zapper flicker are disabled; the wall clock remains accurate. Hidden tabs pause environmental motion and clock updates.
@@ -34,7 +38,7 @@ The bell and test-sound button have been removed. The compact **UI FX ON/OFF** t
 
 Reused unchanged: public/music.mp3 and public/click.mp3 (legacy click backup). No new music recording was generated because no music-generation tool is connected. UI effects are original oscillator synthesis in lib/ui-sounds.ts; no downloadable SFX files or audio dependencies were added.
 
-Four daytime and four nighttime songs are planned in public/music/catalog.json, with full prompts in docs/MUSIC_GENERATION_PROMPTS.md. Their designated folders exist, but no fake audio files were created. All planned entries are excluded from playable arrays. npm run music:sync checks completed files using FFprobe before exporting lib/music-library.json. The live playlists currently each contain the original mix only. Actual additional musical variety therefore awaits those eight files.
+Eight user-supplied MP3s are now active: four in public/music/day and four in public/music/night. Each theme plays its supplied songs first and retains the original mix; saved selections are respected. No Runway generation or credits are used. The former twelve-song proposal is archived in docs/music-generation-catalog.json, with its optional briefs retained in docs/MUSIC_GENERATION_PROMPTS.md. npm run music:sync verifies every supplied file and exports playback attenuation to balance louder masters without altering the audio. Natural song lengths/tails and original filenames are retained. See [Supplied music notes](SUPPLIED_MUSIC.md) for the files, measured levels and current verification.
 
 ## Continuous-motion correction
 
@@ -55,7 +59,7 @@ Verification after the correction: standalone TypeScript check, production build
 - npm run build: passed.
 - Chrome smoke checks cover motion before the first gesture, 40% faster fish cycles, actual 2D fin movement, direction flips, tank bounds across sampled complete loops, seamless travel endpoints, local clock angles, hidden-tab pause/resume for all moving layers, reduced motion, unchanged animation identities across themes, irregular zapper pulse frequency/brightness, real music playback/fades without shared-source reloads, paused/muted switching, SFX mute/debounce, all music controls, saved preferences, navigation, window dragging/closing, and alignment at 1080p/1440p/4K/mobile viewports. The interactive desktop update adds closed startup, PC/lamp interactions, hotspot occlusion, and native pixel-volume controls. Reload checks wait for the new document before evaluating its audio state.
 - No browser runtime exceptions or missing wallpaper/music/animation requests were observed. Screenshots and browser-results.json are under .next/verification/.
-- npm run lint remains unavailable because the existing project does not install/configure ESLint. No lint success is claimed.
+- npm run lint now passes with zero warnings after the dependency setup. ESLint and its Next.js/TypeScript rules are installed and integrated with VS Code; see docs/TOOLING.md.
 - The existing Next.js parent-lockfile/workspace-root warning remains. No unrelated configuration or dependency changes were introduced.
 
 ## Files changed in this follow-up
@@ -111,9 +115,9 @@ Pre-existing edits in AboutWindow.tsx and WorksWindow.tsx were preserved.
 
 ## Remaining limitations
 
-- Eight real, suitably licensed music exports are still needed; prompts and destinations are ready. Song loudness and loop transitions should be auditioned after import.
+- The soundtrack now uses eight supplied songs; external generation is no longer required. Playback attenuation balances their levels, but does not repair distortion already present in a source recording. Archived generation briefs remain optional references.
 - Existing artwork resolution remains 1672 × 941. Display alignment is verified on 4K screens; no native-4K claim is made.
 - The source day/night illustrations already have small texture differences. The animation uses shared geometry and exact extracted silhouettes; it does not attempt to regenerate or redesign those differences.
 - Small inpainted water/backplate patches and reconstructed fan geometry are visual approximations of previously occluded areas, while the main architecture/text and original moving fish artwork remain intact.
-- ESLint still needs installation/configuration for a runnable lint workflow.
+- ESLint installation/configuration is complete; see [Tooling notes](TOOLING.md) for the working lint commands and editor integration.
 

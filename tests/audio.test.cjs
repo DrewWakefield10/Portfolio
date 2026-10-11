@@ -329,11 +329,50 @@ test('single-song next/previous do not restart; ended still loops the only avail
   player.disconnect()
 })
 
-test('planned music never appears in playable playlists', () => {
+test('supplied songs are playable in their matching theme and archived plans remain excluded', () => {
   const { MUSIC_PLAYLISTS } = require('../lib/music.ts')
   const catalog = require('../public/music/catalog.json')
-  assert.equal(catalog.filter(entry => entry.theme === 'light').length, 4)
-  assert.equal(catalog.filter(entry => entry.theme === 'dark').length, 4)
-  const planned = new Set(catalog.filter(entry => entry.status === 'planned').map(entry => entry.id))
+  const planned = new Set(require('../docs/music-generation-catalog.json').map(entry => entry.id))
   assert.ok(Object.values(MUSIC_PLAYLISTS).flat().every(item => !planned.has(item.id)))
+  for (const theme of ['light', 'dark']) {
+    const ready = catalog.filter(entry => entry.status === 'ready' && entry.theme === theme)
+    assert.equal(ready.length, 4)
+    assert.equal(MUSIC_PLAYLISTS[theme].length, 5)
+    assert.equal(MUSIC_PLAYLISTS[theme][0].id, ready[0].id)
+    assert.ok(ready.every(entry => MUSIC_PLAYLISTS[theme].some(track => track.id === entry.id)))
+    assert.ok(MUSIC_PLAYLISTS[theme].some(track => track.src === '/music.mp3'))
+  }
+})
+
+test('track attenuation follows the loaded source during fades and never changes saved user volume', async () => {
+  const supplied = {
+    light: [{ ...track('loud-day'), gain: 0.2 }, track('original')],
+    dark: [{ ...track('night', 'dark'), gain: 0.4 }],
+  }
+  const { player, audio, saved } = setup({}, { playlists: supplied, transitionMs: 50 })
+  assert.equal(audio.volume, MUSIC_MAX_GAIN * 0.5 * 0.2, 'restored paused track is already attenuated')
+  player.play()
+  await wait()
+  const outgoing = audio.volume
+  const transition = player.setTheme('dark')
+  assert.equal(audio.volume, outgoing, 'incoming metadata must not raise the outgoing audio gain')
+  await transition
+  assert.equal(audio.src, '/night.mp3')
+  assert.equal(audio.volume, MUSIC_MAX_GAIN * 0.5 * 0.4)
+  player.setVolume(0.7)
+  await wait(120)
+  assert.ok(Math.abs(audio.volume - MUSIC_MAX_GAIN * 0.7 * 0.4) < 0.0001)
+  assert.equal(saved().volume, 0.7)
+  player.toggleMute()
+  assert.equal(audio.volume, 0)
+  player.toggleMute()
+  assert.equal(audio.volume, MUSIC_MAX_GAIN * 0.7 * 0.4)
+  player.pause()
+  await player.setTheme('light')
+  assert.equal(audio.paused, true)
+  assert.equal(audio.volume, MUSIC_MAX_GAIN * 0.7 * 0.2)
+  player.step(1)
+  await wait()
+  assert.equal(audio.volume, MUSIC_MAX_GAIN * 0.7, 'original recording retains its previous level')
+  player.disconnect()
 })

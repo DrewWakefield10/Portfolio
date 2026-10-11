@@ -26,6 +26,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const initialTheme = storedTheme === 'light' || storedTheme === 'dark'
       ? storedTheme
       : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    // Restore browser preferences after hydration so the initial render matches the server.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTheme(initialTheme)
     applyTheme(initialTheme)
   }, [])

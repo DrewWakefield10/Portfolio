@@ -1,1 +1,60 @@
-[]
+[
+  {
+    "id": "supplied-day-remember-summer-days",
+    "title": "Remember Summer Days",
+    "artist": "Anri",
+    "src": "/music/day/Anri_Remember_Summer_Days%20day.mp3",
+    "theme": "light",
+    "gain": 0.192975
+  },
+  {
+    "id": "supplied-day-fairground",
+    "title": "Fairground",
+    "src": "/music/day/Fairground%20day.mp3",
+    "theme": "light",
+    "gain": 0.303389
+  },
+  {
+    "id": "supplied-day-shibuya-sky",
+    "title": "Shibuya Sky",
+    "src": "/music/day/Shibuya%20Sky%20day.mp3",
+    "theme": "light",
+    "gain": 0.290737
+  },
+  {
+    "id": "supplied-day-without-u",
+    "title": "Without U",
+    "artist": "Thelma Aoyama feat. 4Minute",
+    "src": "/music/day/Without_U_Thelma_Aoyama_Feat_4Minute_day.mp3",
+    "theme": "light",
+    "gain": 0.213304
+  },
+  {
+    "id": "supplied-night-midnight-pretenders",
+    "title": "Midnight Pretenders",
+    "src": "/music/night/Midnight_Pretenders%20night.mp3",
+    "theme": "dark",
+    "gain": 1
+  },
+  {
+    "id": "supplied-night-fool-parsley",
+    "title": "Fool Parsley",
+    "src": "/music/night/fool%20parsley%20night.mp3",
+    "theme": "dark",
+    "gain": 0.283139
+  },
+  {
+    "id": "supplied-night-wasurerarenaino",
+    "title": "Wasurerarenaino",
+    "src": "/music/night/wasurerarenaino%20night.mp3",
+    "theme": "dark",
+    "gain": 0.377138
+  },
+  {
+    "id": "supplied-night-when-you-re-ready",
+    "title": "When You're Ready",
+    "src": "/music/night/when%20you're%20ready%20night.mp3",
+    "theme": "dark",
+    "gain": 0.277971
+  }
+]

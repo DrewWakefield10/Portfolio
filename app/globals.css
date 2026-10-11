@@ -192,7 +192,7 @@
   border: 0;
   box-shadow: none;
   background-color: transparent;
-  color: var(--foreground);
+  color: var(--desktop-control-ink);
 }
 .desktop-navigation .retro-button:hover:not(:active) { background-color: color-mix(in srgb, var(--accent) 15%, transparent); }
 .desktop-navigation .retro-button:active { box-shadow: none; }
@@ -205,21 +205,22 @@
 .desktop-navigation select.retro-button { background-color: var(--background); }
 .desktop-navigation select.retro-button:hover { background-color: var(--background); }
 /* Let visible artwork receive clicks through the toolbar's empty space. */
-.desktop-navigation { pointer-events: none; }
+.desktop-navigation { pointer-events: none; --desktop-control-ink: var(--accent-hover); }
+.dark .desktop-navigation { --desktop-control-ink: var(--accent); }
 .desktop-navigation :is(button, input, select, a, label) { pointer-events: auto; }
-.pixel-pause { display: block; color: var(--accent); }
-html:not(.dark) :is(.launcher-icon, .desktop-navigation) img {
+.pixel-pause, .pixel-control-icon { display: block; }
+html:not(.dark) .launcher-icon img {
   filter: hue-rotate(-55deg) saturate(0.6);
 }
 .wallpaper-layer { transition: opacity 600ms ease-in-out; }
 .music-player .retro-button { padding: 0.25rem 0.4rem; }
+.music-player .radio-station { color: var(--desktop-control-ink); }
 .music-player .retro-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) {
   .wallpaper-layer { transition: none; }
 }
 
 .store-environment {
-  --fan-duration: 1.45s;
   --swim-tempo: 1;
   --swim-distance: 1;
   --fan-dark: #203541;
@@ -234,7 +235,8 @@ html:not(.dark) :is(.launcher-icon, .desktop-navigation) img {
   --clock-hand: #112535;
 }
 .environment-paint { transition: opacity 600ms ease-in-out; }
-.fan-rotor { transform-box: view-box; animation: store-fan-spin var(--fan-duration) linear infinite; }
+/* Keep this timeline fixed; the fan controller ramps playbackRate without seeking. */
+.fan-rotor { transform-box: view-box; animation: store-fan-spin 1s linear infinite; }
 .swimming-fish { animation: store-fish-swim calc(var(--swim-duration) * var(--swim-tempo)) ease-in-out var(--swim-delay) infinite; }
 /* Flat sprite flips at the slowest point of each turn; no perspective or 3D transforms. */
 .fish-facing {
@@ -286,7 +288,7 @@ html:not(.dark) :is(.launcher-icon, .desktop-navigation) img {
 }
 @media (prefers-reduced-motion: reduce) {
   /* Reduced motion keeps continuous gentle travel; extra bobbing and flashing stay off. */
-  .store-environment { --fan-duration: 12s; --swim-tempo: 2; --swim-distance: 0.35; }
+  .store-environment { --swim-tempo: 2; --swim-distance: 0.35; }
   .store-environment :is(.fish-body, .fish-tail) { animation: none; }
   .environment-paint { transition: none; }
   .store-environment .zapper-glow { animation: none !important; opacity: 0 !important; filter: none !important; }
@@ -430,7 +432,7 @@ html:not(.dark) :is(.launcher-icon, .desktop-navigation) img {
 }
 @keyframes interest-cloud-appear { from { opacity: 0; } to { opacity: 1; } }
 
-/* Hotspots share the wallpaper's contain scale and centered letterboxing. */
+/* PC, lamp and object hotspots share the wallpaper's contain scale and letterboxing. */
 .store-hotspot-map { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
 .store-hotspot {
   position: absolute;
@@ -451,6 +453,50 @@ html:not(.dark) :is(.launcher-icon, .desktop-navigation) img {
   clip-path: polygon(39% 2%,61% 2%,65% 28%,100% 79%,62% 84%,57% 98%,43% 98%,38% 84%,0 79%,35% 28%);
 }
 .store-hotspot:hover .hotspot-illumination, .store-hotspot:focus-visible .hotspot-illumination { opacity: 0.14; }
+/* Highlights sit over the source artwork; no replacement objects or visible labels. */
+.hotspot-object { --hotspot-color: #ffe3a0; }
+.hotspot-phone { --hotspot-color: #52eaff; }
+.hotspot-fan { --hotspot-color: #52eaff; clip-path: polygon(30% 0,70% 0,88% 14%,100% 32%,100% 52%,88% 69%,64% 80%,90% 86%,90% 100%,10% 100%,10% 86%,36% 80%,12% 69%,0 52%,0 32%,12% 14%); }
+.hotspot-object .hotspot-illumination {
+  inset: 0;
+  background: var(--hotspot-color);
+  box-shadow: inset 0 0 0 2px var(--hotspot-color);
+}
+.hotspot-clock { clip-path: polygon(20% 0,80% 0,100% 13%,100% 45%,80% 54%,80% 86%,50% 100%,20% 86%,20% 54%,0 45%,0 13%); }
+/* Exclude the blender occluding the board's lower-left corner. */
+.hotspot-board { clip-path: polygon(0 0,100% 0,100% 100%,38% 100%,38% 56%,0 56%); }
+.hotspot-detail { position: absolute; pointer-events: none; opacity: 0; background: var(--hotspot-color); transition: opacity 120ms steps(3, end); }
+.hotspot-board .hotspot-detail { inset: 58% 11% 12% 58%; }
+.store-hotspot:hover .hotspot-detail, .store-hotspot:focus-visible .hotspot-detail { opacity: 0.12; }
+.retro-info-window {
+  width: min(252px, calc(100vw - 24px));
+}
+.dark .retro-info-window {
+  --accent: #00d4ff;
+  --accent-hover: #00a8cc;
+  --foreground: #dff9ff;
+  --window-bg: #0a2342;
+  --window-border: #00a8cc;
+  --window-glass-rgb: 10, 35, 66;
+  --window-title-start: #164c66;
+  --window-title-end: #123955;
+  --window-title-foreground: #b9f4ff;
+}
+.retro-info-window[data-window-id='calendar'] { width: min(300px, calc(100vw - 24px)); }
+.retro-info-window .retro-window-header { font-size: 18px; padding: 4px 8px; }
+.retro-info-window .retro-window-header .retro-button { padding: 0 6px; font-size: 18px; line-height: 1.2; }
+.retro-info-window .retro-window-body { height: auto; max-height: calc(100dvh - 72px); padding: 12px; overflow-y: auto; font-size: 18px; }
+.store-time-content, .store-calendar-content { text-align: center; }
+.store-time-value { display: block; font-size: 30px; line-height: 1.2; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.store-info-caption { margin-top: 8px; color: var(--accent); font-size: 16px; }
+.store-info-zone { font-size: 14px; line-height: 1.2; margin-top: 4px; overflow-wrap: anywhere; }
+.store-calendar-weekday, .store-calendar-date { display: block; }
+.store-calendar-weekday { color: var(--accent); text-transform: uppercase; font-size: 22px; line-height: 1.2; }
+.store-calendar-date { font-size: 20px; line-height: 1.2; }
+.store-calendar-grid { width: 100%; table-layout: fixed; margin-top: 10px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.store-calendar-grid th { color: var(--accent); font-size: 16px; font-weight: normal; }
+.store-calendar-grid td { height: 28px; padding: 0; line-height: 1.2; }
+.calendar-today { display: inline-block; min-width: 25px; border: 1px solid var(--accent); background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent); }
 .pixel-volume {
   appearance: none;
   -webkit-appearance: none;
@@ -478,7 +524,7 @@ html:not(.dark) :is(.launcher-icon, .desktop-navigation) img {
 .pixel-volume:hover, .pixel-volume:active { outline: 1px solid var(--accent); outline-offset: 2px; }
 .pixel-volume:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) {
-  .hotspot-illumination { transition: none; }
+  .hotspot-illumination, .hotspot-detail { transition: none; }
   .retro-cloud-window { animation: none; }
   .skill-item, .interest-button, .experience-link, .experience-arrow { transition: none; }
   .skill-item:hover, .skill-item:focus-visible,

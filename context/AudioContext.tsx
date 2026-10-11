@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
 import { useTheme } from './ThemeContext'
 import { MusicPlayer } from '@/lib/music-player'
-import { UiSounds } from '@/lib/ui-sounds'
+import { UiSounds, hoverSoundKind } from '@/lib/ui-sounds'
 
 const AudioContext = createContext<{ player: MusicPlayer } | null>(null)
 
@@ -34,16 +34,16 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       if (event.pointerType === 'touch' || !player.getSnapshot().effects) return
       const element = control(event.target, true)
       if (!element || (event.relatedTarget instanceof Node && element.contains(event.relatedTarget))) return
-      sounds.play(element.dataset.hoverSound === 'skill' ? 'skill' : 'hover')
+      sounds.play(hoverSoundKind(element.dataset.hoverSound))
     }
     const focus = (event: FocusEvent) => {
       const element = control(event.target, true)
-      if (element && player.getSnapshot().effects) sounds.play(element.dataset.hoverSound === 'skill' ? 'skill' : 'hover')
+      if (element && player.getSnapshot().effects) sounds.play(hoverSoundKind(element.dataset.hoverSound))
     }
     const click = (event: MouseEvent) => {
       const element = control(event.target)
       if (element && player.getSnapshot().effects) {
-        sounds.playFromGesture(element.dataset.clickSound === 'switch' ? 'switch' : 'click')
+        sounds.playFromGesture(element.dataset.clickSound === 'switch' ? 'switch' : element.dataset.clickSound === 'fan' ? 'fan' : 'click')
       }
     }
     let effectsEnabled = player.getSnapshot().effects

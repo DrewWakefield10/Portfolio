@@ -4,12 +4,20 @@
   "interactions": {
     "pc": { "x": 88, "y": 430, "width": 168, "height": 194 },
     "screen": { "x": 125, "y": 491, "width": 73, "height": 88 },
+    "phone": { "x": 673, "y": 348, "width": 67, "height": 106 },
+    "phoneKeypad": { "x": 718, "y": 381, "width": 12, "height": 35 },
+    "clock": { "x": 1137, "y": 83, "width": 155, "height": 246 },
+    "clockFace": { "x": 1151, "y": 98, "width": 124, "height": 103 },
+    "calendar": { "x": 975, "y": 334, "width": 109, "height": 147 },
+    "board": { "x": 753, "y": 364, "width": 201, "height": 264 },
+    "fan": { "x": 812, "y": 111, "width": 124, "height": 150 },
+    "fanControl": { "x": 850, "y": 237, "width": 48, "height": 18 },
     "lights": [
       { "id": "left", "x": 236, "y": 77, "width": 124, "height": 92 },
       { "id": "right", "x": 1356, "y": 78, "width": 126, "height": 90 }
     ]
   },
-  "fan": { "cx": 871, "cy": 173, "radius": 58, "hubRadius": 22 },
+  "fan": { "id": "shelf-fan", "cx": 871, "cy": 173, "radius": 58, "hubRadius": 22 },
   "clock": { "cx": 1210, "cy": 153 },
   "tank": { "x": 1177, "y": 458, "width": 350, "height": 203 },
   "zapper": { "x": 1040, "y": 808, "width": 65, "height": 84 },

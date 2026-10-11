@@ -11,6 +11,12 @@ const chromePath = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Ap
 const output = path.resolve('.next/verification')
 const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'portfolio-browser-'))
 const scene = require('../lib/store-scene.json')
+const musicLibrary = require('../lib/music-library.json')
+function expectedMusicVolume(state, volume) {
+  const file = decodeURIComponent(new URL(state.src).pathname)
+  const track = musicLibrary.find(track => decodeURIComponent(track.src) === file)
+  return volume * 0.475468 * (track?.gain ?? 1)
+}
 let browser, socket
 const pending = new Map()
 let sequence = 0
@@ -221,6 +227,286 @@ async function verifyInteractiveDesktop() {
   await evaluate(`(() => {const e=document.querySelector('.pixel-volume');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(e,'50');e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));})()`)
   await ensureHome()
   console.log('PASS hotspot alignment and activation at 1080p/1440p/4K/mobile/landscape, touch PC, square segmented volume and mouse/touch/keyboard volume control')
+}
+async function verifyWallpaperObjects() {
+  await click('[data-window-id=home] [aria-label="Close window"]')
+  await evaluate(`window.__objectMotions=Array.from(document.querySelectorAll('.environmental-motion')).flatMap(e=>e.getAnimations());true`)
+  const objects = [['phone','contact','triangle',[420,440,460]],['clock','time','sine',[1040,1100,1160]],['calendar','calendar','triangle',[720,760,800]],['board','works','triangle',[720,760,800]]]
+  for (const [id,,type,frequencies] of objects) {
+    await mouse(1800,1000)
+    await wait(150)
+    const point = await evaluate(`(() => {const r=document.querySelector('#store-${id}').getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2}})()`)
+    const count = (await evaluate(audioState)).tones
+    await mouse(point.x,point.y)
+    await until(`Number(getComputedStyle(document.querySelector('#store-${id} .hotspot-illumination')).opacity)>0`)
+    assert.equal((await evaluate(audioState)).tones,count+1)
+    const tone = await evaluate('window.__audioStats.tones.at(-1)')
+    assert.equal(tone.type,type)
+    assert.ok(frequencies.includes(tone.frequency), `${id} hover starts in its own tone family: ${tone.frequency}`)
+    assert.equal(await evaluate(`getComputedStyle(document.querySelector('#store-${id}')).cursor`),'pointer')
+    assert.equal(await evaluate(`document.querySelector('#store-${id}').textContent.trim()`),'')
+  }
+  await click('#store-phone')
+  assert.equal(await evaluate(`document.querySelectorAll('[data-window-id=contact]').length`),1)
+  await moveWindow('contact',20,60)
+  const contactPosition = await evaluate(`document.querySelector('[data-window-id=contact]').style.cssText`)
+  await click('#store-phone')
+  assert.equal(await evaluate(`document.querySelectorAll('.retro-app-window').length`),0)
+  await click('#store-phone')
+  assert.equal(await evaluate(`document.querySelector('[data-window-id=contact]').style.cssText.replace(/z-index:[^;]+;/,'')`),contactPosition.replace(/z-index:[^;]+;/,''))
+  await click('[data-window-id=contact] [aria-label="Close window"]')
+
+  await click('#store-board')
+  await moveWindow('works',20,60)
+  await click('[data-window-id=works] [title="Retro Arcade"]')
+  await click('#store-board')
+  assert.equal(await evaluate(`!!document.querySelector('[data-window-id=works]')`),false)
+  await click('#store-board')
+  assert.equal(await evaluate(`document.querySelector('[data-window-id=works] [data-project-id]').dataset.projectId`),'1')
+  await click('[data-window-id=works] [data-project-id] button')
+  await click('#store-board')
+  await evaluate(`for(let i=0;i<7;i++)document.querySelector('#store-board').click()`)
+  assert.equal(await evaluate(`document.querySelectorAll('[data-window-id=works]').length`),1)
+  await click('[data-window-id=works] [aria-label="Close window"]')
+  console.log('PASS telephone/board hover tones and glow, independent app toggles, dragging, project retention and no duplicates')
+
+  await click('#store-clock')
+  await click('#store-calendar')
+  assert.equal(await evaluate(`document.querySelectorAll('.retro-info-window').length`),2)
+  assert.equal(await evaluate(`document.querySelectorAll('[data-window-id=contact],[data-window-id=works]').length`),0)
+  await moveWindow('time',20,60)
+  await moveWindow('calendar',300,60)
+  await click('#store-clock')
+  assert.equal(await evaluate(`document.querySelectorAll('.retro-info-window').length`),1)
+  assert.equal(await evaluate(`!!document.querySelector('[data-window-id=calendar]')`),true)
+  await click('#store-clock')
+  await click('#store-calendar')
+  assert.equal(await evaluate(`document.querySelectorAll('.retro-info-window').length`),1)
+  assert.equal(await evaluate(`!!document.querySelector('[data-window-id=time]')`),true)
+  await click('#store-calendar')
+  const stamp = await evaluate(`document.querySelector('[data-local-time]').dateTime`)
+  await until(`document.querySelector('[data-local-time]').dateTime!==${JSON.stringify(stamp)}`)
+  const accuracy = await evaluate(`(() => {const displayed=new Date(document.querySelector('[data-local-time]').dateTime),now=new Date(),hour=Number(document.querySelector('[data-clock-hand=hour]').getAttribute('transform').match(/rotate\\(([^ ]+)/)[1]),minute=Number(document.querySelector('[data-clock-hand=minute]').getAttribute('transform').match(/rotate\\(([^ ]+)/)[1]);return {age:Math.abs(now-displayed),time:document.querySelector('[data-local-time]').textContent,expected:displayed.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true}),hour,minute,expectedHour:(displayed.getHours()%12+displayed.getMinutes()/60+displayed.getSeconds()/3600+displayed.getMilliseconds()/3600000)*30,expectedMinute:(displayed.getMinutes()+displayed.getSeconds()/60+displayed.getMilliseconds()/60000)*6,date:document.querySelector('[data-local-date]').dateTime,expectedDate:[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-'),today:document.querySelector('td[aria-current=date]').textContent,expectedToday:String(now.getDate())}})()`)
+  assert.ok(accuracy.age<1100)
+  assert.equal(accuracy.time,accuracy.expected)
+  assert.ok(Math.abs(accuracy.hour-accuracy.expectedHour)<0.001)
+  assert.ok(Math.abs(accuracy.minute-accuracy.expectedMinute)<0.001)
+  assert.equal(accuracy.date,accuracy.expectedDate)
+  assert.equal(accuracy.today,accuracy.expectedToday)
+  for (const id of ['time','calendar']) {
+    assert.equal(await evaluate(`getComputedStyle(document.querySelector('[data-window-id=${id}]')).backgroundColor`),'rgba(215, 224, 201, 0.7)')
+  }
+  await screenshot('store-information-day')
+  await click('[aria-label="Toggle theme"]')
+  assert.equal(await evaluate(`document.querySelectorAll('.retro-info-window').length`),2)
+  for (const id of ['time','calendar']) {
+    assert.equal(await evaluate(`getComputedStyle(document.querySelector('[data-window-id=${id}]')).backgroundColor`),'rgba(10, 35, 66, 0.7)')
+  }
+  await wait(700)
+  await screenshot('store-information-night')
+  await click('[aria-label="Toggle theme"]')
+  for (const id of ['time','calendar']) {
+    assert.equal(await evaluate(`getComputedStyle(document.querySelector('[data-window-id=${id}]')).backgroundColor`),'rgba(215, 224, 201, 0.7)')
+  }
+
+  // Advance the visitor's local clock through real date boundaries, without waiting overnight.
+  await evaluate(`window.__RealDate=Date;window.__testNow=new Date(2024,1,28,23,59,59).getTime();window.Date=class extends window.__RealDate{constructor(...args){super(...(args.length?args:[window.__testNow]))}static now(){return window.__testNow}};document.dispatchEvent(new Event('visibilitychange'))`)
+  await until(`document.querySelector('[data-local-date]').dateTime==='2024-02-28'`)
+  await evaluate(`window.__testNow+=2000`)
+  await until(`document.querySelector('[data-local-date]').dateTime==='2024-02-29'`)
+  assert.equal(await evaluate(`document.querySelector('td[aria-current=date]').textContent`),'29')
+  assert.equal(await evaluate(`Array.from(document.querySelectorAll('.store-calendar-grid td')).filter(e=>e.textContent.trim()).length`),29)
+  for(const [year,month,day,key,days] of [[2024,2,1,'2024-03-01',31],[2026,11,31,'2026-12-31',31],[2027,0,1,'2027-01-01',31]]) {
+    await evaluate(`window.__testNow=new window.__RealDate(${year},${month},${day},0,0,1).getTime();document.dispatchEvent(new Event('visibilitychange'))`)
+    await until(`document.querySelector('[data-local-date]').dateTime==='${key}'`)
+    assert.equal(await evaluate(`Array.from(document.querySelectorAll('.store-calendar-grid td')).filter(e=>e.textContent.trim()).length`),days)
+  }
+  await evaluate(`Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'))`)
+  const frozenTime=await evaluate(`document.querySelector('[data-local-time]').dateTime`)
+  await evaluate(`window.__testNow+=86400000`)
+  await wait(1100)
+  assert.equal(await evaluate(`document.querySelector('[data-local-time]').dateTime`),frozenTime)
+  assert.equal(await evaluate(`document.querySelector('[data-local-date]').dateTime`),'2027-01-01')
+  await evaluate(`delete document.hidden;document.dispatchEvent(new Event('visibilitychange'))`)
+  await until(`document.querySelector('[data-local-date]').dateTime==='2027-01-02'`)
+  assert.equal(await evaluate(`document.querySelector('.store-environment').dataset.running`),'true')
+  for (const timezone of ['Asia/Taipei','America/New_York']) {
+    await send('Emulation.setTimezoneOverride',{timezoneId:timezone})
+    await evaluate(`window.__testNow=Date.UTC(2027,0,1,2,0,0)+('${timezone}'==='Asia/Taipei'?0:1);document.dispatchEvent(new Event('visibilitychange'))`)
+    await until(`document.querySelector('.store-info-zone').textContent.includes('${timezone}')`)
+    assert.equal(await evaluate(`document.querySelector('[data-local-date]').dateTime`),timezone==='Asia/Taipei'?'2027-01-01':'2026-12-31')
+    assert.match(await evaluate(`document.querySelector('[data-local-time]').textContent`),timezone==='Asia/Taipei'?/10:00:00 AM/:/09:00:00 PM/)
+    assert.ok(await evaluate(`document.querySelector('.store-info-zone').textContent.includes('${timezone==='Asia/Taipei'?'UTC+08:00':'UTC-05:00'}')`))
+  }
+  await send('Emulation.setTimezoneOverride',{timezoneId:''})
+  await evaluate(`window.Date=window.__RealDate;delete window.__RealDate;delete window.__testNow;document.dispatchEvent(new Event('visibilitychange'))`)
+  console.log('PASS live seconds, shared SVG clock accuracy, local timezone offsets, leap day, month/year rollover and simultaneous compact popups')
+
+  await moveWindow('time',1300,190)
+  const covered = await evaluate(`(() => {const r=document.querySelector('#store-clock').getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;return {x,y,id:document.elementFromPoint(x,y).closest('[data-window-id]')?.dataset.windowId}})()`)
+  assert.equal(covered.id,'time')
+  await mouse(covered.x,covered.y,'mousePressed')
+  await mouse(covered.x,covered.y,'mouseReleased')
+  assert.equal(await evaluate(`document.querySelectorAll('.retro-info-window').length`),2,'popup receives clicks above wallpaper')
+  await click('[data-window-id=time] [aria-label="Close window"]')
+  assert.equal(await evaluate(`document.activeElement.id`),'store-clock')
+  await click('[data-window-id=calendar] [aria-label="Close window"]')
+  assert.equal(await evaluate(`document.activeElement.id`),'store-calendar')
+  for(const [id,windowId] of [['clock','time'],['calendar','calendar']]) {
+    await evaluate(`document.querySelector('#store-${id}').focus()`)
+    await send('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',windowsVirtualKeyCode:13,text:'\r'})
+    await send('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter',windowsVirtualKeyCode:13})
+    await until(`!!document.querySelector('[data-window-id=${windowId}]')`)
+    await send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27})
+    await send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27})
+    await until(`!document.querySelector('[data-window-id=${windowId}]')`)
+    assert.equal(await evaluate(`document.activeElement.id`),'store-'+id)
+  }
+  await click('[aria-label="UI sounds"]')
+  await mouse(1800,1000)
+  await wait(150)
+  const silent = (await evaluate(audioState)).tones
+  await click('#store-clock')
+  await click('[data-window-id=time] [aria-label="Close window"]')
+  assert.equal((await evaluate(audioState)).tones,silent)
+  await click('[aria-label="UI sounds"]')
+
+  for(const [width,height] of [[1920,1080],[2560,1440],[3840,2160],[375,812],[667,375]]) {
+    await dimensions(width,height)
+    for(const dark of [false,true]) {
+      if(await evaluate(`document.documentElement.classList.contains('dark')`)!==dark) await click('[aria-label="Toggle theme"]')
+      for(const [id,windowId] of objects) {
+        const box = scene.interactions[id]
+        assert.equal(await evaluate(`(() => {const r=document.querySelector('#store-${id}').getBoundingClientRect(),m=document.querySelector('.store-environment').getScreenCTM();return Math.abs(r.left-(${box.x}*m.a+m.e))<0.15&&Math.abs(r.top-(${box.y}*m.d+m.f))<0.15&&Math.abs(r.width-${box.width}*m.a)<0.15&&Math.abs(r.height-${box.height}*m.d)<0.15})()`),true,`aligned ${id} ${width} ${dark}`)
+        if(width===375&&(id==='clock'||id==='calendar')) {
+          const touch=await evaluate(`(() => {const r=document.querySelector('#store-${id}').getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2}})()`)
+          await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...touch,id:1}]})
+          await send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]})
+          await until(`!!document.querySelector('[data-window-id=${windowId}]')`)
+        } else await click('#store-'+id)
+        assert.equal(await evaluate(`document.querySelectorAll('[data-window-id=${windowId}]').length`),1)
+        assert.equal(await evaluate(`(() => {const r=document.querySelector('[data-window-id=${windowId}]').getBoundingClientRect();return r.left>=-0.5&&r.top>=-0.5&&r.right<=innerWidth+0.5&&r.bottom<=innerHeight+0.5})()`),true,'window stays in viewport')
+        await click(`[data-window-id=${windowId}] [aria-label="Close window"]`)
+      }
+    }
+  }
+  await dimensions(1920,1080)
+  await click('[aria-label="Toggle theme"]')
+  assert.equal(await evaluate(`window.__objectMotions.every(a=>Array.from(document.querySelectorAll('.environmental-motion')).some(e=>e.getAnimations().includes(a))&&a.playState==='running')`),true,'new interactions retain continuous environmental timelines')
+  assert.equal(await evaluate(`document.querySelectorAll('.retro-app-window').length`),0)
+  await ensureHome()
+  console.log('PASS popup occlusion, X/Escape focus return, keyboard/touch, effects mute, day/night alignment and viewport bounds through 4K/mobile/landscape')
+}
+async function verifyFanControls() {
+  await click('[data-window-id=home] [aria-label="Close window"]')
+  await until(`document.querySelector('#store-fan').dataset.fanSpeed==='low'&&Math.abs(document.querySelector('.fan-rotor').getAnimations()[0].playbackRate-1)<0.000001`)
+  assert.equal(await evaluate(`document.querySelectorAll('.fan-rotor').length`),1)
+  assert.equal(await evaluate(`document.querySelector('#store-fan').textContent.trim()`),'')
+  assert.equal(await evaluate(`document.querySelector('#store-fan').hasAttribute('title')`),false)
+  await evaluate(`window.__fanControl=document.querySelector('.fan-rotor').getAnimations()[0];window.__fanBody=document.querySelector('.fan-rotor').nextElementSibling.getBoundingClientRect().toJSON();true`)
+  const fanPoint=await evaluate(`(() => {const r=document.querySelector('#store-fan').getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2}})()`)
+  await mouse(fanPoint.x,fanPoint.y)
+  await until(`Number(getComputedStyle(document.querySelector('#store-fan .hotspot-illumination')).opacity)>0`)
+  assert.equal(await evaluate(`getComputedStyle(document.querySelector('#store-fan')).cursor`),'pointer')
+  let previousRate=1
+  for(const [speed,rate] of [['medium',2],['high',4],['off',0]]) {
+    await evaluate(`window.__fanSamples=[];window.__fanSampleDone=false;(() => {let start;const sample=t=>{start??=t;const a=window.__fanControl,m=new DOMMatrix(getComputedStyle(document.querySelector('.fan-rotor')).transform);window.__fanSamples.push({t,time:a.currentTime,angle:(Math.atan2(m.b,m.a)*180/Math.PI+360)%360});if(t-start<700)requestAnimationFrame(sample);else window.__fanSampleDone=true};requestAnimationFrame(sample)})();true`)
+    await click('#store-fan')
+    assert.equal(await evaluate(`document.querySelector('#store-fan').dataset.fanSpeed`),speed)
+    assert.equal(await evaluate(`document.querySelector('.fan-rotor').dataset.fanSpeed`),speed)
+    const partial=await evaluate(`window.__fanControl.playbackRate`)
+    assert.ok(partial>Math.min(previousRate,rate)&&partial<Math.max(previousRate,rate),'speed ramps instead of switching instantly')
+    assert.equal(await evaluate(`window.__audioStats.tones.at(-1).type`),'triangle')
+    assert.ok([380,420,460].includes(await evaluate(`window.__audioStats.tones.at(-1).frequency`)))
+    await until('window.__fanSampleDone')
+    assert.equal(await evaluate(`window.__fanControl.playbackRate`),rate)
+    const samples=await evaluate('window.__fanSamples')
+    for(let i=1;i<samples.length;i++) {
+      const a=samples[i-1],b=samples[i],delta=b.time-a.time
+      assert.ok(delta>=-0.1&&delta<=(b.t-a.t)*4+15,'blade timeline neither resets nor jumps during a ramp')
+      const angle=(b.angle-a.angle+360)%360,expected=(delta*0.36)%360
+      assert.ok(Math.min(Math.abs(angle-expected),360-Math.abs(angle-expected))<0.1,'blade angle follows the continuous timeline')
+    }
+    previousRate=rate
+  }
+  const stopped=await evaluate(`({time:window.__fanControl.currentTime,transform:getComputedStyle(document.querySelector('.fan-rotor')).transform,fish:getComputedStyle(document.querySelector('.swimming-fish')).transform,clock:document.querySelector('[data-clock-hand=minute]').getAttribute('transform')})`)
+  await wait(1100)
+  assert.equal(await evaluate('window.__fanControl.currentTime'),stopped.time)
+  assert.equal(await evaluate(`getComputedStyle(document.querySelector('.fan-rotor')).transform`),stopped.transform)
+  assert.notEqual(await evaluate(`getComputedStyle(document.querySelector('.swimming-fish')).transform`),stopped.fish)
+  assert.notEqual(await evaluate(`document.querySelector('[data-clock-hand=minute]').getAttribute('transform')`),stopped.clock)
+  assert.deepEqual(await evaluate(`document.querySelector('.fan-rotor').nextElementSibling.getBoundingClientRect().toJSON()`),await evaluate('window.__fanBody'),'fan body stays fixed')
+  await reload()
+  await until(`document.querySelector('#store-fan').dataset.fanSpeed==='off'&&document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===0`)
+  await click('#store-fan')
+  await until(`document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===1`)
+  await evaluate(`for(let i=0;i<2;i++)document.querySelector('#store-fan').click()`)
+  await until(`document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===4`)
+  await evaluate(`window.__fanControl=document.querySelector('.fan-rotor').getAnimations()[0]`)
+  await click('[aria-label="Toggle theme"]')
+  await wait(600)
+  assert.equal(await evaluate(`window.__fanControl===document.querySelector('.fan-rotor').getAnimations()[0]&&window.__fanControl.playbackRate===4`),true)
+  await click('[aria-label="Toggle theme"]')
+  assert.equal(await evaluate(`JSON.parse(localStorage.getItem('portfolio-fan-speeds-v1'))['shelf-fan']`),'high')
+  await reload()
+  await until(`document.querySelector('#store-fan').dataset.fanSpeed==='high'&&document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===4`)
+  await evaluate(`for(let i=0;i<8;i++)document.querySelector('#store-fan').click()`)
+  assert.equal(await evaluate(`document.querySelector('#store-fan').dataset.fanSpeed`),'high')
+  await evaluate(`for(let i=0;i<9;i++)document.querySelector('#store-fan').click()`)
+  await until(`document.querySelector('#store-fan').dataset.fanSpeed==='off'&&document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===0`)
+  await click('#store-fan')
+  await until(`document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===1`)
+  console.log('PASS fan default Low, 60/120/240 RPM, smooth ramps with continuous angles, fan-only Off, saved Off/High and rapid-click parity')
+
+  await click('#store-clock')
+  await moveWindow('time',910,150)
+  assert.equal(await evaluate(`document.elementFromPoint(${fanPoint.x},${fanPoint.y}).closest('[data-window-id]')?.dataset.windowId`),'time')
+  await mouse(fanPoint.x,fanPoint.y,'mousePressed')
+  await mouse(fanPoint.x,fanPoint.y,'mouseReleased')
+  assert.equal(await evaluate(`document.querySelector('#store-fan').dataset.fanSpeed`),'low')
+  await click('[data-window-id=time] [aria-label="Close window"]')
+  await click('[aria-label="UI sounds"]')
+  const silent=(await evaluate(audioState)).tones
+  await click('#store-fan')
+  assert.equal((await evaluate(audioState)).tones,silent,'UI FX mute silences fan activations')
+  await evaluate(`for(let i=0;i<3;i++)document.querySelector('#store-fan').click()`)
+  await click('[aria-label="UI sounds"]')
+  await evaluate(`document.querySelector('#store-fan').focus()`)
+  for(const [key,code,virtual,speed] of [['Enter','Enter',13,'medium'],[' ','Space',32,'high']]) {
+    await send('Input.dispatchKeyEvent',{type:'keyDown',key,code,windowsVirtualKeyCode:virtual,text:key==='Enter'?'\r':' '})
+    await send('Input.dispatchKeyEvent',{type:'keyUp',key,code,windowsVirtualKeyCode:virtual})
+    await until(`document.querySelector('#store-fan').dataset.fanSpeed==='${speed}'`)
+  }
+  await until(`document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===4`)
+  await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]})
+  await until(`Math.abs(document.querySelector('.fan-rotor').getAnimations()[0].playbackRate-1/3)<0.000001`)
+  assert.equal(await evaluate(`document.querySelector('#store-fan').dataset.fanSpeed`),'high')
+  await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'no-preference'}]})
+  await until(`document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===4`)
+
+  for(const [width,height] of [[1920,1080],[2560,1440],[3840,2160],[375,812],[667,375]]) {
+    await dimensions(width,height)
+    for(const dark of [false,true]) {
+      if(await evaluate(`document.documentElement.classList.contains('dark')`)!==dark) await click('[aria-label="Toggle theme"]')
+      const box=scene.interactions.fan
+      assert.equal(await evaluate(`(() => {const r=document.querySelector('#store-fan').getBoundingClientRect(),m=document.querySelector('.store-environment').getScreenCTM();return Math.abs(r.left-(${box.x}*m.a+m.e))<0.15&&Math.abs(r.top-(${box.y}*m.d+m.f))<0.15&&Math.abs(r.width-${box.width}*m.a)<0.15&&Math.abs(r.height-${box.height}*m.d)<0.15})()`),true,'fan hotspot matches artwork '+width)
+      const before=await evaluate(`document.querySelector('#store-fan').dataset.fanSpeed`)
+      if(width===375) {
+        const touch=await evaluate(`(() => {const r=document.querySelector('#store-fan').getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2}})()`)
+        await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...touch,id:1}]})
+        await send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]})
+        await until(`document.querySelector('#store-fan').dataset.fanSpeed!==${JSON.stringify(before)}`)
+      } else await click('#store-fan')
+      assert.equal(await evaluate(`document.querySelector('#store-fan').dataset.fanSpeed`),{off:'low',low:'medium',medium:'high',high:'off'}[before])
+    }
+  }
+  await dimensions(1920,1080)
+  await click('[aria-label="Toggle theme"]')
+  await evaluate(`localStorage.setItem('portfolio-fan-speeds-v1','{"shelf-fan":"invalid"}')`)
+  await reload()
+  await until(`document.querySelector('#store-fan').dataset.fanSpeed==='low'&&document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===1`)
+  await ensureHome()
+  console.log('PASS fan keyboard/touch, window occlusion, mute, gentler reduced-motion speeds, day/night alignment through 4K/mobile and invalid-preference fallback')
 }
 async function verifyDesktopUi() {
   await ensureHome()
@@ -470,6 +756,97 @@ async function reload() {
   await until(ready)
 }
 const audioState = `(() => { const a=window.__audioStats.media.at(-1); return {count:window.__audioStats.media.length, loads:window.__audioStats.loads, playing:window.__audioStats.media.filter(a=>!a.paused).length,paused:a.paused,muted:a.muted,volume:a.volume,time:a.currentTime,src:a.currentSrc,tones:window.__audioStats.tones.length} })()`
+
+async function verifySuppliedMusic() {
+  const fileOf = state => decodeURIComponent(new URL(state.src).pathname)
+  if (await evaluate(`!!document.querySelector('[aria-label="Pause music"]')`)) await click('[aria-label="Pause music"]')
+  if (await evaluate(`document.querySelector('[aria-label="Shuffle"]').getAttribute('aria-pressed')==='true'`)) await click('[aria-label="Shuffle"]')
+  for (const theme of ['light', 'dark']) {
+    if (await evaluate(`document.documentElement.classList.contains('dark')`) !== (theme === 'dark')) await click('[aria-label="Toggle theme"]')
+    await until('window.__audioStats.media.at(-1).readyState >= 1')
+    const expected = musicLibrary.filter(track => track.theme === theme)
+    assert.equal(expected.length, 4)
+    const visited = new Set()
+    await click('[aria-label="Play music"]')
+    let previous
+    for (let index = 0; index < expected.length + 1; index++) {
+      await until('window.__audioStats.media.at(-1).currentTime > 0.1 && !window.__audioStats.media.at(-1).paused')
+      await wait(900)
+      const state = await evaluate(audioState)
+      const file = fileOf(state)
+      assert.ok(file === '/music.mp3' || expected.some(track => decodeURIComponent(track.src) === file))
+      assert.ok(!visited.has(file), 'sequential cycle visits each song exactly once')
+      visited.add(file)
+      assert.equal(state.count, 1)
+      assert.equal(state.playing, 1)
+      const userVolume = await evaluate(`Number(document.querySelector('[aria-label="Music volume"]').value)/100`)
+      assert.ok(Math.abs(state.volume - expectedMusicVolume(state, userVolume)) < 0.0001)
+      const track = expected.find(track => decodeURIComponent(track.src) === file)
+      if (track) assert.ok((await evaluate(`document.querySelector('[data-music-controls]').textContent`)).includes(track.title))
+      if (index < expected.length) {
+        previous = file
+        await click('[aria-label="Next track"]')
+        await until(`window.__audioStats.media.at(-1).currentSrc !== ${JSON.stringify(state.src)}`)
+      }
+    }
+    assert.equal(visited.size, 5)
+    const last = fileOf(await evaluate(audioState))
+    await click('[aria-label="Previous track"]')
+    await until(`decodeURIComponent(new URL(window.__audioStats.media.at(-1).currentSrc).pathname) === ${JSON.stringify(previous)}`)
+    await wait(900)
+    await click('[aria-label="Next track"]')
+    await until(`decodeURIComponent(new URL(window.__audioStats.media.at(-1).currentSrc).pathname) === ${JSON.stringify(last)}`)
+    await wait(1000)
+    const beforeEnd = await evaluate(audioState)
+    await evaluate(`(() => {const a=window.__audioStats.media.at(-1);a.currentTime=a.duration-0.1;})()`)
+    await until(`window.__audioStats.media.at(-1).currentSrc !== ${JSON.stringify(beforeEnd.src)} && !window.__audioStats.media.at(-1).paused`)
+    await wait(900)
+    assert.equal((await evaluate(audioState)).playing, 1, 'native ended event advances to the next actual song')
+    await click('[aria-label="Pause music"]')
+    // Select the shared original in each theme for the continuity check below.
+    for (let index = 0; fileOf(await evaluate(audioState)) !== '/music.mp3' && index < 5; index++) {
+      await click('[aria-label="Next track"]')
+      await until('window.__audioStats.media.at(-1).readyState >= 1')
+    }
+  }
+  await click('[aria-label="Play music"]')
+  await until('window.__audioStats.media.at(-1).currentTime > 0.1')
+  const shared = await evaluate(audioState)
+  await click('[aria-label="Toggle theme"]')
+  await wait(1800)
+  let state = await evaluate(audioState)
+  assert.equal(fileOf(state), '/music.mp3')
+  assert.equal(state.loads, shared.loads)
+  assert.ok(state.time > shared.time + 1.5)
+
+  await ensureHome()
+  const stable = await evaluate(audioState)
+  await click('button.group')
+  await moveWindow('about', 340, 120)
+  await click('[data-window-id=about] [aria-label="Close window"]')
+  state = await evaluate(audioState)
+  assert.equal(state.src, stable.src)
+  assert.equal(state.loads, stable.loads)
+  assert.equal(state.playing, 1)
+  assert.ok(state.time > stable.time)
+
+  await click('[aria-label="Shuffle"]')
+  const seen = new Set([fileOf(state)])
+  for (let index = 0; index < 4; index++) {
+    const before = await evaluate(audioState)
+    await click('[aria-label="Next track"]')
+    await until(`window.__audioStats.media.at(-1).currentSrc !== ${JSON.stringify(before.src)}`)
+    await wait(1000)
+    state = await evaluate(audioState)
+    assert.ok(!seen.has(fileOf(state)), 'shuffle exhausts the actual playlist before repeating')
+    seen.add(fileOf(state))
+    assert.equal(state.playing, 1)
+  }
+  assert.equal(seen.size, 5)
+  await click('[aria-label="Shuffle"]')
+  await click('[aria-label="Pause music"]')
+  console.log('PASS all eight supplied MP3s, encoded filenames, per-song volume, day/night playlists, sequential/previous/shuffle/native-ended playback and window stability')
+}
 const ready = `!window.__reloadPending && document.readyState === 'complete' && window.__audioStats?.media.length === 1 && !!document.querySelector('[aria-label="Play music"]') && Array.from(document.querySelectorAll('.wallpaper img')).every(i=>i.complete && i.naturalWidth>0)`
 
 async function main() {
@@ -518,8 +895,11 @@ async function main() {
       constructor(...args) { super(...args); window.__audioStats.contexts.push(this); }
       createOscillator() {
         const oscillator = super.createOscillator();
+        const setFrequency = oscillator.frequency.setValueAtTime.bind(oscillator.frequency);
+        let initialFrequency;
+        oscillator.frequency.setValueAtTime = (value,time) => { initialFrequency=value;return setFrequency(value,time); };
         const start = oscillator.start.bind(oscillator);
-        oscillator.start = (...args) => { window.__audioStats.tones.push({frequency:oscillator.frequency.value,type:oscillator.type}); return start(...args); };
+        oscillator.start = (...args) => { window.__audioStats.tones.push({frequency:initialFrequency??oscillator.frequency.value,type:oscillator.type}); return start(...args); };
         return oscillator;
       }
     };
@@ -547,7 +927,7 @@ async function main() {
   const swimmers = await evaluate(`Array.from(document.querySelectorAll('[data-fish]'),e=>({id:e.dataset.fish,duration:parseFloat(getComputedStyle(e).animationDuration),tail:getComputedStyle(e.querySelector('.fish-tail')).animationName}))`)
   for (const swimmer of swimmers) {
     const original = scene.fish.find(fish => fish.id === swimmer.id)
-    assert.ok(Math.abs(original.duration / swimmer.duration - 1.4) < 0.0001)
+    assert.ok(Math.abs((original.duration / 1.4) / swimmer.duration - 1.6) < 0.0001, 'fish swim 60% faster than the previous animation')
     assert.equal(swimmer.tail, 'store-fish-fin')
   }
   const geometry = await evaluate(`(() => {
@@ -585,9 +965,11 @@ async function main() {
     return {inside,flips,seamless,fins};
   })()`)
   assert.deepEqual(geometry, { inside:true, flips:true, seamless:true, fins:true })
-  console.log('PASS 40% faster fish, animated fins, flat direction flips and tank bounds across complete loops')
+  console.log('PASS 60% faster fish, unchanged fins/body, flat direction flips and tank bounds across complete loops')
 
   await verifyInteractiveDesktop()
+  await verifyWallpaperObjects()
+  await verifyFanControls()
   assert.equal(await evaluate('window.__audioStats.contexts.at(-1).state'), 'running')
   console.log('PASS PC gesture unlocks shared sound effects')
 
@@ -611,8 +993,8 @@ async function main() {
   await evaluate(`delete document.hidden;document.dispatchEvent(new Event('visibilitychange'))`)
   assert.notEqual(await evaluate('document.querySelector("[data-clock-hand=minute]").getAttribute("transform")'), hiddenClock)
   await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] })
-  assert.equal(await evaluate('getComputedStyle(document.querySelector(".fan-rotor")).animationDuration'), '12s')
-  assert.ok(await evaluate(`Array.from(document.querySelectorAll('.swimming-fish'),e=>parseFloat(getComputedStyle(e).animationDuration)).every((duration,i)=>Math.abs(duration-${JSON.stringify(scene.fish.map(fish=>fish.duration/1.4*2))}[i])<0.001)`))
+  await until(`Math.abs(document.querySelector('.fan-rotor').getAnimations()[0].playbackRate-1/12)<0.000001`)
+  assert.ok(await evaluate(`Array.from(document.querySelectorAll('.swimming-fish'),e=>parseFloat(getComputedStyle(e).animationDuration)).every((duration,i)=>Math.abs(duration-${JSON.stringify(scene.fish.map(fish=>fish.duration/(1.4*1.6)*2))}[i])<0.001)`))
   assert.equal(await evaluate('getComputedStyle(document.querySelector(".fish-tail")).animationName'), 'none')
   assert.equal(await evaluate('getComputedStyle(document.querySelector(".zapper-glow")).opacity'), '0')
   await verifyContinuousWallpaper()
@@ -632,14 +1014,14 @@ async function main() {
   await until('window.__audioStats.media.at(-1).currentTime > 0.1')
   assert.equal(await evaluate(`document.querySelector('[aria-label="Pause music"] .pixel-pause').getAttribute('shape-rendering')`), 'crispEdges')
   assert.equal((await evaluate(audioState)).playing, 1)
-  const sharedSourceBefore = await evaluate(audioState)
+  const sourceBefore = await evaluate(audioState)
   await click('[aria-label="Toggle theme"]')
   await wait(1800)
   let state = await evaluate(audioState)
   assert.equal(state.playing, 1)
   assert.equal(state.count, 1)
-  assert.equal(state.loads, sharedSourceBefore.loads)
-  assert.ok(state.time > sharedSourceBefore.time + 1.5, 'shared song should continue through theme fade')
+  assert.equal(state.loads, sourceBefore.loads + 1)
+  assert.notEqual(state.src, sourceBefore.src, 'day/night defaults use different supplied songs')
   assert.equal(await evaluate(`window.__fanMotion === document.querySelector('.fan-rotor').getAnimations()[0]`), true)
   assert.equal(await evaluate(`window.__environmentMotions.every(({e,a})=>e.getAnimations()[0]===a)`), true)
   assert.equal(await evaluate('getComputedStyle(document.querySelector(".zapper-glow")).animationName'), 'store-zapper-glow')
@@ -650,7 +1032,7 @@ async function main() {
   assert.equal(pulses.visible, 'visible')
   assert.ok(new Set(pulses.offsets.slice(1).map((value,index)=>Math.round((value-pulses.offsets[index])*10000))).size > 5)
   console.log('PASS irregular flat zapper pulses, restrained brightness and all motion timelines preserved across themes')
-  assert.ok(Math.abs(state.volume - 0.09) < 0.001)
+  assert.ok(Math.abs(state.volume - expectedMusicVolume(state, 0.5)) < 0.001)
   assert.match(await evaluate('document.querySelector("[data-music-controls]").textContent'), /nighttime radio/)
   await screenshot('desktop-night-1080p')
   await evaluate(`document.querySelector('.wallpaper').style.zIndex='9999'`)
@@ -704,6 +1086,7 @@ async function main() {
   console.log('PASS desktop navigation, window dragging and closing')
   await verifyDesktopUi()
   await verifyAboutInteractions()
+  await verifySuppliedMusic()
 
   await click('[aria-label="Play music"]')
   await click('[aria-label="Next track"]')
@@ -733,7 +1116,7 @@ async function main() {
   await until(ready)
   state = await evaluate(audioState)
   assert.equal(state.playing, 0)
-  assert.ok(Math.abs(state.volume - 0.063) < 0.001)
+  assert.ok(Math.abs(state.volume - expectedMusicVolume(state, 0.35)) < 0.001)
   assert.equal(await evaluate('document.querySelector("[aria-label=Shuffle]").getAttribute("aria-pressed")'), 'true')
   await evaluate(`(() => {const p=JSON.parse(localStorage.getItem('portfolio-audio-v1'));p.enabled=true;localStorage.setItem('portfolio-audio-v1',JSON.stringify(p));})()`)
   await reload()
@@ -767,10 +1150,10 @@ async function main() {
 main().catch(async error => {
   console.error(error)
   process.exitCode = 1
-  try { if (socket?.readyState === WebSocket.OPEN) await screenshot('failure') } catch {}
+  try { if (socket?.readyState === WebSocket.OPEN) await screenshot('failure') } catch { /* The browser may already be disconnected. */ }
 }).finally(async () => {
   if (socket?.readyState === WebSocket.OPEN) {
-    try { await send('Browser.close') } catch {}
+    try { await send('Browser.close') } catch { /* Process cleanup below also handles a closed connection. */ }
     socket.close()
   }
   browser?.kill()

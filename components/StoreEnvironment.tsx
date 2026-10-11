@@ -2,6 +2,9 @@
 
 import { useEffect, useId, useRef, type CSSProperties } from 'react'
 import scene from '@/lib/store-scene.json'
+import { clockAngles, localClock } from '@/lib/local-time'
+import { useFan } from '@/context/FanContext'
+import { useFanRotation } from './useFanRotation'
 
 type Theme = 'light' | 'dark'
 interface StoreEnvironmentProps {
@@ -13,7 +16,7 @@ interface StoreEnvironmentProps {
 
 const themes = ['light', 'dark'] as const
 const directory = '/wallpapers/animation/'
-const fishSpeed = 1.4
+const fishSpeed = 1.4 * 1.6
 const sprites = ['day', 'night'].flatMap(mode => [...scene.fish.map(fish => fish.id), 'fan-hub', 'tank-foreground']
   .map(suffix => `${directory}${mode}-${suffix}.png`))
 
@@ -21,8 +24,11 @@ export function StoreEnvironment({ theme, active, onReady, onError }: StoreEnvir
   const root = useRef<SVGSVGElement>(null)
   const hour = useRef<SVGGElement>(null)
   const minute = useRef<SVGGElement>(null)
+  const rotor = useRef<SVGGElement>(null)
   const clipId = useId().replace(/:/g, '')
   const { fan, clock, tank, zapper } = scene
+  const { speed, ready } = useFan(fan.id)
+  useFanRotation(rotor, speed, ready)
 
   useEffect(() => {
     let cancelled = false
@@ -44,29 +50,15 @@ export function StoreEnvironment({ theme, active, onReady, onError }: StoreEnvir
   }, [onReady, onError])
 
   useEffect(() => {
-    let timer = 0
     const updateClock = () => {
-      const time = new Date()
-      const seconds = time.getSeconds() + time.getMilliseconds() / 1000
-      const minutes = time.getMinutes() + seconds / 60
-      const hours = time.getHours() % 12 + minutes / 60
-      hour.current?.setAttribute('transform', `rotate(${hours * 30} ${clock.cx} ${clock.cy})`)
-      minute.current?.setAttribute('transform', `rotate(${minutes * 6} ${clock.cx} ${clock.cy})`)
-    }
-    const visibility = () => {
-      window.clearInterval(timer)
+      const angles = clockAngles(new Date(localClock.getSnapshot() ?? Date.now()))
+      hour.current?.setAttribute('transform', `rotate(${angles.hour} ${clock.cx} ${clock.cy})`)
+      minute.current?.setAttribute('transform', `rotate(${angles.minute} ${clock.cx} ${clock.cy})`)
       root.current?.setAttribute('data-running', String(!document.hidden))
-      if (!document.hidden) {
-        updateClock()
-        timer = window.setInterval(updateClock, 1000)
-      }
     }
-    visibility()
-    document.addEventListener('visibilitychange', visibility)
-    return () => {
-      window.clearInterval(timer)
-      document.removeEventListener('visibilitychange', visibility)
-    }
+    const unsubscribe = localClock.subscribe(updateClock)
+    updateClock()
+    return unsubscribe
   }, [clock.cx, clock.cy])
 
   const themeImages = (suffix: string, x: number, y: number, width: number, height: number) => themes.map(mode => {
@@ -99,7 +91,7 @@ export function StoreEnvironment({ theme, active, onReady, onError }: StoreEnvir
       </defs>
 
       {/* Only the rotor turns; grille, original hub, rim, stand and shelf stay fixed. */}
-      <g className="fan-rotor environmental-motion" style={{ transformOrigin: `${fan.cx}px ${fan.cy}px` }}>
+      <g ref={rotor} data-fan-id={fan.id} data-fan-speed={speed} className="fan-rotor environmental-motion" style={{ transformOrigin: `${fan.cx}px ${fan.cy}px` }}>
         {[0, 90, 180, 270].map((angle, index) => (
           <path key={angle} transform={`translate(${fan.cx} ${fan.cy}) rotate(${angle})`}
             d="M-5-18 L-23-48 L-32-51 L-44-43 L-49-31 L-43-18 L-22-8 Z"

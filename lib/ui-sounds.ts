@@ -1,4 +1,24 @@
 export const UI_TONES = {
+  fan: [
+    { start: 380, end: 210, duration: 0.070, peak: 0.021 },
+    { start: 420, end: 240, duration: 0.060, peak: 0.020 },
+    { start: 460, end: 270, duration: 0.080, peak: 0.019 },
+  ],
+  phone: [
+    { start: 440, end: 480, duration: 0.080, peak: 0.020 },
+    { start: 460, end: 500, duration: 0.075, peak: 0.019 },
+    { start: 420, end: 460, duration: 0.085, peak: 0.018 },
+  ],
+  clock: [
+    { start: 1100, end: 540, duration: 0.025, peak: 0.018 },
+    { start: 1040, end: 510, duration: 0.030, peak: 0.017 },
+    { start: 1160, end: 570, duration: 0.022, peak: 0.016 },
+  ],
+  paper: [
+    { start: 760, end: 280, duration: 0.045, peak: 0.020 },
+    { start: 720, end: 260, duration: 0.050, peak: 0.019 },
+    { start: 800, end: 300, duration: 0.040, peak: 0.018 },
+  ],
   switch: [
     { start: 320, end: 180, duration: 0.080, peak: 0.045 },
     { start: 340, end: 190, duration: 0.070, peak: 0.042 },
@@ -23,6 +43,10 @@ export const UI_TONES = {
 
 export type UiSoundKind = keyof typeof UI_TONES
 
+export function hoverSoundKind(value: string | undefined): UiSoundKind {
+  return value === 'skill' || value === 'phone' || value === 'clock' || value === 'paper' ? value : 'hover'
+}
+
 // Short, complementary variations share one context and one released voice.
 export class UiSounds {
   private context: AudioContext | null = null
@@ -31,7 +55,7 @@ export class UiSounds {
   private lastClick = -Infinity
   private disposed = false
   private generation = 0
-  private variation = { hover: 0, click: 0, skill: 0, switch: 0 }
+  private variation: Partial<Record<UiSoundKind, number>> = {}
 
   unlock = () => {
     if (this.disposed) return Promise.resolve()
@@ -56,7 +80,7 @@ export class UiSounds {
     const context = this.context
     if (!context || context.state !== 'running' || this.disposed) return
     const now = context.currentTime
-    const activation = kind === 'click' || kind === 'switch'
+    const activation = kind === 'click' || kind === 'switch' || kind === 'fan'
     if (!activation && (now - this.lastHover < 0.09 || now - this.lastClick < 0.12)) return
     if (activation && now - this.lastClick < 0.045) return
     if (activation) this.lastClick = now
@@ -70,7 +94,9 @@ export class UiSounds {
       old.oscillators.forEach(oscillator => { try { oscillator.stop(now + 0.008) } catch {} })
     }
     const tones = UI_TONES[kind]
-    const tone = tones[this.variation[kind]++ % tones.length]
+    const variation = this.variation[kind] ?? 0
+    this.variation[kind] = variation + 1
+    const tone = tones[variation % tones.length]
     const { duration, peak } = tone
     const gain = context.createGain()
     const oscillators = [context.createOscillator()]
@@ -81,7 +107,7 @@ export class UiSounds {
     const voice = { gain, oscillators }
     this.voice = voice
     oscillators.forEach(oscillator => {
-      oscillator.type = kind === 'skill' || kind === 'switch' ? 'triangle' : 'sine'
+      oscillator.type = kind === 'skill' || kind === 'switch' || kind === 'phone' || kind === 'paper' || kind === 'fan' ? 'triangle' : 'sine'
       oscillator.frequency.setValueAtTime(tone.start, now)
       oscillator.frequency.exponentialRampToValueAtTime(tone.end, now + duration * 0.65)
       oscillator.connect(gain)

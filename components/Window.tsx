@@ -7,7 +7,7 @@ interface WindowProps {
   id: string
   title: string
   children: React.ReactNode
-  size?: 'default' | 'compact' | 'launcher'
+  size?: 'default' | 'compact' | 'launcher' | 'info'
   returnFocusId?: string
   presentation?: 'window' | 'cloud'
 }
@@ -64,15 +64,15 @@ export function Window({ id, title, children, size = 'default', returnFocusId, p
     [id, updatePosition]
   )
 
-  const handlePointerUp = useCallback(() => {
+  const handlePointerUp = useCallback(function endDrag() {
     if (!isDraggingRef.current) return
     isDraggingRef.current = false
     pointerRef.current = null
     document.body.style.userSelect = ''
     document.body.style.cursor = ''
     document.removeEventListener('pointermove', handlePointerMove)
-    document.removeEventListener('pointerup', handlePointerUp)
-    document.removeEventListener('pointercancel', handlePointerUp)
+    document.removeEventListener('pointerup', endDrag)
+    document.removeEventListener('pointercancel', endDrag)
   }, [handlePointerMove])
 
   useEffect(() => {
@@ -97,9 +97,14 @@ export function Window({ id, title, children, size = 'default', returnFocusId, p
       if (Math.abs(x - rect.left) > 0.5 || Math.abs(y - rect.top) > 0.5) updatePosition(id, x, y)
     }
     clampPosition()
+    const observer = size === 'info' ? new ResizeObserver(clampPosition) : null
+    if (windowRef.current) observer?.observe(windowRef.current)
     window.addEventListener('resize', clampPosition)
-    return () => window.removeEventListener('resize', clampPosition)
-  }, [id, updatePosition, windowState?.isOpen])
+    return () => {
+      observer?.disconnect()
+      window.removeEventListener('resize', clampPosition)
+    }
+  }, [id, size, updatePosition, windowState?.isOpen])
 
   const handleDragPointerDown = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
@@ -134,9 +139,9 @@ export function Window({ id, title, children, size = 'default', returnFocusId, p
       ref={windowRef}
       id={`desktop-window-${id}`}
       tabIndex={-1}
-      className={`retro-window retro-app-window fixed ${presentation === 'cloud' ? 'retro-cloud-window' : 'retro-surface'}${size === 'compact' ? ' retro-mini-window' : ''}${size === 'launcher' ? ' home-launcher' : ''}`}
+      className={`retro-window retro-app-window fixed ${presentation === 'cloud' ? 'retro-cloud-window' : 'retro-surface'}${size === 'compact' ? ' retro-mini-window' : ''}${size === 'launcher' ? ' home-launcher' : ''}${size === 'info' ? ' retro-info-window' : ''}`}
       data-window-id={id}
-      role={presentation === 'cloud' ? 'dialog' : 'region'}
+      role={presentation === 'cloud' || size === 'info' ? 'dialog' : 'region'}
       aria-label={title}
       aria-describedby={presentation === 'cloud' ? `window-body-${id}` : undefined}
       onPointerDownCapture={() => bringToFront(id)}

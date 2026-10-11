@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import type { CSSProperties } from 'react'
 import { Shuffle, SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-react'
 import { useAudio } from '@/context/AudioContext'
@@ -16,7 +15,9 @@ export function AudioPlayer() {
         {playing ? <svg className="pixel-pause" width="18" height="18" viewBox="0 0 16 16" fill="currentColor" shapeRendering="crispEdges" aria-hidden="true">
           <path d="M2 2h5v12H2zM9 2h5v12H9z" />
           <path d="M3 3h1v10H3zM10 3h1v10h-1z" fill="var(--window-bg)" />
-        </svg> : <Image src="/radio-waves.png" alt="" width={18} height={18} className="object-contain opacity-60" />}
+        </svg> : <svg className="pixel-control-icon" width="18" height="18" viewBox="0 0 16 16" fill="currentColor" shapeRendering="crispEdges" aria-hidden="true">
+          <path d="M7 6h2v4H7zM4 4h2v2H5v4h1v2H4zM10 4h2v8h-2v-2h1V6h-1zM1 1h2v2H2v10h1v2H1zM13 1h2v14h-2v-2h1V3h-1z" />
+        </svg>}
       </button>
       <button type="button" onClick={() => player.step(-1)} className="retro-button" title="Previous track" aria-label="Previous track">
         <SkipBack size={14} aria-hidden />
@@ -25,7 +26,7 @@ export function AudioPlayer() {
         <SkipForward size={14} aria-hidden />
       </button>
       <span className="w-32 min-w-0 leading-tight text-xs" title={trackLabel}>
-        <span className="block text-accent">{theme === 'light' ? 'daytime radio' : 'nighttime radio'}</span>
+        <span className="radio-station block">{theme === 'light' ? 'daytime radio' : 'nighttime radio'}</span>
         <span className="block truncate">{trackLabel}</span>
       </span>
       <button type="button" onClick={player.toggleMute} className="retro-button" title={muted ? 'Unmute music' : 'Mute music'}
@@ -42,11 +43,11 @@ export function AudioPlayer() {
       </label>
       <button type="button" onClick={player.toggleShuffle} className="retro-button" title={shuffle ? 'Disable shuffle' : 'Enable shuffle'}
         aria-label="Shuffle" aria-pressed={shuffle}>
-        <Shuffle size={14} aria-hidden className={shuffle ? 'text-accent' : 'opacity-50'} />
+        <Shuffle size={14} aria-hidden />
       </button>
       <button type="button" onClick={player.toggleEffects} className="retro-button" data-sound="off"
         title={effects ? 'Disable UI sounds' : 'Enable UI sounds'} aria-label="UI sounds" aria-pressed={effects}>
-        <span className={effects ? 'text-accent' : 'opacity-50'}>UI FX {effects ? 'ON' : 'OFF'}</span>
+        <span>UI FX {effects ? 'ON' : 'OFF'}</span>
       </button>
       <span role="status" className="basis-full text-xs text-foreground/80">{message}</span>
     </div>

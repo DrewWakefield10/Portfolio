@@ -26,6 +26,7 @@ interface PlayerOptions {
 export class MusicPlayer {
   private audio: HTMLAudioElement | null = null
   private source: string | null = null
+  private trackGain = 1
   private storage?: Storage
   private preferences: AudioPreferences = readAudioPreferences()
   private playlists: Record<MusicTheme, readonly MusicTrack[]>
@@ -98,7 +99,7 @@ export class MusicPlayer {
     audio.load()
   }
 
-  private gain() { return this.preferences.muted ? 0 : this.preferences.volume * MUSIC_MAX_GAIN }
+  private gain() { return this.preferences.muted ? 0 : this.preferences.volume * MUSIC_MAX_GAIN * this.trackGain }
 
   private selectedTrack(theme: MusicTheme) {
     return this.playlists[theme].find(track => track.id === this.preferences.selected[theme])
@@ -107,6 +108,8 @@ export class MusicPlayer {
 
   private load(track: MusicTrack, restart = true) {
     if (!this.audio) return
+    this.trackGain = typeof track.gain === 'number' && Number.isFinite(track.gain)
+      ? Math.max(0, Math.min(1, track.gain)) : 1
     this.preferences.selected[this.state.theme] = track.id
     this.update({ track })
     this.rotation[this.state.theme].remember(track.id)
@@ -115,6 +118,7 @@ export class MusicPlayer {
       this.audio.src = track.src
       this.audio.load()
     }
+    if (this.audio.paused) this.audio.volume = this.gain()
     this.save()
   }
 

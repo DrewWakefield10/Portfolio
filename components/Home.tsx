@@ -12,6 +12,8 @@ import { AudioPlayer } from './AudioPlayer'
 import { Window } from './Window'
 import { Wallpaper } from './Wallpaper'
 import { StoreHotspots } from './StoreHotspots'
+import { StoreInfoWindows } from './windows/StoreInfoWindows'
+import { FanProvider } from '@/context/FanContext'
 
 export function Home() {
   const { theme } = useTheme()
@@ -22,6 +24,7 @@ export function Home() {
   }
 
   return (
+    <FanProvider>
     <div
       className="relative w-full h-dvh text-foreground overflow-hidden flex flex-col"
     >
@@ -97,8 +100,10 @@ export function Home() {
           <ContactWindow />
         </Window>
         <InterestWindows />
+        <StoreInfoWindows />
       </div>
 
     </div>
+    </FanProvider>
   )
 }

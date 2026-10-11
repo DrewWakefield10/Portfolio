@@ -5,7 +5,7 @@ const ts = require('typescript')
 require.extensions['.ts'] = (module, filename) => module._compile(ts.transpileModule(fs.readFileSync(filename, 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
 }).outputText, filename)
-const { UiSounds, UI_TONES } = require('../lib/ui-sounds.ts')
+const { UiSounds, UI_TONES, hoverSoundKind } = require('../lib/ui-sounds.ts')
 
 class Parameter {
   value = 0
@@ -141,6 +141,51 @@ test('light-switch tones are quiet, distinct activations and respect click throt
   for (const tone of UI_TONES.switch) {
     assert.ok(tone.duration >= 0.05 && tone.duration <= 0.15)
     assert.ok(tone.peak < Math.min(...UI_TONES.click.map(item => item.peak)))
+  }
+  sounds.dispose()
+})
+
+test('phone, clock and paper feedback remain quiet, use hover throttling and release the shared voice', () => {
+  const sounds = new UiSounds()
+  sounds.unlock()
+  const context = FakeContext.instances.at(-1)
+  for (const [index, kind] of ['phone', 'clock', 'paper'].entries()) {
+    context.currentTime = index * 0.2
+    sounds.play(hoverSoundKind(kind))
+    assert.equal(context.oscillators.length, index + 1)
+    assert.equal(context.oscillators[index].frequency.value, UI_TONES[kind][0].start)
+    assert.equal(context.oscillators[index].type, kind === 'clock' ? 'sine' : 'triangle')
+    sounds.play('hover')
+    assert.equal(context.oscillators.length, index + 1, 'object feedback uses shared hover debounce')
+    for (const tone of UI_TONES[kind]) {
+      assert.ok(tone.duration > 0 && tone.duration <= 0.1)
+      assert.ok(tone.peak < Math.min(...UI_TONES.hover.map(item => item.peak)))
+    }
+  }
+  assert.ok(context.oscillators[0].stops.some(time => Math.abs(time - 0.208) < 0.0001))
+  assert.equal(hoverSoundKind('click'), 'hover', 'hover attributes cannot bypass activation throttling')
+  sounds.dispose()
+})
+
+test('fan switch ticks share activation throttling, release and low-volume feedback', () => {
+  const sounds = new UiSounds()
+  sounds.unlock()
+  const context = FakeContext.instances.at(-1)
+  sounds.play('fan')
+  assert.equal(context.oscillators[0].type,'triangle')
+  context.currentTime = 0.02
+  sounds.play('fan')
+  sounds.play('click')
+  context.currentTime = 0.1
+  sounds.play('hover')
+  assert.equal(context.oscillators.length,1)
+  context.currentTime = 0.2
+  sounds.play('fan')
+  assert.equal(context.oscillators.length,2)
+  assert.ok(context.oscillators[0].stops.some(time => Math.abs(time-0.208)<0.0001))
+  for (const tone of UI_TONES.fan) {
+    assert.ok(tone.duration>=0.05&&tone.duration<=0.12)
+    assert.ok(tone.peak<Math.min(...UI_TONES.hover.map(item=>item.peak)))
   }
   sounds.dispose()
 })

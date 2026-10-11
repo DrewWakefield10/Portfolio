@@ -4,6 +4,8 @@ import type { CSSProperties, MouseEvent } from 'react'
 import { useTheme } from '@/context/ThemeContext'
 import { useWindowManager } from '@/context/WindowContext'
 import scene from '@/lib/store-scene.json'
+import { useFan } from '@/context/FanContext'
+import { nextFanSpeed } from '@/lib/fan'
 
 type Rectangle = { x: number; y: number; width: number; height: number }
 const position = (rect: Rectangle, parent: Rectangle): CSSProperties => ({
@@ -13,6 +15,12 @@ const position = (rect: Rectangle, parent: Rectangle): CSSProperties => ({
   height: `${rect.height / parent.height * 100}%`,
 })
 const canvas = { x: 0, y: 0, width: scene.width, height: scene.height }
+const objects = [
+  { id: 'phone', windowId: 'contact', label: 'Contact via wall telephone', sound: 'phone' },
+  { id: 'clock', windowId: 'time', label: 'local time', sound: 'clock' },
+  { id: 'calendar', windowId: 'calendar', label: 'local calendar', sound: 'paper' },
+  { id: 'board', windowId: 'works', label: 'Work via bulletin board', sound: 'paper' },
+] as const
 
 function illuminate(event: MouseEvent<HTMLButtonElement>) {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -25,8 +33,9 @@ function illuminate(event: MouseEvent<HTMLButtonElement>) {
 
 export function StoreHotspots() {
   const { theme, toggleTheme } = useTheme()
-  const { getWindow, toggleWindow } = useWindowManager()
+  const { getWindow, toggleWindow, updatePosition } = useWindowManager()
   const homeOpen = getWindow('home')?.isOpen ?? false
+  const { speed: fanSpeed, cycleSpeed } = useFan(scene.fan.id)
   return (
     <div className="store-hotspots absolute inset-0 z-10 pointer-events-none">
       <div className="store-hotspot-map" style={{ aspectRatio: `${scene.width} / ${scene.height}`,
@@ -37,6 +46,36 @@ export function StoreHotspots() {
           onClick={event => { illuminate(event); toggleWindow('home') }}>
           <span className="hotspot-illumination" style={position(scene.interactions.screen, scene.interactions.pc)} aria-hidden="true" />
         </button>
+        <button id="store-fan" type="button" className="store-hotspot hotspot-object hotspot-fan"
+          data-fan-id={scene.fan.id} data-fan-speed={fanSpeed} data-click-sound="fan"
+          style={position(scene.interactions.fan, canvas)}
+          aria-label={`Fan speed: ${fanSpeed}. Change to ${nextFanSpeed(fanSpeed)}.`}
+          onClick={event => { illuminate(event); cycleSpeed() }}>
+          <span className="hotspot-illumination" aria-hidden="true" />
+          <span className="hotspot-detail" style={position(scene.interactions.fanControl, scene.interactions.fan)} aria-hidden="true" />
+        </button>
+        {objects.map(object => {
+          const open = getWindow(object.windowId)?.isOpen ?? false
+          return (
+            <button key={object.id} id={`store-${object.id}`} type="button"
+              className={`store-hotspot hotspot-object hotspot-${object.id}`} data-wallpaper-object={object.id}
+              data-hover-sound={object.sound} style={position(scene.interactions[object.id], canvas)}
+              aria-label={`${open ? 'Close' : 'Open'} ${object.label}`} aria-expanded={open}
+              aria-controls={`desktop-window-${object.windowId}`}
+              onClick={event => {
+                illuminate(event)
+                const firstWindow = !getWindow(object.windowId)
+                const rect = event.currentTarget.getBoundingClientRect()
+                toggleWindow(object.windowId)
+                if (firstWindow) updatePosition(object.windowId, rect.right + 12, rect.top)
+              }}>
+              <span className="hotspot-illumination" aria-hidden="true" />
+              {object.id === 'phone' && <span className="hotspot-detail" style={position(scene.interactions.phoneKeypad, scene.interactions.phone)} aria-hidden="true" />}
+              {object.id === 'clock' && <span className="hotspot-detail" style={position(scene.interactions.clockFace, scene.interactions.clock)} aria-hidden="true" />}
+              {object.id === 'board' && <span className="hotspot-detail" aria-hidden="true" />}
+            </button>
+          )
+        })}
         {scene.interactions.lights.map(light => (
           <button key={light.id} type="button" className="store-hotspot hotspot-light" data-light={light.id}
             data-click-sound="switch" style={position(light, canvas)}

@@ -1,0 +1,338 @@
+[
+  {
+    "id": "day-morning-routine",
+    "title": "Morning Routine",
+    "theme": "light",
+    "file": "day/morning-routine.mp3",
+    "status": "planned",
+    "collection": "store-soundtrack-expansion-v1",
+    "genre": "lo-fi",
+    "bpm": 78,
+    "durationSeconds": 150,
+    "key": "C major",
+    "mood": "Warm, gently optimistic, nostalgic opening-shop calm.",
+    "instruments": [
+      "Felt piano",
+      "Brushed soft kit",
+      "Fingered electric bass",
+      "Barely audible tape texture"
+    ],
+    "harmony": "Cmaj9 - Em7 - Am9 - Dm9/G. Compose an original descending three-note piano answer with open voicings.",
+    "rhythm": "Bass roots and fifths with space on beat three; 54% sixteenth swing, sparse snare on two and four.",
+    "structure": "0-8s: Piano pickup; 8-47s: A introduces the gentle rhythm and bass; 47-85s: B develops upper-register piano answer; 85-134s: varied A with one sparse four-bar turnaround; 134-150s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay.",
+    "mastering": {
+      "integratedLufs": -24,
+      "toleranceLu": 1.5,
+      "maxTruePeakDbtp": -2
+    },
+    "prompt": "Compose \"Morning Routine\", an original lo-fi instrumental for the warm daytime pixel-art store playlist. Tempo 78 BPM in 4/4, intended key C major, duration 150 seconds. Mood: Warm, gently optimistic, nostalgic opening-shop calm. Instrumentation: Felt piano; Brushed soft kit; Fingered electric bass; Barely audible tape texture. Harmony and melody: Cmaj9 - Em7 - Am9 - Dm9/G. Compose an original descending three-note piano answer with open voicings. Bass and drums: Bass roots and fifths with space on beat three; 54% sixteenth swing, sparse snare on two and four. Structure: 0-8s: Piano pickup; 8-47s: A introduces the gentle rhythm and bass; 47-85s: B develops upper-register piano answer; 85-134s: varied A with one sparse four-bar turnaround; 134-150s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay. Create entirely original instrumental music: no vocals, lyrics, spoken words, vocal chops, artist imitation, recognizable borrowed melody, or samples from the reference file. Treat the existing soundtrack only as a restrained warm spectral and loudness reference; its genre, instruments and harmony are unverified. Keep energy low and consistent across this collection: rounded attacks, soft upper frequencies, understated bass, no harsh percussion, loud vinyl crackle, distortion, drops or cinematic crescendos. Develop variations rather than repeating one short loop for the whole song. Keep tape texture barely audible. End with a natural harmonic resolution and short decay, arranged to re-enter smoothly without an abrupt cut; no silence longer than 1.5 seconds. Export a genuine stereo MP3 at 192 kbps and 44.1 kHz (or quality Ogg/AAC with the catalog path updated). Master the final encoded file to -24 LUFS integrated within +/-1.5 LU, with true peaks at or below -2 dBTP. Aim for roughly 5-10 LU loudness range when musically appropriate; retain dynamics rather than forcing this range with compression. This is a target for NEW masters only: do not alter the original. Include title, album \"Drew Portfolio - Store Soundtrack\", and actual creator metadata; do not invent artist credits. Deliver a real audible original recording with a clean ending."
+  },
+  {
+    "id": "day-corner-store",
+    "title": "Corner Store",
+    "theme": "light",
+    "file": "day/corner-store.mp3",
+    "status": "planned",
+    "collection": "store-soundtrack-expansion-v1",
+    "genre": "rnb-neo-soul",
+    "bpm": 82,
+    "durationSeconds": 156,
+    "key": "D major",
+    "mood": "Welcoming, smooth, quietly cheerful neighborhood-store groove.",
+    "instruments": [
+      "Warm Rhodes",
+      "Muted clean electric guitar",
+      "Round fingered bass",
+      "Soft kick, cross-stick and shaker"
+    ],
+    "harmony": "Dmaj9 - F#m7 - Bm9 - Em9/A. Create a new syncopated Rhodes phrase answered by short muted guitar notes.",
+    "rhythm": "Stepwise bass approaches with rests; occasional anticipated kick and behind-the-beat cross-stick in a gentle straight-eighth R&B pocket.",
+    "structure": "0-8s: Rhodes and muted guitar; 8-48s: A introduces the gentle rhythm and bass; 48-89s: B develops melody moves to guitar; 89-140s: varied A with alternate bass approaches; 140-156s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay.",
+    "mastering": {
+      "integratedLufs": -24,
+      "toleranceLu": 1.5,
+      "maxTruePeakDbtp": -2
+    },
+    "prompt": "Compose \"Corner Store\", an original rnb-neo-soul instrumental for the warm daytime pixel-art store playlist. Tempo 82 BPM in 4/4, intended key D major, duration 156 seconds. Mood: Welcoming, smooth, quietly cheerful neighborhood-store groove. Instrumentation: Warm Rhodes; Muted clean electric guitar; Round fingered bass; Soft kick, cross-stick and shaker. Harmony and melody: Dmaj9 - F#m7 - Bm9 - Em9/A. Create a new syncopated Rhodes phrase answered by short muted guitar notes. Bass and drums: Stepwise bass approaches with rests; occasional anticipated kick and behind-the-beat cross-stick in a gentle straight-eighth R&B pocket. Structure: 0-8s: Rhodes and muted guitar; 8-48s: A introduces the gentle rhythm and bass; 48-89s: B develops melody moves to guitar; 89-140s: varied A with alternate bass approaches; 140-156s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay. Create entirely original instrumental music: no vocals, lyrics, spoken words, vocal chops, artist imitation, recognizable borrowed melody, or samples from the reference file. Treat the existing soundtrack only as a restrained warm spectral and loudness reference; its genre, instruments and harmony are unverified. Keep energy low and consistent across this collection: rounded attacks, soft upper frequencies, understated bass, no harsh percussion, loud vinyl crackle, distortion, drops or cinematic crescendos. Develop variations rather than repeating one short loop for the whole song. Keep tape texture barely audible. End with a natural harmonic resolution and short decay, arranged to re-enter smoothly without an abrupt cut; no silence longer than 1.5 seconds. Export a genuine stereo MP3 at 192 kbps and 44.1 kHz (or quality Ogg/AAC with the catalog path updated). Master the final encoded file to -24 LUFS integrated within +/-1.5 LU, with true peaks at or below -2 dBTP. Aim for roughly 5-10 LU loudness range when musically appropriate; retain dynamics rather than forcing this range with compression. This is a target for NEW masters only: do not alter the original. Include title, album \"Drew Portfolio - Store Soundtrack\", and actual creator metadata; do not invent artist credits. Deliver a real audible original recording with a clean ending."
+  },
+  {
+    "id": "day-afternoon-breeze",
+    "title": "Afternoon Breeze",
+    "theme": "light",
+    "file": "day/afternoon-breeze.mp3",
+    "status": "planned",
+    "collection": "store-soundtrack-expansion-v1",
+    "genre": "jazzhop",
+    "bpm": 86,
+    "durationSeconds": 156,
+    "key": "F major",
+    "mood": "Airy, warm, unhurried afternoon jazz atmosphere.",
+    "instruments": [
+      "Soft hollow-body jazz guitar",
+      "Quiet upright-style bass",
+      "Brush kit with faint ride",
+      "Felt-piano support"
+    ],
+    "harmony": "Fmaj9 - Dm9 - Gm9 - C13. Write an original four-bar guitar question and a rhythmically different response, without an extended solo.",
+    "rhythm": "Two bass notes per bar with short walking fragments at phrase ends; light 56% eighth swing, quiet brush backbeat and sparse ride.",
+    "structure": "0-8s: Guitar and bass; 8-48s: A introduces the gentle rhythm and bass; 48-89s: B develops guitar and piano trade restrained phrases; 89-140s: varied A with softly reharmonized turnaround; 140-156s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay.",
+    "mastering": {
+      "integratedLufs": -24,
+      "toleranceLu": 1.5,
+      "maxTruePeakDbtp": -2
+    },
+    "prompt": "Compose \"Afternoon Breeze\", an original jazzhop instrumental for the warm daytime pixel-art store playlist. Tempo 86 BPM in 4/4, intended key F major, duration 156 seconds. Mood: Airy, warm, unhurried afternoon jazz atmosphere. Instrumentation: Soft hollow-body jazz guitar; Quiet upright-style bass; Brush kit with faint ride; Felt-piano support. Harmony and melody: Fmaj9 - Dm9 - Gm9 - C13. Write an original four-bar guitar question and a rhythmically different response, without an extended solo. Bass and drums: Two bass notes per bar with short walking fragments at phrase ends; light 56% eighth swing, quiet brush backbeat and sparse ride. Structure: 0-8s: Guitar and bass; 8-48s: A introduces the gentle rhythm and bass; 48-89s: B develops guitar and piano trade restrained phrases; 89-140s: varied A with softly reharmonized turnaround; 140-156s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay. Create entirely original instrumental music: no vocals, lyrics, spoken words, vocal chops, artist imitation, recognizable borrowed melody, or samples from the reference file. Treat the existing soundtrack only as a restrained warm spectral and loudness reference; its genre, instruments and harmony are unverified. Keep energy low and consistent across this collection: rounded attacks, soft upper frequencies, understated bass, no harsh percussion, loud vinyl crackle, distortion, drops or cinematic crescendos. Develop variations rather than repeating one short loop for the whole song. Keep tape texture barely audible. End with a natural harmonic resolution and short decay, arranged to re-enter smoothly without an abrupt cut; no silence longer than 1.5 seconds. Export a genuine stereo MP3 at 192 kbps and 44.1 kHz (or quality Ogg/AAC with the catalog path updated). Master the final encoded file to -24 LUFS integrated within +/-1.5 LU, with true peaks at or below -2 dBTP. Aim for roughly 5-10 LU loudness range when musically appropriate; retain dynamics rather than forcing this range with compression. This is a target for NEW masters only: do not alter the original. Include title, album \"Drew Portfolio - Store Soundtrack\", and actual creator metadata; do not invent artist credits. Deliver a real audible original recording with a clean ending."
+  },
+  {
+    "id": "day-coffee-break",
+    "title": "Coffee Break",
+    "theme": "light",
+    "file": "day/coffee-break.mp3",
+    "status": "planned",
+    "collection": "store-soundtrack-expansion-v1",
+    "genre": "rnb-neo-soul",
+    "bpm": 74,
+    "durationSeconds": 144,
+    "key": "A minor",
+    "mood": "Intimate, restful, soulful warmth during a short break.",
+    "instruments": [
+      "Velvety Rhodes",
+      "Quiet nylon-string guitar",
+      "Muted bass guitar",
+      "Rounded kick, soft rim and tambourine taps"
+    ],
+    "harmony": "Am9 - D13 - Gmaj9 - E7sus4. Compose a gently rising original Rhodes motif with suspended endings and soft chromatic inner voices.",
+    "rhythm": "Long bass notes with one quiet pickup; 53% sixteenth swing and laid-back rim accents. No slap bass or gospel climax.",
+    "structure": "0-8s: Unaccompanied Rhodes; 8-45s: A introduces the gentle rhythm and bass; 45-82s: B develops nylon-string guitar responses; 82-128s: varied A with changed inner chord voicings; 128-144s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay.",
+    "mastering": {
+      "integratedLufs": -24,
+      "toleranceLu": 1.5,
+      "maxTruePeakDbtp": -2
+    },
+    "prompt": "Compose \"Coffee Break\", an original rnb-neo-soul instrumental for the warm daytime pixel-art store playlist. Tempo 74 BPM in 4/4, intended key A minor, duration 144 seconds. Mood: Intimate, restful, soulful warmth during a short break. Instrumentation: Velvety Rhodes; Quiet nylon-string guitar; Muted bass guitar; Rounded kick, soft rim and tambourine taps. Harmony and melody: Am9 - D13 - Gmaj9 - E7sus4. Compose a gently rising original Rhodes motif with suspended endings and soft chromatic inner voices. Bass and drums: Long bass notes with one quiet pickup; 53% sixteenth swing and laid-back rim accents. No slap bass or gospel climax. Structure: 0-8s: Unaccompanied Rhodes; 8-45s: A introduces the gentle rhythm and bass; 45-82s: B develops nylon-string guitar responses; 82-128s: varied A with changed inner chord voicings; 128-144s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay. Create entirely original instrumental music: no vocals, lyrics, spoken words, vocal chops, artist imitation, recognizable borrowed melody, or samples from the reference file. Treat the existing soundtrack only as a restrained warm spectral and loudness reference; its genre, instruments and harmony are unverified. Keep energy low and consistent across this collection: rounded attacks, soft upper frequencies, understated bass, no harsh percussion, loud vinyl crackle, distortion, drops or cinematic crescendos. Develop variations rather than repeating one short loop for the whole song. Keep tape texture barely audible. End with a natural harmonic resolution and short decay, arranged to re-enter smoothly without an abrupt cut; no silence longer than 1.5 seconds. Export a genuine stereo MP3 at 192 kbps and 44.1 kHz (or quality Ogg/AAC with the catalog path updated). Master the final encoded file to -24 LUFS integrated within +/-1.5 LU, with true peaks at or below -2 dBTP. Aim for roughly 5-10 LU loudness range when musically appropriate; retain dynamics rather than forcing this range with compression. This is a target for NEW masters only: do not alter the original. Include title, album \"Drew Portfolio - Store Soundtrack\", and actual creator metadata; do not invent artist credits. Deliver a real audible original recording with a clean ending."
+  },
+  {
+    "id": "day-sunny-windows",
+    "title": "Sunny Windows",
+    "theme": "light",
+    "file": "day/sunny-windows.mp3",
+    "status": "planned",
+    "collection": "store-soundtrack-expansion-v1",
+    "genre": "lo-fi",
+    "bpm": 80,
+    "durationSeconds": 156,
+    "key": "G major",
+    "mood": "Sunlit, tender, comfortably nostalgic without high energy.",
+    "instruments": [
+      "Warm clean electric guitar",
+      "Soft piano chords",
+      "Gentle electric bass",
+      "Damped dusty kit and muted shaker"
+    ],
+    "harmony": "Gmaj9 - Bm7 - Cmaj9 - Cm6. Compose a sparse original guitar melody with occasional quiet harmonics; make the borrowed chord comforting.",
+    "rhythm": "Sustained root bass; 55% sixteenth swing, soft kick and damped snare without cymbal wash.",
+    "structure": "0-8s: Guitar motif and piano; 8-48s: A introduces the gentle rhythm and bass; 48-89s: B develops piano answers the guitar; 89-140s: varied A with sparse guitar octave changes; 140-156s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay.",
+    "mastering": {
+      "integratedLufs": -24,
+      "toleranceLu": 1.5,
+      "maxTruePeakDbtp": -2
+    },
+    "prompt": "Compose \"Sunny Windows\", an original lo-fi instrumental for the warm daytime pixel-art store playlist. Tempo 80 BPM in 4/4, intended key G major, duration 156 seconds. Mood: Sunlit, tender, comfortably nostalgic without high energy. Instrumentation: Warm clean electric guitar; Soft piano chords; Gentle electric bass; Damped dusty kit and muted shaker. Harmony and melody: Gmaj9 - Bm7 - Cmaj9 - Cm6. Compose a sparse original guitar melody with occasional quiet harmonics; make the borrowed chord comforting. Bass and drums: Sustained root bass; 55% sixteenth swing, soft kick and damped snare without cymbal wash. Structure: 0-8s: Guitar motif and piano; 8-48s: A introduces the gentle rhythm and bass; 48-89s: B develops piano answers the guitar; 89-140s: varied A with sparse guitar octave changes; 140-156s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay. Create entirely original instrumental music: no vocals, lyrics, spoken words, vocal chops, artist imitation, recognizable borrowed melody, or samples from the reference file. Treat the existing soundtrack only as a restrained warm spectral and loudness reference; its genre, instruments and harmony are unverified. Keep energy low and consistent across this collection: rounded attacks, soft upper frequencies, understated bass, no harsh percussion, loud vinyl crackle, distortion, drops or cinematic crescendos. Develop variations rather than repeating one short loop for the whole song. Keep tape texture barely audible. End with a natural harmonic resolution and short decay, arranged to re-enter smoothly without an abrupt cut; no silence longer than 1.5 seconds. Export a genuine stereo MP3 at 192 kbps and 44.1 kHz (or quality Ogg/AAC with the catalog path updated). Master the final encoded file to -24 LUFS integrated within +/-1.5 LU, with true peaks at or below -2 dBTP. Aim for roughly 5-10 LU loudness range when musically appropriate; retain dynamics rather than forcing this range with compression. This is a target for NEW masters only: do not alter the original. Include title, album \"Drew Portfolio - Store Soundtrack\", and actual creator metadata; do not invent artist credits. Deliver a real audible original recording with a clean ending."
+  },
+  {
+    "id": "day-slow-sunday",
+    "title": "Slow Sunday",
+    "theme": "light",
+    "file": "day/slow-sunday.mp3",
+    "status": "planned",
+    "collection": "store-soundtrack-expansion-v1",
+    "genre": "lo-fi",
+    "bpm": 68,
+    "durationSeconds": 168,
+    "key": "B-flat major",
+    "mood": "Lazy, dreamy, warm and quietly content.",
+    "instruments": [
+      "Low-velocity felt piano",
+      "Subtle warm synth bed",
+      "Gentle sine-supported bass",
+      "Soft half-time kick, rim and brushed hats"
+    ],
+    "harmony": "Bbmaj9 - Gm9 - Ebmaj9 - F6/9. Create an original widely spaced piano motif with room between phrases, retaining a continuous tonal bed.",
+    "rhythm": "Long rounded bass notes, little sub energy; half-time impression over a clear 68 BPM pulse, 52% swing and occasional brushed hat pickup.",
+    "structure": "0-10s: Felt piano and soft pad; 10-52s: A introduces the gentle rhythm and bass; 52-96s: B develops open upper voicings without raising level; 96-152s: varied A with fewer melody notes; 152-168s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay.",
+    "mastering": {
+      "integratedLufs": -24,
+      "toleranceLu": 1.5,
+      "maxTruePeakDbtp": -2
+    },
+    "prompt": "Compose \"Slow Sunday\", an original lo-fi instrumental for the warm daytime pixel-art store playlist. Tempo 68 BPM in 4/4, intended key B-flat major, duration 168 seconds. Mood: Lazy, dreamy, warm and quietly content. Instrumentation: Low-velocity felt piano; Subtle warm synth bed; Gentle sine-supported bass; Soft half-time kick, rim and brushed hats. Harmony and melody: Bbmaj9 - Gm9 - Ebmaj9 - F6/9. Create an original widely spaced piano motif with room between phrases, retaining a continuous tonal bed. Bass and drums: Long rounded bass notes, little sub energy; half-time impression over a clear 68 BPM pulse, 52% swing and occasional brushed hat pickup. Structure: 0-10s: Felt piano and soft pad; 10-52s: A introduces the gentle rhythm and bass; 52-96s: B develops open upper voicings without raising level; 96-152s: varied A with fewer melody notes; 152-168s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay. Create entirely original instrumental music: no vocals, lyrics, spoken words, vocal chops, artist imitation, recognizable borrowed melody, or samples from the reference file. Treat the existing soundtrack only as a restrained warm spectral and loudness reference; its genre, instruments and harmony are unverified. Keep energy low and consistent across this collection: rounded attacks, soft upper frequencies, understated bass, no harsh percussion, loud vinyl crackle, distortion, drops or cinematic crescendos. Develop variations rather than repeating one short loop for the whole song. Keep tape texture barely audible. End with a natural harmonic resolution and short decay, arranged to re-enter smoothly without an abrupt cut; no silence longer than 1.5 seconds. Export a genuine stereo MP3 at 192 kbps and 44.1 kHz (or quality Ogg/AAC with the catalog path updated). Master the final encoded file to -24 LUFS integrated within +/-1.5 LU, with true peaks at or below -2 dBTP. Aim for roughly 5-10 LU loudness range when musically appropriate; retain dynamics rather than forcing this range with compression. This is a target for NEW masters only: do not alter the original. Include title, album \"Drew Portfolio - Store Soundtrack\", and actual creator metadata; do not invent artist credits. Deliver a real audible original recording with a clean ending."
+  },
+  {
+    "id": "night-after-hours",
+    "title": "After Hours",
+    "theme": "dark",
+    "file": "night/after-hours.mp3",
+    "status": "planned",
+    "collection": "store-soundtrack-expansion-v1",
+    "genre": "rnb-neo-soul",
+    "bpm": 70,
+    "durationSeconds": 156,
+    "key": "C-sharp minor",
+    "mood": "Intimate, dreamy, comforting late-night calm.",
+    "instruments": [
+      "Mellow electric piano",
+      "Soft tremolo clean guitar",
+      "Rounded low electric bass",
+      "Quiet electronic kick, rim and hats"
+    ],
+    "harmony": "C#m9 - F#m9 - B13 - Emaj9. Write a new two-part electric-piano phrase with an understated guitar response and suspended inner voices.",
+    "rhythm": "Bass gently approaches a few chord tones with restrained sub; behind-the-beat rim and 54% sixteenth swing, no trap rolls.",
+    "structure": "0-8s: Electric piano and guitar ambience; 8-48s: A introduces the gentle rhythm and bass; 48-89s: B develops wider voicings and a different answer; 89-140s: varied A with gently reduced density; 140-156s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay.",
+    "mastering": {
+      "integratedLufs": -24,
+      "toleranceLu": 1.5,
+      "maxTruePeakDbtp": -2
+    },
+    "prompt": "Compose \"After Hours\", an original rnb-neo-soul instrumental for the dreamy nighttime pixel-art store playlist. Tempo 70 BPM in 4/4, intended key C-sharp minor, duration 156 seconds. Mood: Intimate, dreamy, comforting late-night calm. Instrumentation: Mellow electric piano; Soft tremolo clean guitar; Rounded low electric bass; Quiet electronic kick, rim and hats. Harmony and melody: C#m9 - F#m9 - B13 - Emaj9. Write a new two-part electric-piano phrase with an understated guitar response and suspended inner voices. Bass and drums: Bass gently approaches a few chord tones with restrained sub; behind-the-beat rim and 54% sixteenth swing, no trap rolls. Structure: 0-8s: Electric piano and guitar ambience; 8-48s: A introduces the gentle rhythm and bass; 48-89s: B develops wider voicings and a different answer; 89-140s: varied A with gently reduced density; 140-156s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay. Create entirely original instrumental music: no vocals, lyrics, spoken words, vocal chops, artist imitation, recognizable borrowed melody, or samples from the reference file. Treat the existing soundtrack only as a restrained warm spectral and loudness reference; its genre, instruments and harmony are unverified. Keep energy low and consistent across this collection: rounded attacks, soft upper frequencies, understated bass, no harsh percussion, loud vinyl crackle, distortion, drops or cinematic crescendos. Develop variations rather than repeating one short loop for the whole song. Keep tape texture barely audible. End with a natural harmonic resolution and short decay, arranged to re-enter smoothly without an abrupt cut; no silence longer than 1.5 seconds. Export a genuine stereo MP3 at 192 kbps and 44.1 kHz (or quality Ogg/AAC with the catalog path updated). Master the final encoded file to -24 LUFS integrated within +/-1.5 LU, with true peaks at or below -2 dBTP. Aim for roughly 5-10 LU loudness range when musically appropriate; retain dynamics rather than forcing this range with compression. This is a target for NEW masters only: do not alter the original. Include title, album \"Drew Portfolio - Store Soundtrack\", and actual creator metadata; do not invent artist credits. Deliver a real audible original recording with a clean ending."
+  },
+  {
+    "id": "night-neon-rain",
+    "title": "Neon Rain",
+    "theme": "dark",
+    "file": "night/neon-rain.mp3",
+    "status": "planned",
+    "collection": "store-soundtrack-expansion-v1",
+    "genre": "ambient-electronic",
+    "bpm": 64,
+    "durationSeconds": 168,
+    "key": "E minor",
+    "mood": "Spacious, peaceful, softly melancholic neon-lit shop ambience.",
+    "instruments": [
+      "Warm slow synth pads",
+      "Sparse rounded electric-piano notes",
+      "Soft filtered pluck",
+      "Restrained sine bass and faint brushed pulse"
+    ],
+    "harmony": "Em9 - Cmaj9 - Am11 - Bsus4. Invent a slowly evolving four-note pluck motif with gentle chord colors rather than a dramatic lead.",
+    "rhythm": "Soft sustained bass without rumble; implied 64 BPM through sparse filtered taps and a continuous tonal bed. Synthesized texture, no foreground rain recording.",
+    "structure": "0-10s: Warm pad and sparse keys; 10-52s: A introduces the gentle rhythm and bass; 52-96s: B develops change pad voicing and pluck placement; 96-152s: varied A with quiet electric-piano answers; 152-168s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay.",
+    "mastering": {
+      "integratedLufs": -24,
+      "toleranceLu": 1.5,
+      "maxTruePeakDbtp": -2
+    },
+    "prompt": "Compose \"Neon Rain\", an original ambient-electronic instrumental for the dreamy nighttime pixel-art store playlist. Tempo 64 BPM in 4/4, intended key E minor, duration 168 seconds. Mood: Spacious, peaceful, softly melancholic neon-lit shop ambience. Instrumentation: Warm slow synth pads; Sparse rounded electric-piano notes; Soft filtered pluck; Restrained sine bass and faint brushed pulse. Harmony and melody: Em9 - Cmaj9 - Am11 - Bsus4. Invent a slowly evolving four-note pluck motif with gentle chord colors rather than a dramatic lead. Bass and drums: Soft sustained bass without rumble; implied 64 BPM through sparse filtered taps and a continuous tonal bed. Synthesized texture, no foreground rain recording. Structure: 0-10s: Warm pad and sparse keys; 10-52s: A introduces the gentle rhythm and bass; 52-96s: B develops change pad voicing and pluck placement; 96-152s: varied A with quiet electric-piano answers; 152-168s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay. Create entirely original instrumental music: no vocals, lyrics, spoken words, vocal chops, artist imitation, recognizable borrowed melody, or samples from the reference file. Treat the existing soundtrack only as a restrained warm spectral and loudness reference; its genre, instruments and harmony are unverified. Keep energy low and consistent across this collection: rounded attacks, soft upper frequencies, understated bass, no harsh percussion, loud vinyl crackle, distortion, drops or cinematic crescendos. Develop variations rather than repeating one short loop for the whole song. Keep tape texture barely audible. End with a natural harmonic resolution and short decay, arranged to re-enter smoothly without an abrupt cut; no silence longer than 1.5 seconds. Export a genuine stereo MP3 at 192 kbps and 44.1 kHz (or quality Ogg/AAC with the catalog path updated). Master the final encoded file to -24 LUFS integrated within +/-1.5 LU, with true peaks at or below -2 dBTP. Aim for roughly 5-10 LU loudness range when musically appropriate; retain dynamics rather than forcing this range with compression. This is a target for NEW masters only: do not alter the original. Include title, album \"Drew Portfolio - Store Soundtrack\", and actual creator metadata; do not invent artist credits. Deliver a real audible original recording with a clean ending."
+  },
+  {
+    "id": "night-midnight-convenience",
+    "title": "Midnight Convenience",
+    "theme": "dark",
+    "file": "night/midnight-convenience.mp3",
+    "status": "planned",
+    "collection": "store-soundtrack-expansion-v1",
+    "genre": "jazzhop",
+    "bpm": 76,
+    "durationSeconds": 156,
+    "key": "D minor",
+    "mood": "Relaxed, intimate nocturnal jazz glow.",
+    "instruments": [
+      "Muted jazz guitar",
+      "Warm electric-piano comping",
+      "Rounded upright-style bass",
+      "Soft brushes, low kick and faint ride"
+    ],
+    "harmony": "Dm9 - G13 - Cmaj9 - A7sus4. Compose an original understated guitar motif with brief piano answers; no recognizable jazz standard or virtuoso solo.",
+    "rhythm": "Long bass roots with occasional two-note approaches; light 55% eighth swing and soft brush backbeat without busy ride patterns.",
+    "structure": "0-8s: Guitar and warm keys; 8-48s: A introduces the gentle rhythm and bass; 48-89s: B develops electric piano answers guitar; 89-140s: varied A with quieter alternate turnaround; 140-156s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay.",
+    "mastering": {
+      "integratedLufs": -24,
+      "toleranceLu": 1.5,
+      "maxTruePeakDbtp": -2
+    },
+    "prompt": "Compose \"Midnight Convenience\", an original jazzhop instrumental for the dreamy nighttime pixel-art store playlist. Tempo 76 BPM in 4/4, intended key D minor, duration 156 seconds. Mood: Relaxed, intimate nocturnal jazz glow. Instrumentation: Muted jazz guitar; Warm electric-piano comping; Rounded upright-style bass; Soft brushes, low kick and faint ride. Harmony and melody: Dm9 - G13 - Cmaj9 - A7sus4. Compose an original understated guitar motif with brief piano answers; no recognizable jazz standard or virtuoso solo. Bass and drums: Long bass roots with occasional two-note approaches; light 55% eighth swing and soft brush backbeat without busy ride patterns. Structure: 0-8s: Guitar and warm keys; 8-48s: A introduces the gentle rhythm and bass; 48-89s: B develops electric piano answers guitar; 89-140s: varied A with quieter alternate turnaround; 140-156s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay. Create entirely original instrumental music: no vocals, lyrics, spoken words, vocal chops, artist imitation, recognizable borrowed melody, or samples from the reference file. Treat the existing soundtrack only as a restrained warm spectral and loudness reference; its genre, instruments and harmony are unverified. Keep energy low and consistent across this collection: rounded attacks, soft upper frequencies, understated bass, no harsh percussion, loud vinyl crackle, distortion, drops or cinematic crescendos. Develop variations rather than repeating one short loop for the whole song. Keep tape texture barely audible. End with a natural harmonic resolution and short decay, arranged to re-enter smoothly without an abrupt cut; no silence longer than 1.5 seconds. Export a genuine stereo MP3 at 192 kbps and 44.1 kHz (or quality Ogg/AAC with the catalog path updated). Master the final encoded file to -24 LUFS integrated within +/-1.5 LU, with true peaks at or below -2 dBTP. Aim for roughly 5-10 LU loudness range when musically appropriate; retain dynamics rather than forcing this range with compression. This is a target for NEW masters only: do not alter the original. Include title, album \"Drew Portfolio - Store Soundtrack\", and actual creator metadata; do not invent artist credits. Deliver a real audible original recording with a clean ending."
+  },
+  {
+    "id": "night-quiet-streets",
+    "title": "Quiet Streets",
+    "theme": "dark",
+    "file": "night/quiet-streets.mp3",
+    "status": "planned",
+    "collection": "store-soundtrack-expansion-v1",
+    "genre": "lo-fi",
+    "bpm": 66,
+    "durationSeconds": 162,
+    "key": "A major",
+    "mood": "Still, nostalgic, gently wistful and reassuring.",
+    "instruments": [
+      "Soft felt piano",
+      "Low tape-softened pad",
+      "Round electric bass",
+      "Damped lo-fi kit and sparse brushed hats"
+    ],
+    "harmony": "Amaj9 - C#m7 - F#m9 - Dmaj9. Write an original falling piano fragment with a quiet answering phrase, keeping major-key wistfulness warm.",
+    "rhythm": "Held bass roots with occasional soft passing notes; 54% sixteenth swing, low-density soft snare and no sudden fills.",
+    "structure": "0-10s: Piano and pad; 10-50s: A introduces the gentle rhythm and bass; 50-92s: B develops answer moves down an octave; 92-146s: varied A with reduced hats and melody density; 146-162s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay.",
+    "mastering": {
+      "integratedLufs": -24,
+      "toleranceLu": 1.5,
+      "maxTruePeakDbtp": -2
+    },
+    "prompt": "Compose \"Quiet Streets\", an original lo-fi instrumental for the dreamy nighttime pixel-art store playlist. Tempo 66 BPM in 4/4, intended key A major, duration 162 seconds. Mood: Still, nostalgic, gently wistful and reassuring. Instrumentation: Soft felt piano; Low tape-softened pad; Round electric bass; Damped lo-fi kit and sparse brushed hats. Harmony and melody: Amaj9 - C#m7 - F#m9 - Dmaj9. Write an original falling piano fragment with a quiet answering phrase, keeping major-key wistfulness warm. Bass and drums: Held bass roots with occasional soft passing notes; 54% sixteenth swing, low-density soft snare and no sudden fills. Structure: 0-10s: Piano and pad; 10-50s: A introduces the gentle rhythm and bass; 50-92s: B develops answer moves down an octave; 92-146s: varied A with reduced hats and melody density; 146-162s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay. Create entirely original instrumental music: no vocals, lyrics, spoken words, vocal chops, artist imitation, recognizable borrowed melody, or samples from the reference file. Treat the existing soundtrack only as a restrained warm spectral and loudness reference; its genre, instruments and harmony are unverified. Keep energy low and consistent across this collection: rounded attacks, soft upper frequencies, understated bass, no harsh percussion, loud vinyl crackle, distortion, drops or cinematic crescendos. Develop variations rather than repeating one short loop for the whole song. Keep tape texture barely audible. End with a natural harmonic resolution and short decay, arranged to re-enter smoothly without an abrupt cut; no silence longer than 1.5 seconds. Export a genuine stereo MP3 at 192 kbps and 44.1 kHz (or quality Ogg/AAC with the catalog path updated). Master the final encoded file to -24 LUFS integrated within +/-1.5 LU, with true peaks at or below -2 dBTP. Aim for roughly 5-10 LU loudness range when musically appropriate; retain dynamics rather than forcing this range with compression. This is a target for NEW masters only: do not alter the original. Include title, album \"Drew Portfolio - Store Soundtrack\", and actual creator metadata; do not invent artist credits. Deliver a real audible original recording with a clean ending."
+  },
+  {
+    "id": "night-last-customer",
+    "title": "Last Customer",
+    "theme": "dark",
+    "file": "night/last-customer.mp3",
+    "status": "planned",
+    "collection": "store-soundtrack-expansion-v1",
+    "genre": "rnb-neo-soul",
+    "bpm": 72,
+    "durationSeconds": 168,
+    "key": "G minor",
+    "mood": "Soulful, reflective and welcoming rather than sad.",
+    "instruments": [
+      "Warm Rhodes",
+      "Low clean-guitar swells",
+      "Soft fingered bass",
+      "Gentle electronic kick, rim and shaker"
+    ],
+    "harmony": "Gm9 - Cm9 - F13 - Bbmaj9. Invent a syncopated Rhodes motif with restrained chromatic approach voicings and short guitar swells.",
+    "rhythm": "Melodic bass chord-tone approaches with rests; behind-the-beat 53% sixteenth swing, mellow kick and rim, no slap or fuzz.",
+    "structure": "0-10s: Rhodes and guitar swell; 10-52s: A introduces the gentle rhythm and bass; 52-96s: B develops new short answer with expanded inner voices; 96-152s: varied A with gentler bass variation; 152-168s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay.",
+    "mastering": {
+      "integratedLufs": -24,
+      "toleranceLu": 1.5,
+      "maxTruePeakDbtp": -2
+    },
+    "prompt": "Compose \"Last Customer\", an original rnb-neo-soul instrumental for the dreamy nighttime pixel-art store playlist. Tempo 72 BPM in 4/4, intended key G minor, duration 168 seconds. Mood: Soulful, reflective and welcoming rather than sad. Instrumentation: Warm Rhodes; Low clean-guitar swells; Soft fingered bass; Gentle electronic kick, rim and shaker. Harmony and melody: Gm9 - Cm9 - F13 - Bbmaj9. Invent a syncopated Rhodes motif with restrained chromatic approach voicings and short guitar swells. Bass and drums: Melodic bass chord-tone approaches with rests; behind-the-beat 53% sixteenth swing, mellow kick and rim, no slap or fuzz. Structure: 0-10s: Rhodes and guitar swell; 10-52s: A introduces the gentle rhythm and bass; 52-96s: B develops new short answer with expanded inner voices; 96-152s: varied A with gentler bass variation; 152-168s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay. Create entirely original instrumental music: no vocals, lyrics, spoken words, vocal chops, artist imitation, recognizable borrowed melody, or samples from the reference file. Treat the existing soundtrack only as a restrained warm spectral and loudness reference; its genre, instruments and harmony are unverified. Keep energy low and consistent across this collection: rounded attacks, soft upper frequencies, understated bass, no harsh percussion, loud vinyl crackle, distortion, drops or cinematic crescendos. Develop variations rather than repeating one short loop for the whole song. Keep tape texture barely audible. End with a natural harmonic resolution and short decay, arranged to re-enter smoothly without an abrupt cut; no silence longer than 1.5 seconds. Export a genuine stereo MP3 at 192 kbps and 44.1 kHz (or quality Ogg/AAC with the catalog path updated). Master the final encoded file to -24 LUFS integrated within +/-1.5 LU, with true peaks at or below -2 dBTP. Aim for roughly 5-10 LU loudness range when musically appropriate; retain dynamics rather than forcing this range with compression. This is a target for NEW masters only: do not alter the original. Include title, album \"Drew Portfolio - Store Soundtrack\", and actual creator metadata; do not invent artist credits. Deliver a real audible original recording with a clean ending."
+  },
+  {
+    "id": "night-city-lights",
+    "title": "City Lights",
+    "theme": "dark",
+    "file": "night/city-lights.mp3",
+    "status": "planned",
+    "collection": "store-soundtrack-expansion-v1",
+    "genre": "lo-fi",
+    "bpm": 74,
+    "durationSeconds": 156,
+    "key": "E-flat major",
+    "mood": "Dreamy, softly luminous, comforting nighttime motion.",
+    "instruments": [
+      "Rounded electric piano",
+      "Low analog pad",
+      "Muted mellow synth pluck",
+      "Smooth bass, soft kick and brushed electronic snare"
+    ],
+    "harmony": "Ebmaj9 - Cm9 - Abmaj9 - Bb6/9. Create an original offbeat pluck motif answered by sparse piano, with faint retro synth color behind it.",
+    "rhythm": "Legato restrained bass; 54% sixteenth swing and unhurried backbeat. No bright arpeggio, driving synthwave kick or dramatic riser.",
+    "structure": "0-8s: Keys and warm pad; 8-48s: A introduces the gentle rhythm and bass; 48-89s: B develops piano takes a few pluck notes; 89-140s: varied A with subtle upper pad color; 140-156s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay.",
+    "mastering": {
+      "integratedLufs": -24,
+      "toleranceLu": 1.5,
+      "maxTruePeakDbtp": -2
+    },
+    "prompt": "Compose \"City Lights\", an original lo-fi instrumental for the dreamy nighttime pixel-art store playlist. Tempo 74 BPM in 4/4, intended key E-flat major, duration 156 seconds. Mood: Dreamy, softly luminous, comforting nighttime motion. Instrumentation: Rounded electric piano; Low analog pad; Muted mellow synth pluck; Smooth bass, soft kick and brushed electronic snare. Harmony and melody: Ebmaj9 - Cm9 - Abmaj9 - Bb6/9. Create an original offbeat pluck motif answered by sparse piano, with faint retro synth color behind it. Bass and drums: Legato restrained bass; 54% sixteenth swing and unhurried backbeat. No bright arpeggio, driving synthwave kick or dramatic riser. Structure: 0-8s: Keys and warm pad; 8-48s: A introduces the gentle rhythm and bass; 48-89s: B develops piano takes a few pluck notes; 89-140s: varied A with subtle upper pad color; 140-156s: remove percussion in stages, resolve to the opening tonal color and allow a short natural decay. Create entirely original instrumental music: no vocals, lyrics, spoken words, vocal chops, artist imitation, recognizable borrowed melody, or samples from the reference file. Treat the existing soundtrack only as a restrained warm spectral and loudness reference; its genre, instruments and harmony are unverified. Keep energy low and consistent across this collection: rounded attacks, soft upper frequencies, understated bass, no harsh percussion, loud vinyl crackle, distortion, drops or cinematic crescendos. Develop variations rather than repeating one short loop for the whole song. Keep tape texture barely audible. End with a natural harmonic resolution and short decay, arranged to re-enter smoothly without an abrupt cut; no silence longer than 1.5 seconds. Export a genuine stereo MP3 at 192 kbps and 44.1 kHz (or quality Ogg/AAC with the catalog path updated). Master the final encoded file to -24 LUFS integrated within +/-1.5 LU, with true peaks at or below -2 dBTP. Aim for roughly 5-10 LU loudness range when musically appropriate; retain dynamics rather than forcing this range with compression. This is a target for NEW masters only: do not alter the original. Include title, album \"Drew Portfolio - Store Soundtrack\", and actual creator metadata; do not invent artist credits. Deliver a real audible original recording with a clean ending."
+  }
+]

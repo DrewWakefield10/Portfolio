@@ -8,23 +8,25 @@ export interface MusicTrack {
   artist?: string
   src: string
   theme: MusicTheme
+  /** Optional attenuation measured at import; never changes the saved volume. */
+  gain?: number
 }
 
 // Planned music is excluded. `npm run music:sync` verifies real files before
 // exporting ready entries from public/music/catalog.json into this library.
 export const MUSIC_PLAYLISTS: Record<MusicTheme, readonly MusicTrack[]> = {
   light: [
-    { id: 'original-day', title: 'Original portfolio mix', src: '/music.mp3', theme: 'light' },
     ...(additionalTracks as MusicTrack[]).filter(track => track.theme === 'light'),
+    { id: 'original-day', title: 'Original portfolio mix', src: '/music.mp3', theme: 'light' },
   ],
   dark: [
-    { id: 'original-night', title: 'Original portfolio mix', src: '/music.mp3', theme: 'dark' },
     ...(additionalTracks as MusicTrack[]).filter(track => track.theme === 'dark'),
+    { id: 'original-night', title: 'Original portfolio mix', src: '/music.mp3', theme: 'dark' },
   ],
 }
 
 export const MUSIC_TRANSITION_MS = 1600
-export const MUSIC_MAX_GAIN = 0.18
+export const MUSIC_MAX_GAIN = 0.475468
 export const AUDIO_STORAGE_KEY = 'portfolio-audio-v1'
 
 export interface AudioPreferences {
