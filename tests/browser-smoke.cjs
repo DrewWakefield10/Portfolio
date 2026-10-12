@@ -228,6 +228,14 @@ async function verifyInteractiveDesktop() {
   await ensureHome()
   console.log('PASS hotspot alignment and activation at 1080p/1440p/4K/mobile/landscape, touch PC, square segmented volume and mouse/touch/keyboard volume control')
 }
+async function verifyWallCalendar() {
+  const date = await evaluate(`document.querySelector('[data-local-date]').dateTime`)
+  await until(`document.querySelector('[data-wall-calendar]')?.dataset.wallCalendar===${JSON.stringify(date)}`)
+  const [, month, day] = date.split('-').map(Number)
+  assert.deepEqual(await evaluate(`Array.from(document.querySelectorAll('[data-calendar-day]'),e=>e.textContent)`),[String(day),String(day)])
+  assert.deepEqual(await evaluate(`Array.from(document.querySelectorAll('[data-calendar-month]'),e=>e.textContent)`),[`${month}月`,`${month}月`])
+  assert.equal(await evaluate(`(() => {const a=document.querySelector('[data-wall-calendar]').getScreenCTM(),b=document.querySelector('.store-environment').getScreenCTM();return ['a','b','c','d','e','f'].every(key=>Math.abs(a[key]-b[key])<0.001)})()`),true,'wall calendar stays aligned with artwork')
+}
 async function verifyWallpaperObjects() {
   await click('[data-window-id=home] [aria-label="Close window"]')
   await evaluate(`window.__objectMotions=Array.from(document.querySelectorAll('.environmental-motion')).flatMap(e=>e.getAnimations());true`)
@@ -293,6 +301,7 @@ async function verifyWallpaperObjects() {
   assert.ok(Math.abs(accuracy.minute-accuracy.expectedMinute)<0.001)
   assert.equal(accuracy.date,accuracy.expectedDate)
   assert.equal(accuracy.today,accuracy.expectedToday)
+  await verifyWallCalendar()
   for (const id of ['time','calendar']) {
     assert.equal(await evaluate(`getComputedStyle(document.querySelector('[data-window-id=${id}]')).backgroundColor`),'rgba(215, 224, 201, 0.7)')
   }
@@ -303,6 +312,7 @@ async function verifyWallpaperObjects() {
     assert.equal(await evaluate(`getComputedStyle(document.querySelector('[data-window-id=${id}]')).backgroundColor`),'rgba(10, 35, 66, 0.7)')
   }
   await wait(700)
+  await verifyWallCalendar()
   await screenshot('store-information-night')
   await click('[aria-label="Toggle theme"]')
   for (const id of ['time','calendar']) {
@@ -312,13 +322,16 @@ async function verifyWallpaperObjects() {
   // Advance the visitor's local clock through real date boundaries, without waiting overnight.
   await evaluate(`window.__RealDate=Date;window.__testNow=new Date(2024,1,28,23,59,59).getTime();window.Date=class extends window.__RealDate{constructor(...args){super(...(args.length?args:[window.__testNow]))}static now(){return window.__testNow}};document.dispatchEvent(new Event('visibilitychange'))`)
   await until(`document.querySelector('[data-local-date]').dateTime==='2024-02-28'`)
+  await verifyWallCalendar()
   await evaluate(`window.__testNow+=2000`)
   await until(`document.querySelector('[data-local-date]').dateTime==='2024-02-29'`)
+  await verifyWallCalendar()
   assert.equal(await evaluate(`document.querySelector('td[aria-current=date]').textContent`),'29')
   assert.equal(await evaluate(`Array.from(document.querySelectorAll('.store-calendar-grid td')).filter(e=>e.textContent.trim()).length`),29)
   for(const [year,month,day,key,days] of [[2024,2,1,'2024-03-01',31],[2026,11,31,'2026-12-31',31],[2027,0,1,'2027-01-01',31]]) {
     await evaluate(`window.__testNow=new window.__RealDate(${year},${month},${day},0,0,1).getTime();document.dispatchEvent(new Event('visibilitychange'))`)
     await until(`document.querySelector('[data-local-date]').dateTime==='${key}'`)
+    await verifyWallCalendar()
     assert.equal(await evaluate(`Array.from(document.querySelectorAll('.store-calendar-grid td')).filter(e=>e.textContent.trim()).length`),days)
   }
   await evaluate(`Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'))`)
@@ -327,14 +340,17 @@ async function verifyWallpaperObjects() {
   await wait(1100)
   assert.equal(await evaluate(`document.querySelector('[data-local-time]').dateTime`),frozenTime)
   assert.equal(await evaluate(`document.querySelector('[data-local-date]').dateTime`),'2027-01-01')
+  await verifyWallCalendar()
   await evaluate(`delete document.hidden;document.dispatchEvent(new Event('visibilitychange'))`)
   await until(`document.querySelector('[data-local-date]').dateTime==='2027-01-02'`)
+  await verifyWallCalendar()
   assert.equal(await evaluate(`document.querySelector('.store-environment').dataset.running`),'true')
   for (const timezone of ['Asia/Taipei','America/New_York']) {
     await send('Emulation.setTimezoneOverride',{timezoneId:timezone})
     await evaluate(`window.__testNow=Date.UTC(2027,0,1,2,0,0)+('${timezone}'==='Asia/Taipei'?0:1);document.dispatchEvent(new Event('visibilitychange'))`)
     await until(`document.querySelector('.store-info-zone').textContent.includes('${timezone}')`)
     assert.equal(await evaluate(`document.querySelector('[data-local-date]').dateTime`),timezone==='Asia/Taipei'?'2027-01-01':'2026-12-31')
+    await verifyWallCalendar()
     assert.match(await evaluate(`document.querySelector('[data-local-time]').textContent`),timezone==='Asia/Taipei'?/10:00:00 AM/:/09:00:00 PM/)
     assert.ok(await evaluate(`document.querySelector('.store-info-zone').textContent.includes('${timezone==='Asia/Taipei'?'UTC+08:00':'UTC-05:00'}')`))
   }
@@ -385,6 +401,7 @@ async function verifyWallpaperObjects() {
           await until(`!!document.querySelector('[data-window-id=${windowId}]')`)
         } else await click('#store-'+id)
         assert.equal(await evaluate(`document.querySelectorAll('[data-window-id=${windowId}]').length`),1)
+        if(id==='calendar') await verifyWallCalendar()
         assert.equal(await evaluate(`(() => {const r=document.querySelector('[data-window-id=${windowId}]').getBoundingClientRect();return r.left>=-0.5&&r.top>=-0.5&&r.right<=innerWidth+0.5&&r.bottom<=innerHeight+0.5})()`),true,'window stays in viewport')
         await click(`[data-window-id=${windowId}] [aria-label="Close window"]`)
       }
@@ -399,7 +416,7 @@ async function verifyWallpaperObjects() {
 }
 async function verifyFanControls() {
   await click('[data-window-id=home] [aria-label="Close window"]')
-  await until(`document.querySelector('#store-fan').dataset.fanSpeed==='low'&&Math.abs(document.querySelector('.fan-rotor').getAnimations()[0].playbackRate-1)<0.000001`)
+  await until(`document.querySelector('#store-fan').dataset.fanSpeed==='low'&&Math.abs(document.querySelector('.fan-rotor').getAnimations()[0].playbackRate-4)<0.000001`)
   assert.equal(await evaluate(`document.querySelectorAll('.fan-rotor').length`),1)
   assert.equal(await evaluate(`document.querySelector('#store-fan').textContent.trim()`),'')
   assert.equal(await evaluate(`document.querySelector('#store-fan').hasAttribute('title')`),false)
@@ -408,8 +425,8 @@ async function verifyFanControls() {
   await mouse(fanPoint.x,fanPoint.y)
   await until(`Number(getComputedStyle(document.querySelector('#store-fan .hotspot-illumination')).opacity)>0`)
   assert.equal(await evaluate(`getComputedStyle(document.querySelector('#store-fan')).cursor`),'pointer')
-  let previousRate=1
-  for(const [speed,rate] of [['medium',2],['high',4],['off',0]]) {
+  let previousRate=4
+  for(const [speed,rate] of [['medium',8],['high',16],['off',0]]) {
     await evaluate(`window.__fanSamples=[];window.__fanSampleDone=false;(() => {let start;const sample=t=>{start??=t;const a=window.__fanControl,m=new DOMMatrix(getComputedStyle(document.querySelector('.fan-rotor')).transform);window.__fanSamples.push({t,time:a.currentTime,angle:(Math.atan2(m.b,m.a)*180/Math.PI+360)%360});if(t-start<700)requestAnimationFrame(sample);else window.__fanSampleDone=true};requestAnimationFrame(sample)})();true`)
     await click('#store-fan')
     assert.equal(await evaluate(`document.querySelector('#store-fan').dataset.fanSpeed`),speed)
@@ -423,7 +440,7 @@ async function verifyFanControls() {
     const samples=await evaluate('window.__fanSamples')
     for(let i=1;i<samples.length;i++) {
       const a=samples[i-1],b=samples[i],delta=b.time-a.time
-      assert.ok(delta>=-0.1&&delta<=(b.t-a.t)*4+15,'blade timeline neither resets nor jumps during a ramp')
+      assert.ok(delta>=-0.1&&delta<=(b.t-a.t)*16+15,'blade timeline neither resets nor jumps during a ramp')
       const angle=(b.angle-a.angle+360)%360,expected=(delta*0.36)%360
       assert.ok(Math.min(Math.abs(angle-expected),360-Math.abs(angle-expected))<0.1,'blade angle follows the continuous timeline')
     }
@@ -439,24 +456,24 @@ async function verifyFanControls() {
   await reload()
   await until(`document.querySelector('#store-fan').dataset.fanSpeed==='off'&&document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===0`)
   await click('#store-fan')
-  await until(`document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===1`)
-  await evaluate(`for(let i=0;i<2;i++)document.querySelector('#store-fan').click()`)
   await until(`document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===4`)
+  await evaluate(`for(let i=0;i<2;i++)document.querySelector('#store-fan').click()`)
+  await until(`document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===16`)
   await evaluate(`window.__fanControl=document.querySelector('.fan-rotor').getAnimations()[0]`)
   await click('[aria-label="Toggle theme"]')
   await wait(600)
-  assert.equal(await evaluate(`window.__fanControl===document.querySelector('.fan-rotor').getAnimations()[0]&&window.__fanControl.playbackRate===4`),true)
+  assert.equal(await evaluate(`window.__fanControl===document.querySelector('.fan-rotor').getAnimations()[0]&&window.__fanControl.playbackRate===16`),true)
   await click('[aria-label="Toggle theme"]')
   assert.equal(await evaluate(`JSON.parse(localStorage.getItem('portfolio-fan-speeds-v1'))['shelf-fan']`),'high')
   await reload()
-  await until(`document.querySelector('#store-fan').dataset.fanSpeed==='high'&&document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===4`)
+  await until(`document.querySelector('#store-fan').dataset.fanSpeed==='high'&&document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===16`)
   await evaluate(`for(let i=0;i<8;i++)document.querySelector('#store-fan').click()`)
   assert.equal(await evaluate(`document.querySelector('#store-fan').dataset.fanSpeed`),'high')
   await evaluate(`for(let i=0;i<9;i++)document.querySelector('#store-fan').click()`)
   await until(`document.querySelector('#store-fan').dataset.fanSpeed==='off'&&document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===0`)
   await click('#store-fan')
-  await until(`document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===1`)
-  console.log('PASS fan default Low, 60/120/240 RPM, smooth ramps with continuous angles, fan-only Off, saved Off/High and rapid-click parity')
+  await until(`document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===4`)
+  console.log('PASS fan default Low, 240/480/960 RPM, smooth ramps with continuous angles, fan-only Off, saved Off/High and rapid-click parity')
 
   await click('#store-clock')
   await moveWindow('time',910,150)
@@ -477,12 +494,12 @@ async function verifyFanControls() {
     await send('Input.dispatchKeyEvent',{type:'keyUp',key,code,windowsVirtualKeyCode:virtual})
     await until(`document.querySelector('#store-fan').dataset.fanSpeed==='${speed}'`)
   }
-  await until(`document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===4`)
+  await until(`document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===16`)
   await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]})
-  await until(`Math.abs(document.querySelector('.fan-rotor').getAnimations()[0].playbackRate-1/3)<0.000001`)
+  await until(`Math.abs(document.querySelector('.fan-rotor').getAnimations()[0].playbackRate-4/3)<0.000001`)
   assert.equal(await evaluate(`document.querySelector('#store-fan').dataset.fanSpeed`),'high')
   await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'no-preference'}]})
-  await until(`document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===4`)
+  await until(`document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===16`)
 
   for(const [width,height] of [[1920,1080],[2560,1440],[3840,2160],[375,812],[667,375]]) {
     await dimensions(width,height)
@@ -504,7 +521,7 @@ async function verifyFanControls() {
   await click('[aria-label="Toggle theme"]')
   await evaluate(`localStorage.setItem('portfolio-fan-speeds-v1','{"shelf-fan":"invalid"}')`)
   await reload()
-  await until(`document.querySelector('#store-fan').dataset.fanSpeed==='low'&&document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===1`)
+  await until(`document.querySelector('#store-fan').dataset.fanSpeed==='low'&&document.querySelector('.fan-rotor').getAnimations()[0].playbackRate===4`)
   await ensureHome()
   console.log('PASS fan keyboard/touch, window occlusion, mute, gentler reduced-motion speeds, day/night alignment through 4K/mobile and invalid-preference fallback')
 }
@@ -993,7 +1010,7 @@ async function main() {
   await evaluate(`delete document.hidden;document.dispatchEvent(new Event('visibilitychange'))`)
   assert.notEqual(await evaluate('document.querySelector("[data-clock-hand=minute]").getAttribute("transform")'), hiddenClock)
   await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] })
-  await until(`Math.abs(document.querySelector('.fan-rotor').getAnimations()[0].playbackRate-1/12)<0.000001`)
+  await until(`Math.abs(document.querySelector('.fan-rotor').getAnimations()[0].playbackRate-1/3)<0.000001`)
   assert.ok(await evaluate(`Array.from(document.querySelectorAll('.swimming-fish'),e=>parseFloat(getComputedStyle(e).animationDuration)).every((duration,i)=>Math.abs(duration-${JSON.stringify(scene.fish.map(fish=>fish.duration/(1.4*1.6)*2))}[i])<0.001)`))
   assert.equal(await evaluate('getComputedStyle(document.querySelector(".fish-tail")).animationName'), 'none')
   assert.equal(await evaluate('getComputedStyle(document.querySelector(".zapper-glow")).opacity'), '0')

@@ -5,6 +5,7 @@ import { useCallback, useState } from 'react'
 import { useTheme } from '@/context/ThemeContext'
 import { WALLPAPERS } from '@/lib/wallpapers'
 import { StoreEnvironment } from './StoreEnvironment'
+import { WallCalendar } from './WallCalendar'
 
 export function Wallpaper() {
   const { theme } = useTheme()
@@ -32,6 +33,7 @@ export function Wallpaper() {
         </div>
       ))}
       <StoreEnvironment theme={visible} active={animated} onReady={assetsReady} onError={assetFailed} />
+      <WallCalendar theme={visible} />
     </div>
   )
 }

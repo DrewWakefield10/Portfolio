@@ -1,4 +1,4 @@
-export const FAN_SPEEDS = { off: 0, low: 60, medium: 120, high: 240 } as const
+export const FAN_SPEEDS = { off: 0, low: 240, medium: 480, high: 960 } as const
 export type FanSpeed = keyof typeof FAN_SPEEDS
 export const FAN_STORAGE_KEY = 'portfolio-fan-speeds-v1'
 const cycle: readonly FanSpeed[] = ['off', 'low', 'medium', 'high']

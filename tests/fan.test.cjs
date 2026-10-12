@@ -12,7 +12,7 @@ global.requestAnimationFrame ??= () => 0
 global.cancelAnimationFrame ??= () => {}
 
 test('fan cycle, default Low and validated independent saved settings', () => {
-  assert.deepEqual(FAN_SPEEDS, { off: 0, low: 60, medium: 120, high: 240 })
+  assert.deepEqual(FAN_SPEEDS, { off: 0, low: 240, medium: 480, high: 960 })
   let speed = 'off'
   const settings = []
   for (let i = 0; i < 5; i++) { speed = nextFanSpeed(speed); settings.push(speed) }
@@ -21,7 +21,7 @@ test('fan cycle, default Low and validated independent saved settings', () => {
     assert.deepEqual(readFanPreferences(raw, ['one', 'two']), { one: 'low', two: 'low' })
   }
   assert.deepEqual(readFanPreferences('{"one":"off","two":"high","old":"medium"}', ['one', 'two']), { one: 'off', two: 'high' })
-  for (const [speed, rate] of [['off',0],['low',1],['medium',2],['high',4]]) {
+  for (const [speed, rate] of [['off',0],['low',4],['medium',8],['high',16]]) {
     assert.equal(fanPlaybackRate(speed, false),rate)
     assert.equal(fanPlaybackRate(speed, true),rate/12)
   }

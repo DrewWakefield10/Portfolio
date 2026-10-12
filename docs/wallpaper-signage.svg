@@ -11,12 +11,11 @@
       <text x="670.5" y="747">ドリュー</text><text x="670.5" y="758">の</text>
       <text x="670.5" y="769">ポート</text><text x="670.5" y="780">フォリオ</text>
     </g>
-    <path d="M326 711 H607 V757 H326Z" fill="#f6f0d9"/>
-    <text x="466.5" y="750" font-size="43" font-weight="bold">訪客請先登記</text>
-    <path d="M980 348 H1076 V444 H980Z" fill="#faf3df"/>
-    <g fill="#872c34" font-weight="bold">
-      <text x="1028" y="399" font-size="62">23</text>
-      <text x="1028" y="438" font-size="31">星期五</text>
+    <g id="welcome-sign">
+      <path d="M326 711 H607 V757 H326Z" fill="#f6f0d9"/>
+      <text x="466.5" y="741" font-size="18" font-weight="bold">私のデジタルホームへようこそ</text>
     </g>
+    <path d="M980 348 H1076 V444 H980Z" fill="#faf3df"/>
+    <!-- WallCalendar renders the visitor's current local day and Japanese month here. -->
   </g>
 </svg>
