@@ -12,6 +12,22 @@ interface WindowProps {
   presentation?: 'window' | 'cloud'
 }
 
+function mobileLayout() { return window.matchMedia('(max-width: 1024px)').matches }
+
+function viewportBounds() {
+  if (!mobileLayout()) return { left: 0, top: 0, right: window.innerWidth, bottom: window.innerHeight }
+  const viewport = window.visualViewport
+  const styles = getComputedStyle(document.documentElement)
+  const safe = (edge: string) => parseFloat(styles.getPropertyValue(`--safe-area-${edge}`)) || 0
+  const left = (viewport?.offsetLeft ?? 0) + safe('left') + 12
+  const right = (viewport?.offsetLeft ?? 0) + (viewport?.width ?? window.innerWidth) - safe('right') - 12
+  const bottom = (viewport?.offsetTop ?? 0) + (viewport?.height ?? window.innerHeight) - safe('bottom') - 12
+  const viewportTop = (viewport?.offsetTop ?? 0) + safe('top') + 8
+  const navigationBottom = document.querySelector('.desktop-navigation')?.getBoundingClientRect().bottom ?? 0
+  const top = Math.min(Math.max(viewportTop, navigationBottom + 8), Math.max(viewportTop, bottom - 96))
+  return { left, top, right, bottom }
+}
+
 function CloseButton({ onClose }: { onClose: () => void }) {
   return (
     <button
@@ -31,12 +47,13 @@ export function Window({ id, title, children, size = 'default', returnFocusId, p
   const isDraggingRef = useRef(false)
   const pointerRef = useRef<number | null>(null)
   const dragOffsetRef = useRef({ x: 0, y: 0 })
+  const placed = useRef(false)
 
   const windowState = getWindow(id)
 
   const handleClose = useCallback(() => {
     closeWindow(id)
-    if (returnFocusId) document.getElementById(returnFocusId)?.focus()
+    if (returnFocusId) document.getElementById(returnFocusId)?.focus({ preventScroll: true })
   }, [closeWindow, id, returnFocusId])
 
   useEffect(() => {
@@ -52,13 +69,14 @@ export function Window({ id, title, children, size = 'default', returnFocusId, p
       const rect = windowRef.current.getBoundingClientRect()
       const nextX = e.clientX - dragOffsetRef.current.x
       const nextY = e.clientY - dragOffsetRef.current.y
-      const maxX = Math.max(0, window.innerWidth - rect.width)
-      const maxY = Math.max(0, window.innerHeight - rect.height)
+      const bounds = viewportBounds()
+      const maxX = Math.max(bounds.left, bounds.right - rect.width)
+      const maxY = Math.max(bounds.top, bounds.bottom - rect.height)
 
       updatePosition(
         id,
-        Math.max(0, Math.min(nextX, maxX)),
-        Math.max(0, Math.min(nextY, maxY))
+        Math.max(bounds.left, Math.min(nextX, maxX)),
+        Math.max(bounds.top, Math.min(nextY, maxY))
       )
     },
     [id, updatePosition]
@@ -88,21 +106,37 @@ export function Window({ id, title, children, size = 'default', returnFocusId, p
   }, [handlePointerMove, handlePointerUp, windowState?.isOpen])
 
   useLayoutEffect(() => {
-    if (!windowState?.isOpen) return
+    if (!windowState?.isOpen) { placed.current = false; return }
+    let firstPlacement = !placed.current
+    placed.current = true
     const clampPosition = () => {
-      const rect = windowRef.current?.getBoundingClientRect()
-      if (!rect) return
-      const x = Math.max(0, Math.min(rect.left, window.innerWidth - rect.width))
-      const y = Math.max(0, Math.min(rect.top, window.innerHeight - rect.height))
+      const element = windowRef.current
+      if (!element) return
+      const bounds = viewportBounds()
+      if (mobileLayout()) {
+        element.style.setProperty('--mobile-window-width', `${bounds.right - bounds.left}px`)
+        element.style.setProperty('--mobile-window-max-height', `${bounds.bottom - bounds.top}px`)
+      }
+      const rect = element.getBoundingClientRect()
+      const center = firstPlacement && mobileLayout()
+      const x = center ? (bounds.left + bounds.right - rect.width) / 2 : Math.max(bounds.left, Math.min(rect.left, bounds.right - rect.width))
+      const y = center ? (bounds.top + bounds.bottom - rect.height) / 2 : Math.max(bounds.top, Math.min(rect.top, bounds.bottom - rect.height))
+      firstPlacement = false
       if (Math.abs(x - rect.left) > 0.5 || Math.abs(y - rect.top) > 0.5) updatePosition(id, x, y)
     }
     clampPosition()
-    const observer = size === 'info' ? new ResizeObserver(clampPosition) : null
+    const observer = new ResizeObserver(clampPosition)
     if (windowRef.current) observer?.observe(windowRef.current)
+    const navigation = document.querySelector('.desktop-navigation')
+    if (navigation) observer.observe(navigation)
     window.addEventListener('resize', clampPosition)
+    window.visualViewport?.addEventListener('resize', clampPosition)
+    window.visualViewport?.addEventListener('scroll', clampPosition)
     return () => {
       observer?.disconnect()
       window.removeEventListener('resize', clampPosition)
+      window.visualViewport?.removeEventListener('resize', clampPosition)
+      window.visualViewport?.removeEventListener('scroll', clampPosition)
     }
   }, [id, size, updatePosition, windowState?.isOpen])
 
@@ -145,10 +179,10 @@ export function Window({ id, title, children, size = 'default', returnFocusId, p
       aria-label={title}
       aria-describedby={presentation === 'cloud' ? `window-body-${id}` : undefined}
       onPointerDownCapture={() => bringToFront(id)}
-      onPointerDown={presentation === 'cloud' ? handleDragPointerDown : undefined}
+      onPointerDown={presentation === 'cloud' ? event => { if (!mobileLayout()) handleDragPointerDown(event) } : undefined}
       onFocusCapture={() => bringToFront(id)}
       onKeyDown={(event) => {
-        if (size !== 'default' && event.key === 'Escape') {
+        if ((size !== 'default' || mobileLayout()) && event.key === 'Escape') {
           event.stopPropagation()
           handleClose()
         }
@@ -166,7 +200,7 @@ export function Window({ id, title, children, size = 'default', returnFocusId, p
       )}
       <div
         className="retro-window-header"
-        onPointerDown={presentation === 'window' ? handleDragPointerDown : undefined}
+        onPointerDown={event => { if (presentation === 'window' || mobileLayout()) handleDragPointerDown(event) }}
       >
         <span className="min-w-0">{title}</span>
         <CloseButton onClose={handleClose} />

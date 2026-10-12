@@ -19,6 +19,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     try { storage = window.localStorage } catch { /* Storage can be blocked. */ }
     player.connect(media, initialTheme.current, storage)
     const sounds = new UiSounds()
+    let touchInput = false
     const selector = 'button, a[href], [role="button"], summary, input[type="range"], input[type="checkbox"]'
     const control = (target: EventTarget | null, includeSkills = false) => {
       const element = target instanceof Element ? target.closest<HTMLElement>(includeSkills ? `${selector}, [data-hover-sound="skill"]` : selector) : null
@@ -28,6 +29,11 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     const unlock = (event: Event) => {
       if (!event.isTrusted) return
       if (player.getSnapshot().effects) sounds.unlock()
+      // A touch may become a swipe; wait for its trusted click before resuming music.
+      if (event.type === 'pointerdown' && event instanceof PointerEvent) {
+        touchInput = event.pointerType === 'touch'
+        if (touchInput) return
+      } else if (event.type === 'keydown') touchInput = false
       if (!(event.target instanceof Element && event.target.closest('[data-music-controls]'))) player.resumeAfterGesture()
     }
     const hover = (event: PointerEvent) => {
@@ -37,13 +43,16 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       sounds.play(hoverSoundKind(element.dataset.hoverSound))
     }
     const focus = (event: FocusEvent) => {
+      if (touchInput) return
       const element = control(event.target, true)
       if (element && player.getSnapshot().effects) sounds.play(hoverSoundKind(element.dataset.hoverSound))
     }
     const click = (event: MouseEvent) => {
-      const element = control(event.target)
+      if (event.detail > 0 && event.target instanceof Element && event.target.closest('.store-scene-viewport[data-panning="true"]')) return
+      unlock(event)
+      const element = control(event.target, true)
       if (element && player.getSnapshot().effects) {
-        sounds.playFromGesture(element.dataset.clickSound === 'switch' ? 'switch' : element.dataset.clickSound === 'fan' ? 'fan' : 'click')
+        sounds.playFromGesture(element.dataset.hoverSound === 'skill' ? 'skill' : element.dataset.clickSound === 'switch' ? 'switch' : element.dataset.clickSound === 'fan' ? 'fan' : 'click')
       }
     }
     let effectsEnabled = player.getSnapshot().effects

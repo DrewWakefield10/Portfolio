@@ -6,7 +6,7 @@ import {
   useEffect,
   useCallback,
   type ReactNode,
-  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
 } from 'react'
 import { cn } from '@/lib/utils'
 
@@ -28,7 +28,7 @@ export function RetroScrollArea({
   const contentRef = useRef<HTMLDivElement>(null)
   const innerRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
-  const dragRef = useRef<{ startY: number; startScrollTop: number } | null>(null)
+  const dragRef = useRef<{ startY: number; startScrollTop: number; pointer: number } | null>(null)
 
   const [thumb, setThumb] = useState({ height: 0, top: 0 })
   const [scrollable, setScrollable] = useState(false)
@@ -46,10 +46,10 @@ export function RetroScrollArea({
       return
     }
 
-    const height = Math.max(
+    const height = Math.min(clientHeight, Math.max(
       MIN_THUMB_HEIGHT,
       (clientHeight / scrollHeight) * clientHeight
-    )
+    ))
     const maxTop = clientHeight - height
     const top =
       maxTop <= 0
@@ -72,7 +72,8 @@ export function RetroScrollArea({
     return () => observer.disconnect()
   }, [updateThumb])
 
-  const handleThumbMouseDown = (e: ReactMouseEvent) => {
+  const handleThumbPointerDown = (e: ReactPointerEvent) => {
+    if (e.button !== 0 || !e.isPrimary) return
     e.preventDefault()
     e.stopPropagation()
     const el = contentRef.current
@@ -81,12 +82,14 @@ export function RetroScrollArea({
     dragRef.current = {
       startY: e.clientY,
       startScrollTop: el.scrollTop,
+      pointer: e.pointerId,
     }
+    e.currentTarget.setPointerCapture(e.pointerId)
     document.body.style.userSelect = 'none'
     document.body.style.cursor = 'grabbing'
   }
 
-  const handleTrackClick = (e: ReactMouseEvent) => {
+  const handleTrackClick = (e: ReactPointerEvent) => {
     const el = contentRef.current
     const track = trackRef.current
     if (!el || !track || e.target !== track) return
@@ -94,10 +97,10 @@ export function RetroScrollArea({
     const rect = track.getBoundingClientRect()
     const clickY = e.clientY - rect.top
     const { scrollHeight, clientHeight } = el
-    const thumbHeight = Math.max(
+    const thumbHeight = Math.min(clientHeight, Math.max(
       MIN_THUMB_HEIGHT,
       (clientHeight / scrollHeight) * clientHeight
-    )
+    ))
     const maxTop = clientHeight - thumbHeight
     const targetTop = Math.max(0, Math.min(clickY - thumbHeight / 2, maxTop))
     const scrollRatio = maxTop > 0 ? targetTop / maxTop : 0
@@ -106,16 +109,16 @@ export function RetroScrollArea({
   }
 
   useEffect(() => {
-    const onMouseMove = (e: MouseEvent) => {
+    const onPointerMove = (e: PointerEvent) => {
       const drag = dragRef.current
       const el = contentRef.current
-      if (!drag || !el) return
+      if (!drag || !el || drag.pointer !== e.pointerId) return
 
       const { scrollHeight, clientHeight } = el
-      const thumbHeight = Math.max(
+      const thumbHeight = Math.min(clientHeight, Math.max(
         MIN_THUMB_HEIGHT,
         (clientHeight / scrollHeight) * clientHeight
-      )
+      ))
       const maxTop = clientHeight - thumbHeight
       const maxScroll = scrollHeight - clientHeight
       const deltaY = e.clientY - drag.startY
@@ -124,19 +127,21 @@ export function RetroScrollArea({
       el.scrollTop = drag.startScrollTop + scrollDelta
     }
 
-    const onMouseUp = () => {
+    const onPointerUp = () => {
       if (!dragRef.current) return
       dragRef.current = null
       document.body.style.userSelect = ''
       document.body.style.cursor = ''
     }
 
-    document.addEventListener('mousemove', onMouseMove)
-    document.addEventListener('mouseup', onMouseUp)
+    document.addEventListener('pointermove', onPointerMove)
+    document.addEventListener('pointerup', onPointerUp)
+    document.addEventListener('pointercancel', onPointerUp)
 
     return () => {
-      document.removeEventListener('mousemove', onMouseMove)
-      document.removeEventListener('mouseup', onMouseUp)
+      document.removeEventListener('pointermove', onPointerMove)
+      document.removeEventListener('pointerup', onPointerUp)
+      document.removeEventListener('pointercancel', onPointerUp)
       document.body.style.userSelect = ''
       document.body.style.cursor = ''
     }
@@ -161,13 +166,13 @@ export function RetroScrollArea({
         <div
           ref={trackRef}
           className="retro-scroll-track relative w-3.5 shrink-0 cursor-pointer border-l border-window-border bg-window-bg"
-          onMouseDown={handleTrackClick}
+          onPointerDown={handleTrackClick}
           aria-hidden
         >
           <div
             className="retro-scroll-thumb absolute left-0 w-full cursor-grab border-2 border-window-border bg-accent active:cursor-grabbing"
             style={{ height: thumb.height, transform: `translateY(${thumb.top}px)` }}
-            onMouseDown={handleThumbMouseDown}
+            onPointerDown={handleThumbPointerDown}
           />
         </div>
       )}

@@ -12,6 +12,8 @@
     "test:time": "node --test tests/local-time.test.cjs",
     "test:fan": "node --test tests/fan.test.cjs",
     "test:browser": "node tests/browser-smoke.cjs",
+    "test:mobile": "node tests/browser-mobile.cjs",
+    "test:firefox": "node tests/browser-firefox.cjs",
     "typecheck": "tsc --noEmit --incremental false",
     "music:sync": "node scripts/sync-music.cjs",
     "music:analyze": "node scripts/analyze-music.cjs"

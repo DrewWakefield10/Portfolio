@@ -67,7 +67,7 @@ export function StoreHotspots() {
                 const firstWindow = !getWindow(object.windowId)
                 const rect = event.currentTarget.getBoundingClientRect()
                 toggleWindow(object.windowId)
-                if (firstWindow) updatePosition(object.windowId, rect.right + 12, rect.top)
+                if (firstWindow && !matchMedia('(max-width: 1024px)').matches) updatePosition(object.windowId, rect.right + 12, rect.top)
               }}>
               <span className="hotspot-illumination" aria-hidden="true" />
               {object.id === 'phone' && <span className="hotspot-detail" style={position(scene.interactions.phoneKeypad, scene.interactions.phone)} aria-hidden="true" />}

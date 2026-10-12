@@ -22,6 +22,11 @@ The two one-time theme/fan preference restoration effects have local, documented
 - `npm run lint:fix`: apply supported automatic fixes, then enforce the same zero-warning limit.
 - `npm run typecheck`: run TypeScript independently.
 - `npm run build`: create a production build. Lint is a separate check.
+- `npm run test:browser`: existing Chrome desktop/audio regression suite against a production preview on port 3100.
+- `npm run test:mobile`: Chrome touch input across phones, tablets, and desktop viewports; `CHROME_PATH` can select Edge instead.
+- `npm run test:firefox`: native Firefox responsive, pointer, scene-panning, and music checks via WebDriver BiDi.
+
+See [Mobile compatibility](MOBILE_COMPATIBILITY.md) for setup, verified viewports, browser limitations, and generated reports.
 
 `.vscode/settings.json` enables flat-config validation for JavaScript/TypeScript and automatic workspace-directory detection. `.vscode/extensions.json` recommends the installed ESLint extension for other checkouts. No formatter or automatic save behavior is changed. If VS Code was open during installation, reload its window to activate the extension; diagnostics use this project's local ESLint configuration.
 

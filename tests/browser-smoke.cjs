@@ -8,7 +8,7 @@ const { spawn } = require('node:child_process')
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
 const url = process.argv[2] || 'http://localhost:3100'
 const chromePath = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe'
-const output = path.resolve('.next/verification')
+const output = path.resolve(process.env.TEST_OUTPUT_DIR || '.next/verification')
 const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'portfolio-browser-'))
 const scene = require('../lib/store-scene.json')
 const musicLibrary = require('../lib/music-library.json')
@@ -50,12 +50,18 @@ async function mouse(x, y, type = 'mouseMoved') {
     ...(type !== 'mouseMoved' ? { clickCount: 1 } : {}) })
 }
 async function click(selector) {
+  await revealHotspot(selector)
   await until(`(() => {const e=document.querySelector(${JSON.stringify(selector)});if(!e)return false;const r=e.getBoundingClientRect();const h=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return !!h&&e.contains(h)})()`)
   const rect = await evaluate(`(() => {const e=document.querySelector(${JSON.stringify(selector)}); if(!e) throw Error('Missing control'); const r=e.getBoundingClientRect(); return {x:r.x+r.width/2,y:r.y+r.height/2}})()`)
   await mouse(rect.x, rect.y)
   await mouse(rect.x, rect.y, 'mousePressed')
   await mouse(rect.x, rect.y, 'mouseReleased')
   await wait(80)
+}
+async function revealHotspot(selector) {
+  await evaluate(`(() => {const e=document.querySelector(${JSON.stringify(selector)}),options=document.querySelector('.audio-options'),toggle=document.querySelector('.audio-options-toggle');if(!e||!options||!toggle||getComputedStyle(toggle).display==='none')return;if((e.closest('.audio-options')&&getComputedStyle(options).display==='none')||(e.matches('.store-hotspot')&&options.dataset.expanded==='true'))toggle.click();})()`)
+  await evaluate(`(() => {const e=document.querySelector(${JSON.stringify(selector)});if(!e?.matches('.store-hotspot'))return;const r=e.getBoundingClientRect();if(r.left<0||r.right>innerWidth)e.scrollIntoView({inline:'center',block:'nearest'});})()`)
+  await wait(40)
 }
 async function screenshot(name) {
   const result = await send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false })
@@ -184,7 +190,7 @@ async function verifyInteractiveDesktop() {
   for (const [width,height] of [[1920,1080],[2560,1440],[3840,2160],[375,812],[667,375]]) {
     await dimensions(width,height)
     await wait(150)
-    const alignment = await evaluate(`(() => {const map=document.querySelector('.store-hotspot-map').getBoundingClientRect(),scale=Math.min(innerWidth/${scene.width},innerHeight/${scene.height}),pc=document.querySelector('#store-pc').getBoundingClientRect(),r=${JSON.stringify(scene.interactions.pc)};return {mapX:map.left,mapY:map.top,expectedX:(innerWidth-${scene.width}*scale)/2,expectedY:(innerHeight-${scene.height}*scale)/2,pcX:pc.left,pcY:pc.top,pcWidth:pc.width,ex:(innerWidth-${scene.width}*scale)/2+r.x*scale,ey:(innerHeight-${scene.height}*scale)/2+r.y*scale,ew:r.width*scale}})()`)
+    const alignment = await evaluate(`(() => {const map=document.querySelector('.store-hotspot-map').getBoundingClientRect(),m=document.querySelector('.store-environment').getScreenCTM(),pc=document.querySelector('#store-pc').getBoundingClientRect(),r=${JSON.stringify(scene.interactions.pc)};return {mapX:map.left,mapY:map.top,expectedX:m.e,expectedY:m.f,pcX:pc.left,pcY:pc.top,pcWidth:pc.width,ex:m.e+r.x*m.a,ey:m.f+r.y*m.d,ew:r.width*m.a}})()`)
     for(const [a,b] of [['mapX','expectedX'],['mapY','expectedY'],['pcX','ex'],['pcY','ey'],['pcWidth','ew']]) assert.ok(Math.abs(alignment[a]-alignment[b])<0.15, 'hotspot artwork alignment '+width+' '+a)
     await click('#store-pc')
     assert.equal(await evaluate(`!!document.querySelector('[data-window-id=home]')`), true)
@@ -195,11 +201,13 @@ async function verifyInteractiveDesktop() {
     assert.equal(await evaluate(`document.documentElement.classList.contains('dark')`), false)
   }
   await dimensions(375,812)
+  await revealHotspot('#store-pc')
   const touch = await evaluate(`(() => {const r=document.querySelector('#store-pc').getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2}})()`)
   await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...touch,id:1}]})
   await send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]})
   await until(`!!document.querySelector('[data-window-id=home]')`)
   await click('[data-window-id=home] [aria-label="Close window"]')
+  await revealHotspot('[data-light=right]')
   const touchLight = await evaluate(`(() => {const r=document.querySelector('[data-light=right]').getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2}})()`)
   for (const dark of [true,false]) {
     await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...touchLight,id:1}]})
@@ -395,6 +403,7 @@ async function verifyWallpaperObjects() {
         const box = scene.interactions[id]
         assert.equal(await evaluate(`(() => {const r=document.querySelector('#store-${id}').getBoundingClientRect(),m=document.querySelector('.store-environment').getScreenCTM();return Math.abs(r.left-(${box.x}*m.a+m.e))<0.15&&Math.abs(r.top-(${box.y}*m.d+m.f))<0.15&&Math.abs(r.width-${box.width}*m.a)<0.15&&Math.abs(r.height-${box.height}*m.d)<0.15})()`),true,`aligned ${id} ${width} ${dark}`)
         if(width===375&&(id==='clock'||id==='calendar')) {
+          await revealHotspot('#store-'+id)
           const touch=await evaluate(`(() => {const r=document.querySelector('#store-${id}').getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2}})()`)
           await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...touch,id:1}]})
           await send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]})
@@ -509,6 +518,7 @@ async function verifyFanControls() {
       assert.equal(await evaluate(`(() => {const r=document.querySelector('#store-fan').getBoundingClientRect(),m=document.querySelector('.store-environment').getScreenCTM();return Math.abs(r.left-(${box.x}*m.a+m.e))<0.15&&Math.abs(r.top-(${box.y}*m.d+m.f))<0.15&&Math.abs(r.width-${box.width}*m.a)<0.15&&Math.abs(r.height-${box.height}*m.d)<0.15})()`),true,'fan hotspot matches artwork '+width)
       const before=await evaluate(`document.querySelector('#store-fan').dataset.fanSpeed`)
       if(width===375) {
+        await revealHotspot('#store-fan')
         const touch=await evaluate(`(() => {const r=document.querySelector('#store-fan').getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2}})()`)
         await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...touch,id:1}]})
         await send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]})
@@ -598,12 +608,12 @@ async function verifyDesktopUi() {
     assert.ok(fits.every(Boolean),'application windows fit '+label)
     assert.equal(await evaluate(`(() => {const r=document.querySelector('.home-launcher').getBoundingClientRect();return r.top>=0&&r.bottom<=innerHeight+1})()`),true,'launcher fits desktop area in '+label)
     if(label==='mobile') {
-      const header=await evaluate(`(() => {const r=document.querySelector('[data-window-id=contact] .retro-window-header').getBoundingClientRect();return {x:r.left+60,y:r.top+12,left:r.left}})()`)
+      const header=await evaluate(`(() => {const r=document.querySelector('[data-window-id=contact] .retro-window-header').getBoundingClientRect();return {x:r.left+60,y:r.top+12,top:r.top}})()`)
       await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:header.x,y:header.y,id:1}]})
-      await send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:header.x+20,y:header.y,id:1}]})
+      await send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:header.x,y:header.y+20,id:1}]})
       await send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]})
       await wait(80)
-      assert.ok(await evaluate(`document.querySelector('[data-window-id=contact]').getBoundingClientRect().left >= ${header.left+15}`),'touch header dragging')
+      assert.ok(await evaluate(`document.querySelector('[data-window-id=contact]').getBoundingClientRect().top >= ${header.top+15}`),'touch header dragging within mobile bounds')
     }
     await screenshot('ui-applications-'+label)
   }
@@ -866,7 +876,7 @@ async function verifySuppliedMusic() {
 }
 const ready = `!window.__reloadPending && document.readyState === 'complete' && window.__audioStats?.media.length === 1 && !!document.querySelector('[aria-label="Play music"]') && Array.from(document.querySelectorAll('.wallpaper img')).every(i=>i.complete && i.naturalWidth>0)`
 
-async function main() {
+async function startBrowser() {
   fs.mkdirSync(output, { recursive: true })
   browser = spawn(chromePath, ['--headless=new', '--remote-debugging-port=0', '--user-data-dir=' + profile,
     '--no-first-run', '--no-default-browser-check', '--autoplay-policy=user-gesture-required', 'about:blank'],
@@ -921,6 +931,10 @@ async function main() {
       }
     };
   ` })
+}
+
+async function main() {
+  await startBrowser()
   await dimensions(1920, 1080)
   await send('Page.navigate', { url })
   await until(ready)
@@ -1149,11 +1163,11 @@ async function main() {
     await dimensions(width,height)
     await wait(700)
     const layout = await evaluate(`(() => {const i=document.querySelector('.wallpaper img');const r=i.getBoundingClientRect();return {width:r.width,height:r.height,fit:getComputedStyle(i).objectFit,overflow:document.documentElement.scrollWidth>innerWidth}})()`)
-    assert.equal(layout.width, width)
+    assert.ok(Math.abs(layout.width - (width <= 1024 ? Math.max(width,height*scene.width/scene.height) : width)) < 1)
     assert.equal(layout.height, height)
     assert.equal(layout.fit, 'contain')
     assert.equal(layout.overflow, false)
-    const alignment = await evaluate(`(() => {const s=document.querySelector('.store-environment'),m=s.getScreenCTM(),scale=Math.min(innerWidth/1672,innerHeight/941);return {scale:m.a,expected:scale,x:m.e,y:m.f,ex:(innerWidth-1672*scale)/2,ey:(innerHeight-941*scale)/2}})()`)
+    const alignment = await evaluate(`(() => {const s=document.querySelector('.store-environment'),m=s.getScreenCTM(),stage=document.querySelector('.store-scene').getBoundingClientRect(),scale=Math.min(stage.width/1672,stage.height/941);return {scale:m.a,expected:scale,x:m.e,y:m.f,ex:stage.left+(stage.width-1672*scale)/2,ey:stage.top+(stage.height-941*scale)/2}})()`)
     assert.ok(Math.abs(alignment.scale-alignment.expected)<0.001)
     assert.ok(Math.abs(alignment.x-alignment.ex)<0.1 && Math.abs(alignment.y-alignment.ey)<0.1)
     await screenshot('desktop-' + label)
@@ -1164,7 +1178,7 @@ async function main() {
   fs.writeFileSync(path.join(output,'browser-results.json'), JSON.stringify({ passed:true, exceptions, failedAssets, preferences:prefs },null,2))
 }
 
-main().catch(async error => {
+function runChecks(checks) { return checks().catch(async error => {
   console.error(error)
   process.exitCode = 1
   try { if (socket?.readyState === WebSocket.OPEN) await screenshot('failure') } catch { /* The browser may already be disconnected. */ }
@@ -1175,4 +1189,7 @@ main().catch(async error => {
   }
   browser?.kill()
   // The isolated Chrome profile stays in OS temp; never touch a user's browser profile.
-})
+}) }
+
+if (require.main === module) runChecks(main)
+module.exports = { startBrowser, runChecks, send, evaluate, until, click, revealHotspot, mouse, screenshot, dimensions, reload, ready, audioState, url, output, exceptions, failedAssets }

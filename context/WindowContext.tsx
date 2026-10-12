@@ -91,8 +91,9 @@ export function WindowProvider({ children }: { children: React.ReactNode }) {
       const newMap = new Map(prev)
       const window = newMap.get(id)
       if (!window) return prev
-
-      const newZIndex = Math.max(0, ...Array.from(newMap.values(), (w) => w.zIndex)) + 1
+      const highest = Math.max(0, ...Array.from(newMap.values(), (w) => w.zIndex))
+      if (window.zIndex === highest) return prev
+      const newZIndex = highest + 1
       newMap.set(id, {
         ...window,
         zIndex: newZIndex,
@@ -106,6 +107,7 @@ export function WindowProvider({ children }: { children: React.ReactNode }) {
       const newMap = new Map(prev)
       const window = newMap.get(id)
       if (window) {
+        if (window.position.x === x && window.position.y === y) return prev
         newMap.set(id, {
           ...window,
           position: { x, y },

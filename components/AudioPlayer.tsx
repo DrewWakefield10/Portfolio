@@ -1,11 +1,13 @@
 'use client'
 
-import type { CSSProperties } from 'react'
+import { useId, useState, type CSSProperties } from 'react'
 import { Shuffle, SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-react'
 import { useAudio } from '@/context/AudioContext'
 
 export function AudioPlayer() {
   const { player, theme, track, playing, volume, muted, shuffle, effects, message } = useAudio()
+  const [optionsOpen, setOptionsOpen] = useState(false)
+  const optionsId = useId()
   const trackLabel = track ? `${track.title}${track.artist ? ` — ${track.artist}` : ''}` : 'No tracks'
   return (
     <div className="music-player flex flex-wrap items-center gap-1.5 max-w-full" role="group" aria-label="Background music" data-music-controls>
@@ -25,7 +27,7 @@ export function AudioPlayer() {
       <button type="button" onClick={() => player.step(1)} className="retro-button" title="Next track" aria-label="Next track">
         <SkipForward size={14} aria-hidden />
       </button>
-      <span className="w-32 min-w-0 leading-tight text-xs" title={trackLabel}>
+      <span className="music-track w-32 min-w-0 leading-tight text-xs" title={trackLabel}>
         <span className="radio-station block">{theme === 'light' ? 'daytime radio' : 'nighttime radio'}</span>
         <span className="block truncate">{trackLabel}</span>
       </span>
@@ -33,6 +35,14 @@ export function AudioPlayer() {
         aria-label={muted ? 'Unmute music' : 'Mute music'} aria-pressed={muted}>
         {muted ? <VolumeX size={14} aria-hidden /> : <Volume2 size={14} aria-hidden />}
       </button>
+      <button type="button" className="retro-button audio-options-toggle" aria-label="More music controls"
+        aria-expanded={optionsOpen} aria-controls={optionsId} onClick={() => setOptionsOpen(open => !open)}>
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" shapeRendering="crispEdges" aria-hidden="true">
+          <path d="M1 6h3v4H1zM6 6h4v4H6zM12 6h3v4h-3z" />
+        </svg>
+      </button>
+      <div id={optionsId} className="audio-options" data-expanded={optionsOpen}>
+        <span className="mobile-track-title text-xs"><span className="radio-station block">{theme === 'light' ? 'daytime radio' : 'nighttime radio'}</span>{trackLabel}</span>
       <label className="flex items-center gap-1 text-xs">
         <span className="sr-only">Music volume</span>
         <input type="range" min="0" max="100" step="1" value={Math.round(volume * 100)}
@@ -49,6 +59,7 @@ export function AudioPlayer() {
         title={effects ? 'Disable UI sounds' : 'Enable UI sounds'} aria-label="UI sounds" aria-pressed={effects}>
         <span>UI FX {effects ? 'ON' : 'OFF'}</span>
       </button>
+      </div>
       <span role="status" className="basis-full text-xs text-foreground/80">{message}</span>
     </div>
   )

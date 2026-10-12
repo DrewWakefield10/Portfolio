@@ -2,6 +2,8 @@
 
 ## Viewing and hearing the changes
 
+Mobile and tablet layouts now use a horizontally explorable shared scene while desktop presentation stays intact. Navigation remains transparent and stationary; mobile audio settings expand from the pixel ellipsis, and app windows fit the usable viewport. Touch swipes stay silent, preserve animation timelines, and do not trigger wallpaper objects or resume saved music. See [Mobile compatibility](MOBILE_COMPATIBILITY.md) for implementation, browser verification, and device-testing limits.
+
 Fish travel now runs 60% faster than the preceding version. The shelf fan starts at Low and cycles Low ? Medium ? High ? Off, preserving its speed across themes and reloads. Off stops only its blades. See [Fish and fan notes](FISH_FAN_NOTES.md) for the continuity-preserving controller, accessibility, changed files, and verification.
 
 The telephone now toggles Contact, the bulletin board toggles Works, and the clock/calendar open independent compact live information windows. See [Wallpaper object notes](WALLPAPER_OBJECTS_NOTES.md) for shared local-time behavior, alignment, modified files, and verification.

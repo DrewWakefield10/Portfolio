@@ -10,8 +10,8 @@ import { InterestWindows } from './windows/InterestWindows'
 import { ThemeToggle } from './ThemeToggle'
 import { AudioPlayer } from './AudioPlayer'
 import { Window } from './Window'
-import { Wallpaper } from './Wallpaper'
-import { StoreHotspots } from './StoreHotspots'
+import { StoreScene } from './StoreScene'
+import { MobileWindowSwitcher } from './MobileWindowSwitcher'
 import { StoreInfoWindows } from './windows/StoreInfoWindows'
 import { FanProvider } from '@/context/FanContext'
 
@@ -26,15 +26,14 @@ export function Home() {
   return (
     <FanProvider>
     <div
-      className="relative w-full h-dvh text-foreground overflow-hidden flex flex-col"
+      className="portfolio-desktop relative w-full h-dvh text-foreground overflow-hidden flex flex-col"
     >
-      <Wallpaper />
-      <div className="absolute inset-0 bg-background/20 pointer-events-none" />
-      <StoreHotspots />
+      <StoreScene />
       {/* Top Bar */}
       <div className="desktop-navigation relative z-20 flex-shrink-0 px-4 py-3 flex flex-wrap items-start gap-3 bg-transparent" role="toolbar" aria-label="Desktop controls">
         <ThemeToggle />
         <AudioPlayer />
+        <MobileWindowSwitcher />
       </div>
 
       {/* Main Content */}

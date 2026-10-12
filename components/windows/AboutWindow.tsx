@@ -27,10 +27,10 @@ export function AboutWindow() {
 
   return (
     <div
-      className={`${vt323.className} h-full min-h-0 flex flex-col overflow-hidden text-foreground`}
+      className={`${vt323.className} about-window h-full min-h-0 flex flex-col overflow-hidden text-foreground`}
     >
       {/* FIXED PROFILE SECTION */}
-      <div className="shrink-0 border-b border-accent/30 p-4 sm:p-6">
+      <div className="about-profile shrink-0 border-b border-accent/30 p-4 sm:p-6">
         <div className="flex items-center gap-3 sm:gap-5">
           <div className="relative shrink-0 w-16 h-16 sm:w-28 sm:h-28 overflow-hidden border-2 border-accent">
             <Image
