@@ -60,6 +60,12 @@
 @layer base {
   * {
     @apply outline-accent/50;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  input, textarea, [contenteditable]:not([contenteditable='false']), [contenteditable]:not([contenteditable='false']) * {
+    -webkit-user-select: text;
+    user-select: text;
   }
   body {
     @apply bg-background text-foreground;
