@@ -38,6 +38,35 @@ class FakeContext {
 }
 global.AudioContext = FakeContext
 
+test('zaps sweep down quietly, bypass hover throttling and release rather than stack', () => {
+  const sounds = new UiSounds()
+  sounds.play('zap')
+  sounds.unlock()
+  const context = FakeContext.instances.at(-1)
+  sounds.play('hover')
+  context.currentTime = 0.01
+  sounds.playFromGesture('zap')
+  assert.equal(context.oscillators.length, 2, 'a preceding hover must not swallow the zap')
+  const zap = context.oscillators[1]
+  assert.equal(zap.type, 'sawtooth')
+  assert.equal(zap.frequency.events[1].value, UI_TONES.zap[0].end)
+  assert.ok(context.oscillators[0].stops.some(time => Math.abs(time - 0.018) < 0.0001))
+  sounds.play('zap')
+  assert.equal(context.oscillators.length, 2, 'rapid repeat activations are throttled')
+  for (const time of [0.12, 0.24]) { context.currentTime = time; sounds.play('zap') }
+  assert.deepEqual(context.oscillators.slice(1).map(node => node.frequency.value), UI_TONES.zap.map(tone => tone.start))
+  for (const tone of UI_TONES.zap) {
+    assert.ok(tone.start > tone.end * 10, 'steep pitch drop makes an electrical zap')
+    assert.ok(tone.duration <= 0.1)
+    assert.ok(tone.peak < Math.min(...UI_TONES.click.map(item => item.peak)))
+  }
+  sounds.silence()
+  assert.equal(context.gains.at(-1).gain.events.at(-1).value, 0.0001)
+  sounds.dispose()
+  sounds.playFromGesture('zap')
+  assert.equal(context.oscillators.length, 4)
+})
+
 test('a gesture waits for suspended audio and mute cancels pending feedback', async () => {
   const sounds = new UiSounds()
   sounds.unlock()

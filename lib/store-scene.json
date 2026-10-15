@@ -10,8 +10,10 @@
     "clockFace": { "x": 1151, "y": 98, "width": 124, "height": 103 },
     "calendar": { "x": 975, "y": 334, "width": 109, "height": 147 },
     "board": { "x": 753, "y": 364, "width": 201, "height": 264 },
+    "machines": { "x": 1187, "y": 729, "width": 321, "height": 176 },
     "fan": { "x": 812, "y": 111, "width": 124, "height": 150 },
     "fanControl": { "x": 850, "y": 237, "width": 48, "height": 18 },
+    "zapper": { "x": 1030, "y": 754, "width": 86, "height": 150 },
     "lights": [
       { "id": "left", "x": 236, "y": 77, "width": 124, "height": 92 },
       { "id": "right", "x": 1356, "y": 78, "width": 126, "height": 90 }

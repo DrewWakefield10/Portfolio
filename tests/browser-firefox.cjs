@@ -47,12 +47,20 @@ async function main() {
   ],{windowsHide:true,stdio:['ignore','pipe','pipe']})
   let stderr=''
   const endpoint=await new Promise((resolve,reject)=>{
-    const timer=setTimeout(()=>reject(Error('Firefox did not start: '+stderr)),30000)
+    const timer=setTimeout(()=>{clearInterval(poll);reject(Error('Firefox did not start: '+stderr))},30000)
+    // Windows may relaunch Firefox without forwarding its stderr. The known
+    // loopback port remains usable even when the startup banner is lost.
+    const poll=setInterval(async()=>{
+      try {
+        await fetch(`http://127.0.0.1:${port}/`,{signal:AbortSignal.timeout(500)})
+        clearTimeout(timer);clearInterval(poll);resolve(`ws://127.0.0.1:${port}/session`)
+      } catch { /* Retry while the isolated browser starts. */ }
+    },200)
     browser.once('error',reject)
     const onData=data=>{
       stderr+=data
       const match=stderr.match(/WebDriver BiDi listening on (ws:\/\/[^\s]+)/)
-      if(match){clearTimeout(timer);resolve(match[1].replace(/\/$/,'')+'/session')}
+      if(match){clearTimeout(timer);clearInterval(poll);resolve(match[1].replace(/\/$/,'')+'/session')}
     }
     browser.stderr.on('data',onData)
     browser.stdout.on('data',onData)
@@ -82,7 +90,7 @@ async function main() {
       assert.ok(Math.abs(geometry.width-(width<=1024?Math.max(width,height*scene.width/scene.height):width))<1)
       assert.equal(geometry.height,height)
       assert.equal(geometry.overflow,false)
-      for(const [object,id] of [['pc','home'],['phone','contact'],['clock','time'],['calendar','calendar'],['board','works']]) {
+      for(const [object,id] of [['pc','home'],['phone','contact'],['clock','time'],['calendar','calendar'],['board','works'],['machines','sources']]) {
         await click('#store-'+object)
         await until(`!!document.querySelector('[data-window-id=${id}]')`)
         assert.equal(await evaluate(`(() => {const e=document.querySelector('[data-window-id=${id}]'),r=e.getBoundingClientRect();return r.left>=0&&r.top>=0&&r.right<=innerWidth+.5&&r.bottom<=innerHeight+.5&&e.scrollWidth<=e.clientWidth+1})()`),true,'Firefox fitted '+id)

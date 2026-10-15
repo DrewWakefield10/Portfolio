@@ -1,6 +1,6 @@
 # Existing soundtrack analysis and expansion status
 
-Current soundtrack: the user has supplied eight MP3s, now active as four day/four night songs alongside the retained original mix. External generation was cancelled. See [SUPPLIED_MUSIC.md](SUPPLIED_MUSIC.md) for the current files, measured levels, playback gain and verification. The analysis below records the earlier original-only reference and generation plan; its former empty-library/pending-generation statements are historical.
+Current soundtrack: eight supplied MP3s are active as four day/four night songs. The unidentified original mix was removed from both playlists on 2026-10-16. External generation was cancelled. See [SUPPLIED_MUSIC.md](SUPPLIED_MUSIC.md) for the current files, measured levels, playback gain and verification. The analysis below records the earlier original-only reference and generation plan; its former empty-library/pending-generation statements are historical.
 
 Analysis date: 2026-10-12. All actual music assets and the active playlists were inspected before planning the expansion. No new songs have been generated.
 

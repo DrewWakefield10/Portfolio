@@ -460,6 +460,7 @@ html:not(.dark) .launcher-icon img {
   touch-action: manipulation;
 }
 .store-hotspot:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.zapper-click-flash { position: absolute; pointer-events: none; opacity: 0; background: #d9ffff; }
 .hotspot-illumination { position: absolute; pointer-events: none; opacity: 0; transition: opacity 120ms steps(3, end); }
 .hotspot-pc .hotspot-illumination { background: #52eaff; box-shadow: inset 0 0 8px #52eaff, 0 0 6px rgba(82,234,255,0.35); }
 .hotspot-light .hotspot-illumination {
@@ -471,6 +472,7 @@ html:not(.dark) .launcher-icon img {
 /* Highlights sit over the source artwork; no replacement objects or visible labels. */
 .hotspot-object { --hotspot-color: #ffe3a0; }
 .hotspot-phone { --hotspot-color: #52eaff; }
+.hotspot-machines { --hotspot-color: var(--accent); }
 .hotspot-fan { --hotspot-color: #52eaff; clip-path: polygon(30% 0,70% 0,88% 14%,100% 32%,100% 52%,88% 69%,64% 80%,90% 86%,90% 100%,10% 100%,10% 86%,36% 80%,12% 69%,0 52%,0 32%,12% 14%); }
 .hotspot-object .hotspot-illumination {
   inset: 0;

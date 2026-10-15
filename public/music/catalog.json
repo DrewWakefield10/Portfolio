@@ -11,6 +11,7 @@
   {
     "id": "supplied-day-fairground",
     "title": "Fairground",
+    "artist": "Pop Culture",
     "theme": "light",
     "file": "day/Fairground day.mp3",
     "status": "ready",
@@ -19,6 +20,7 @@
   {
     "id": "supplied-day-shibuya-sky",
     "title": "Shibuya Sky",
+    "artist": "Dust Diggers & Hicks",
     "theme": "light",
     "file": "day/Shibuya Sky day.mp3",
     "status": "ready",
@@ -43,7 +45,8 @@
   },
   {
     "id": "supplied-night-fool-parsley",
-    "title": "Fool Parsley",
+    "title": "anyways",
+    "artist": "Fool Parsley",
     "theme": "dark",
     "file": "night/fool parsley night.mp3",
     "status": "ready",
@@ -60,6 +63,7 @@
   {
     "id": "supplied-night-when-you-re-ready",
     "title": "When You're Ready",
+    "artist": "ARISU",
     "theme": "dark",
     "file": "night/when you're ready night.mp3",
     "status": "ready",

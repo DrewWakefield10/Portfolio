@@ -20,6 +20,7 @@ const objects = [
   { id: 'clock', windowId: 'time', label: 'local time', sound: 'clock' },
   { id: 'calendar', windowId: 'calendar', label: 'local calendar', sound: 'paper' },
   { id: 'board', windowId: 'works', label: 'Work via bulletin board', sound: 'paper' },
+  { id: 'machines', windowId: 'sources', label: 'sources and credits via store machines', sound: 'paper' },
 ] as const
 
 function illuminate(event: MouseEvent<HTMLButtonElement>) {
@@ -29,6 +30,17 @@ function illuminate(event: MouseEvent<HTMLButtonElement>) {
   paint?.animate([{ opacity: 0.08 }, { opacity: 0.28, offset: 0.25 }, { opacity: 0 }], {
     duration: 450, easing: 'steps(4, end)',
   })
+}
+
+function zap(event: MouseEvent<HTMLButtonElement>) {
+  const flash = event.currentTarget.querySelector('.zapper-click-flash')
+  flash?.getAnimations().forEach(animation => animation.cancel())
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
+  flash?.animate(reducedMotion
+    ? [{ opacity: 0.18 }, { opacity: 0 }]
+    : [{ opacity: 0 }, { opacity: 0.46, offset: 0.12 }, { opacity: 0.1, offset: 0.32 },
+      { opacity: 0.28, offset: 0.5 }, { opacity: 0 }],
+  { duration: reducedMotion ? 140 : 180, easing: reducedMotion ? 'ease-out' : 'steps(2, end)' })
 }
 
 export function StoreHotspots() {
@@ -53,6 +65,12 @@ export function StoreHotspots() {
           onClick={event => { illuminate(event); cycleSpeed() }}>
           <span className="hotspot-illumination" aria-hidden="true" />
           <span className="hotspot-detail" style={position(scene.interactions.fanControl, scene.interactions.fan)} aria-hidden="true" />
+        </button>
+        <button id="store-zapper" type="button" className="store-hotspot hotspot-zapper"
+          data-click-sound="zap" data-hover-sound="off"
+          style={position(scene.interactions.zapper, canvas)} aria-label="Activate bug zapper"
+          onClick={zap}>
+          <span className="zapper-click-flash" style={position(scene.zapper, scene.interactions.zapper)} aria-hidden="true" />
         </button>
         {objects.map(object => {
           const open = getWindow(object.windowId)?.isOpen ?? false

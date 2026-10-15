@@ -4,6 +4,7 @@ const assert = require('node:assert/strict')
 const fs = require('node:fs')
 const path = require('node:path')
 const scene = require('../lib/store-scene.json')
+const musicLibrary = require('../lib/music-library.json')
 const { startBrowser, runChecks, send, evaluate, until, revealHotspot, screenshot,
   reload, ready, audioState, url, output, exceptions, failedAssets } = require('./browser-smoke.cjs')
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
@@ -50,7 +51,7 @@ async function assertWindow(id) {
 }
 async function close(id) { await tap(`[data-window-id=${id}] [aria-label="Close window"]`) }
 async function assertAlignment() {
-  for(const [id,box] of Object.entries(scene.interactions).filter(([id])=>['pc','phone','clock','calendar','board','fan'].includes(id))) {
+  for(const [id,box] of Object.entries(scene.interactions).filter(([id])=>['pc','phone','clock','calendar','board','fan','machines'].includes(id))) {
     assert.equal(await evaluate(`(() => {const r=document.querySelector('#store-${id}').getBoundingClientRect(),m=document.querySelector('.store-environment').getScreenCTM();return Math.abs(r.left-(${box.x}*m.a+m.e))<.2&&Math.abs(r.top-(${box.y}*m.d+m.f))<.2&&Math.abs(r.width-${box.width}*m.a)<.2&&Math.abs(r.height-${box.height}*m.d)<.2})()`),true,'scene-aligned '+id)
   }
 }
@@ -117,11 +118,19 @@ async function main() {
       await screenshot(`mobile-${width}-${dark?'night':'day'}-about`)
       await close('about')
       await close('home')
-      for(const [object,id] of [['phone','contact'],['clock','time'],['calendar','calendar'],['board','works']]) {
+      for(const [object,id] of [['phone','contact'],['clock','time'],['calendar','calendar'],['board','works'],['machines','sources']]) {
         await revealHotspot('#store-'+object)
         const position = await evaluate(scrollPosition)
         await tap('#store-'+object)
         await assertWindow(id)
+        if(id==='sources') {
+          const credits=await evaluate(`(() => {const e=document.querySelector('[data-window-id=sources]');return {text:e.textContent,music:e.querySelectorAll('[data-music-credit]').length,links:Array.from(e.querySelectorAll('a[target="_blank"]'),a=>({href:a.href,rel:a.rel}))}})()`)
+          assert.ok(credits.text.includes('Pixel Jeff')&&credits.text.includes('shar’s desktop'))
+          assert.equal(credits.music,new Set(musicLibrary.map(track=>track.src)).size,'all current recordings credited once')
+          assert.ok(credits.links.some(link=>link.href==='https://www.sharyap.com/'))
+          assert.ok(credits.links.some(link=>link.href==='https://pixeljeff1995.artstation.com/'))
+          assert.ok(credits.links.every(link=>link.rel.includes('noopener')&&link.rel.includes('noreferrer')))
+        }
         await close(id)
         assert.ok(Math.abs(await evaluate(scrollPosition)-position)<1,'closing '+id+' preserves scene position')
       }
@@ -139,7 +148,7 @@ async function main() {
       }
       if(!dark) reports.push({viewport:[width,height],scene:geometry,about})
     }
-    console.log(`PASS ${width}x${height}: both themes, all eight hotspots, fitted windows, transparent stationary navigation`)
+    console.log(`PASS ${width}x${height}: both themes, window/fan/light hotspots, fitted windows, transparent stationary navigation`)
   }
 
   await dimensions(390,844)

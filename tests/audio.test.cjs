@@ -337,11 +337,26 @@ test('supplied songs are playable in their matching theme and archived plans rem
   for (const theme of ['light', 'dark']) {
     const ready = catalog.filter(entry => entry.status === 'ready' && entry.theme === theme)
     assert.equal(ready.length, 4)
-    assert.equal(MUSIC_PLAYLISTS[theme].length, 5)
+    assert.equal(MUSIC_PLAYLISTS[theme].length, 4)
     assert.equal(MUSIC_PLAYLISTS[theme][0].id, ready[0].id)
     assert.ok(ready.every(entry => MUSIC_PLAYLISTS[theme].some(track => track.id === entry.id)))
-    assert.ok(MUSIC_PLAYLISTS[theme].some(track => track.src === '/music.mp3'))
+    assert.ok(MUSIC_PLAYLISTS[theme].every(track => track.src !== '/music.mp3'))
   }
+})
+
+test('retired original selections fall back to supplied songs without losing preferences or autoplaying', async () => {
+  const { MUSIC_PLAYLISTS } = require('../lib/music.ts')
+  const { player, audio, saved } = setup({ volume: 0.7, muted: true, enabled: true,
+    selected: { light: 'original-day', dark: 'original-night' } }, { playlists: MUSIC_PLAYLISTS })
+  assert.equal(audio.src, MUSIC_PLAYLISTS.light[0].src)
+  assert.equal(saved().selected.light, MUSIC_PLAYLISTS.light[0].id)
+  await player.setTheme('dark')
+  assert.equal(audio.src, MUSIC_PLAYLISTS.dark[0].src)
+  assert.equal(saved().selected.dark, MUSIC_PLAYLISTS.dark[0].id)
+  assert.equal(saved().volume, 0.7)
+  assert.equal(saved().muted, true)
+  assert.equal(audio.plays, 0)
+  player.disconnect()
 })
 
 test('track attenuation follows the loaded source during fades and never changes saved user volume', async () => {

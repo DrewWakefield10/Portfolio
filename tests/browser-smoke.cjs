@@ -69,6 +69,8 @@ async function screenshot(name) {
 }
 async function dimensions(width, height) {
   await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false })
+  // Let scene ResizeObservers preserve/clamp the old center before revealing a new hotspot.
+  await evaluate('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve(true))))')
 }
 async function moveWindow(id, left, top) {
   const start = await evaluate(`(() => {const e=document.querySelector('[data-window-id="${id}"]'),w=e.getBoundingClientRect(),r=e.querySelector('.retro-window-header').getBoundingClientRect();return {x:r.x+60,y:r.y+10,offsetX:r.x+60-w.left,offsetY:r.y+10-w.top}})()`)
@@ -796,12 +798,12 @@ async function verifySuppliedMusic() {
     const visited = new Set()
     await click('[aria-label="Play music"]')
     let previous
-    for (let index = 0; index < expected.length + 1; index++) {
+    for (let index = 0; index < expected.length; index++) {
       await until('window.__audioStats.media.at(-1).currentTime > 0.1 && !window.__audioStats.media.at(-1).paused')
       await wait(900)
       const state = await evaluate(audioState)
       const file = fileOf(state)
-      assert.ok(file === '/music.mp3' || expected.some(track => decodeURIComponent(track.src) === file))
+      assert.ok(expected.some(track => decodeURIComponent(track.src) === file))
       assert.ok(!visited.has(file), 'sequential cycle visits each song exactly once')
       visited.add(file)
       assert.equal(state.count, 1)
@@ -810,13 +812,13 @@ async function verifySuppliedMusic() {
       assert.ok(Math.abs(state.volume - expectedMusicVolume(state, userVolume)) < 0.0001)
       const track = expected.find(track => decodeURIComponent(track.src) === file)
       if (track) assert.ok((await evaluate(`document.querySelector('[data-music-controls]').textContent`)).includes(track.title))
-      if (index < expected.length) {
+      if (index < expected.length - 1) {
         previous = file
         await click('[aria-label="Next track"]')
         await until(`window.__audioStats.media.at(-1).currentSrc !== ${JSON.stringify(state.src)}`)
       }
     }
-    assert.equal(visited.size, 5)
+    assert.equal(visited.size, expected.length)
     const last = fileOf(await evaluate(audioState))
     await click('[aria-label="Previous track"]')
     await until(`decodeURIComponent(new URL(window.__audioStats.media.at(-1).currentSrc).pathname) === ${JSON.stringify(previous)}`)
@@ -830,11 +832,6 @@ async function verifySuppliedMusic() {
     await wait(900)
     assert.equal((await evaluate(audioState)).playing, 1, 'native ended event advances to the next actual song')
     await click('[aria-label="Pause music"]')
-    // Select the shared original in each theme for the continuity check below.
-    for (let index = 0; fileOf(await evaluate(audioState)) !== '/music.mp3' && index < 5; index++) {
-      await click('[aria-label="Next track"]')
-      await until('window.__audioStats.media.at(-1).readyState >= 1')
-    }
   }
   await click('[aria-label="Play music"]')
   await until('window.__audioStats.media.at(-1).currentTime > 0.1')
@@ -842,9 +839,10 @@ async function verifySuppliedMusic() {
   await click('[aria-label="Toggle theme"]')
   await wait(1800)
   let state = await evaluate(audioState)
-  assert.equal(fileOf(state), '/music.mp3')
-  assert.equal(state.loads, shared.loads)
-  assert.ok(state.time > shared.time + 1.5)
+  assert.ok(musicLibrary.some(track => track.theme === 'light' && decodeURIComponent(track.src) === fileOf(state)))
+  assert.equal(state.loads, shared.loads + 1)
+  assert.equal(state.count, 1)
+  assert.equal(state.playing, 1)
 
   await ensureHome()
   const stable = await evaluate(audioState)
@@ -859,7 +857,7 @@ async function verifySuppliedMusic() {
 
   await click('[aria-label="Shuffle"]')
   const seen = new Set([fileOf(state)])
-  for (let index = 0; index < 4; index++) {
+  for (let index = 0; index < 3; index++) {
     const before = await evaluate(audioState)
     await click('[aria-label="Next track"]')
     await until(`window.__audioStats.media.at(-1).currentSrc !== ${JSON.stringify(before.src)}`)
@@ -869,7 +867,7 @@ async function verifySuppliedMusic() {
     seen.add(fileOf(state))
     assert.equal(state.playing, 1)
   }
-  assert.equal(seen.size, 5)
+  assert.equal(seen.size, 4)
   await click('[aria-label="Shuffle"]')
   await click('[aria-label="Pause music"]')
   console.log('PASS all eight supplied MP3s, encoded filenames, per-song volume, day/night playlists, sequential/previous/shuffle/native-ended playback and window stability')

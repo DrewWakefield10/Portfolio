@@ -39,20 +39,20 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     const hover = (event: PointerEvent) => {
       if (event.pointerType === 'touch' || !player.getSnapshot().effects) return
       const element = control(event.target, true)
-      if (!element || (event.relatedTarget instanceof Node && element.contains(event.relatedTarget))) return
+      if (!element || element.dataset.hoverSound === 'off' || (event.relatedTarget instanceof Node && element.contains(event.relatedTarget))) return
       sounds.play(hoverSoundKind(element.dataset.hoverSound))
     }
     const focus = (event: FocusEvent) => {
       if (touchInput) return
       const element = control(event.target, true)
-      if (element && player.getSnapshot().effects) sounds.play(hoverSoundKind(element.dataset.hoverSound))
+      if (element && element.dataset.hoverSound !== 'off' && player.getSnapshot().effects) sounds.play(hoverSoundKind(element.dataset.hoverSound))
     }
     const click = (event: MouseEvent) => {
       if (event.detail > 0 && event.target instanceof Element && event.target.closest('.store-scene-viewport[data-panning="true"]')) return
       unlock(event)
       const element = control(event.target, true)
       if (element && player.getSnapshot().effects) {
-        sounds.playFromGesture(element.dataset.hoverSound === 'skill' ? 'skill' : element.dataset.clickSound === 'switch' ? 'switch' : element.dataset.clickSound === 'fan' ? 'fan' : 'click')
+        sounds.playFromGesture(element.dataset.hoverSound === 'skill' ? 'skill' : element.dataset.clickSound === 'switch' ? 'switch' : element.dataset.clickSound === 'fan' ? 'fan' : element.dataset.clickSound === 'zap' ? 'zap' : 'click')
       }
     }
     let effectsEnabled = player.getSnapshot().effects

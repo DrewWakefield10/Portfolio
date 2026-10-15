@@ -13,6 +13,7 @@ import { Window } from './Window'
 import { StoreScene } from './StoreScene'
 import { MobileWindowSwitcher } from './MobileWindowSwitcher'
 import { StoreInfoWindows } from './windows/StoreInfoWindows'
+import { SourcesWindow } from './windows/SourcesWindow'
 import { FanProvider } from '@/context/FanContext'
 
 export function Home() {
@@ -99,6 +100,9 @@ export function Home() {
           <ContactWindow />
         </Window>
         <InterestWindows />
+        <Window id="sources" title="Sources.txt" returnFocusId="store-machines">
+          <SourcesWindow />
+        </Window>
         <StoreInfoWindows />
       </div>
 

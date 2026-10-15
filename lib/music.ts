@@ -17,11 +17,9 @@ export interface MusicTrack {
 export const MUSIC_PLAYLISTS: Record<MusicTheme, readonly MusicTrack[]> = {
   light: [
     ...(additionalTracks as MusicTrack[]).filter(track => track.theme === 'light'),
-    { id: 'original-day', title: 'Original portfolio mix', src: '/music.mp3', theme: 'light' },
   ],
   dark: [
     ...(additionalTracks as MusicTrack[]).filter(track => track.theme === 'dark'),
-    { id: 'original-night', title: 'Original portfolio mix', src: '/music.mp3', theme: 'dark' },
   ],
 }
 

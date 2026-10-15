@@ -1,4 +1,9 @@
 export const UI_TONES = {
+  zap: [
+    { start: 1400, end: 110, duration: 0.090, peak: 0.028 },
+    { start: 1600, end: 130, duration: 0.080, peak: 0.026 },
+    { start: 1250, end: 100, duration: 0.100, peak: 0.027 },
+  ],
   fan: [
     { start: 380, end: 210, duration: 0.070, peak: 0.021 },
     { start: 420, end: 240, duration: 0.060, peak: 0.020 },
@@ -80,7 +85,7 @@ export class UiSounds {
     const context = this.context
     if (!context || context.state !== 'running' || this.disposed) return
     const now = context.currentTime
-    const activation = kind === 'click' || kind === 'switch' || kind === 'fan'
+    const activation = kind === 'click' || kind === 'switch' || kind === 'fan' || kind === 'zap'
     if (!activation && (now - this.lastHover < 0.09 || now - this.lastClick < 0.12)) return
     if (activation && now - this.lastClick < 0.045) return
     if (activation) this.lastClick = now
@@ -107,7 +112,7 @@ export class UiSounds {
     const voice = { gain, oscillators }
     this.voice = voice
     oscillators.forEach(oscillator => {
-      oscillator.type = kind === 'skill' || kind === 'switch' || kind === 'phone' || kind === 'paper' || kind === 'fan' ? 'triangle' : 'sine'
+      oscillator.type = kind === 'zap' ? 'sawtooth' : kind === 'skill' || kind === 'switch' || kind === 'phone' || kind === 'paper' || kind === 'fan' ? 'triangle' : 'sine'
       oscillator.frequency.setValueAtTime(tone.start, now)
       oscillator.frequency.exponentialRampToValueAtTime(tone.end, now + duration * 0.65)
       oscillator.connect(gain)

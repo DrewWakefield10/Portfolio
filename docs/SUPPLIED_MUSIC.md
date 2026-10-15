@@ -4,20 +4,20 @@ The user replaced the generation workflow with eight existing MP3s in `public/mu
 
 ## Active playlists
 
-Each theme now has **four supplied songs plus the retained original portfolio mix**. Supplied songs come first for new listeners. Existing valid saved song selections are respected. Light mode uses the day folder; dark mode uses the night folder.
+Each theme now has **four supplied songs**. The owner removed the unidentified original portfolio mix from both playlists on 2026-10-16. Existing valid saved song selections are respected; retired selections fall back to the first supplied song while keeping other preferences. Light mode uses the day folder; dark mode uses the night folder.
 
 | Theme | Song | Duration | Measured LUFS | Playback multiplier |
 |---|---|---:|---:|---:|
 | Day | Remember Summer Days — Anri | 4:54 | -9.71 | 0.192975 |
-| Day | Fairground | 2:08 | -13.64 | 0.303389 |
-| Day | Shibuya Sky | 2:15 | -13.27 | 0.290737 |
+| Day | Fairground — Pop Culture | 2:08 | -13.64 | 0.303389 |
+| Day | Shibuya Sky — Dust Diggers & Hicks | 2:15 | -13.27 | 0.290737 |
 | Day | Without U — Thelma Aoyama feat. 4Minute | 3:13 | -10.58 | 0.213304 |
 | Night | Midnight Pretenders | 5:43 | -25.17 | 1 |
-| Night | Fool Parsley | 1:51 | -13.04 | 0.283139 |
+| Night | anyways — Fool Parsley | 1:51 | -13.04 | 0.283139 |
 | Night | Wasurerarenaino | 3:56 | -15.53 | 0.377138 |
-| Night | When You're Ready | 2:24 | -12.88 | 0.277971 |
+| Night | When You're Ready — ARISU | 2:24 | -12.88 | 0.277971 |
 
-Titles are cleaned from the supplied filenames; artist credits are included only where the filenames explicitly name them. Files have no usable embedded title/artist tags. Original filenames, full song lengths and encoded bytes are preserved.
+Initial titles came from supplied filenames, which have no usable embedded title/artist tags. Four artists and the actual title of anyways were subsequently verified from source videos supplied by the owner. Sources.txt includes those links, the artists, and Tama's Little Music Shop. See [Credits and sources](CREDITS_SOURCES.md). Original filenames, full song lengths and encoded bytes are preserved.
 
 ## Playback level and import
 
@@ -27,7 +27,7 @@ This is playback-only gain: no trimming, renaming, re-encoding, dynamic compress
 
 The `user-supplied` collection accepts natural song lengths and short tails, including the 5:43 Midnight Pretenders file and its approximately 3.3-second ending tail. It still requires a full successful decode, finite duration/loudness/true peak and rejects silent or overwhelmingly empty files. The former 2-3 minute/-24 LUFS master-export requirements remain for generated briefs, rather than blocking the supplied songs.
 
-Paths are encoded per segment when exported, so spaces, apostrophes and other URL characters load correctly without altering filenames. The original `/music.mp3` stays available at its original level in both themes. Missing generation plans are not requested.
+Paths are encoded per segment when exported, so spaces, apostrophes and other URL characters load correctly without altering filenames. The legacy `/music.mp3` is no longer part of either playlist. Missing generation plans are not requested.
 
 ## Updating the collection
 
@@ -42,9 +42,9 @@ The former twelve planned songs are archived in `docs/music-generation-catalog.j
 
 - `public/music/catalog.json` and `lib/music-library.json`: eight ready tracks, theme assignments, readable metadata, encoded paths and measured attenuation.
 - `scripts/music-audio.cjs` and `scripts/sync-music.cjs`: supplied-song validation and playback-gain calculation alongside the existing generated-master checks.
-- `lib/music.ts` and `lib/music-player.ts`: supplied-first ordering and gain for the loaded source, retaining one audio element, fades, saved preferences, mute and the original mix.
+- `lib/music.ts` and `lib/music-player.ts`: supplied-song ordering and gain for the loaded source, retaining one audio element, fades, saved preferences and mute. The unidentified original mix was subsequently removed from the playlists.
 - Audio/import/browser regression tests and current documentation; generation plans archived without deleting their briefs or any audio assets.
 
 ## Verification
 
-All eight supplied MP3s decoded successfully before import. `npm run music:sync` activated all eight. Lint, TypeScript, production build and all 43 audio/time/fan unit tests pass. The full production Chrome suite passes, including all eight real supplied files, theme playlists, sequential/shuffled navigation, actual end-of-song advance, gain, preferences and stable playback while dragging windows. There are no runtime exceptions or missing assets. Original and supplied audio SHA-256 hashes are unchanged.
+All eight supplied MP3s decoded successfully before import. `npm run music:sync` activated all eight. Lint, TypeScript, production build and all 44 audio/time/fan unit tests pass, including fallback from retired original-mix selections. The full production Chrome suite passes, including all eight real supplied files, theme playlists, sequential/shuffled navigation, actual end-of-song advance, gain, preferences and stable playback while dragging windows. There are no runtime exceptions or missing assets. Original and supplied audio SHA-256 hashes are unchanged.

@@ -5,6 +5,7 @@ import { interests, interestWindowId } from '@/lib/about'
 
 const titles: Record<string, string> = {
   home: 'Home', about: 'About.txt', works: 'Works.app', contact: 'Contact.app', time: 'TIME.EXE', calendar: 'CALENDAR.DAT',
+  sources: 'Sources.txt',
   ...Object.fromEntries(interests.map(interest => [interestWindowId(interest.id), interest.title])),
 }
 

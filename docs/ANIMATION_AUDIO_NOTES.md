@@ -2,6 +2,8 @@
 
 ## Viewing and hearing the changes
 
+Click or tap the illustrated blue bug zapper for a brief, local grille flicker and a quiet synthesized electrical zap. It opens no window and changes no theme or animation settings. UI FX OFF silences the zap; reduced motion replaces the flicker with one gentle fade. Its transparent hotspot follows the shared scene during mobile panning, and swipes do not activate it. Focused verification: `node tests/browser-zapper.cjs` against the production preview on port 3100.
+
 Mobile and tablet layouts now use a horizontally explorable shared scene while desktop presentation stays intact. Navigation remains transparent and stationary; mobile audio settings expand from the pixel ellipsis, and app windows fit the usable viewport. Touch swipes stay silent, preserve animation timelines, and do not trigger wallpaper objects or resume saved music. See [Mobile compatibility](MOBILE_COMPATIBILITY.md) for implementation, browser verification, and device-testing limits.
 
 Fish travel now runs 60% faster than the preceding version. The shelf fan starts at Low and cycles Low ? Medium ? High ? Off, preserving its speed across themes and reloads. Off stops only its blades. See [Fish and fan notes](FISH_FAN_NOTES.md) for the continuity-preserving controller, accessibility, changed files, and verification.
@@ -40,7 +42,7 @@ The bell and test-sound button have been removed. The compact **UI FX ON/OFF** t
 
 Reused unchanged: public/music.mp3 and public/click.mp3 (legacy click backup). No new music recording was generated because no music-generation tool is connected. UI effects are original oscillator synthesis in lib/ui-sounds.ts; no downloadable SFX files or audio dependencies were added.
 
-Eight user-supplied MP3s are now active: four in public/music/day and four in public/music/night. Each theme plays its supplied songs first and retains the original mix; saved selections are respected. No Runway generation or credits are used. The former twelve-song proposal is archived in docs/music-generation-catalog.json, with its optional briefs retained in docs/MUSIC_GENERATION_PROMPTS.md. npm run music:sync verifies every supplied file and exports playback attenuation to balance louder masters without altering the audio. Natural song lengths/tails and original filenames are retained. See [Supplied music notes](SUPPLIED_MUSIC.md) for the files, measured levels and current verification.
+Eight user-supplied MP3s are now active: four in public/music/day and four in public/music/night. The unidentified original mix was removed from both playlists at the owner's request; saved selections of it fall back to supplied music. Sources.txt, opened from the machines beneath the aquarium, credits artists and links to the owner's verified sources. No Runway generation or service credits are used. The former twelve-song proposal is archived in docs/music-generation-catalog.json, with its optional briefs retained in docs/MUSIC_GENERATION_PROMPTS.md. npm run music:sync verifies every supplied file and exports playback attenuation to balance louder masters without altering the audio. Natural song lengths/tails and original filenames are retained. See [Supplied music notes](SUPPLIED_MUSIC.md) for the files, measured levels and current verification.
 
 ## Continuous-motion correction
 
