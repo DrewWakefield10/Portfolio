@@ -258,6 +258,7 @@ html:not(.dark) .launcher-icon img {
   transform-box: view-box;
   animation: store-fish-turn calc(var(--swim-duration) * var(--swim-tempo)) steps(1, end) var(--swim-delay) infinite;
 }
+.fish-heading { transform-box: view-box; }
 .fish-body { animation: store-fish-bob var(--body-duration) ease-in-out var(--fin-delay) infinite; }
 .fish-tail {
   transform-box: view-box;
@@ -461,6 +462,44 @@ html:not(.dark) .launcher-icon img {
 }
 .store-hotspot:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .zapper-click-flash { position: absolute; pointer-events: none; opacity: 0; background: #d9ffff; }
+.hotspot-tank { overflow: hidden; }
+.tank-glass-highlight { position: absolute; inset: 0; pointer-events: none; opacity: 0; box-shadow: inset 0 0 0 2px #b1f5ee; }
+.hotspot-tank:focus-visible .tank-glass-highlight { opacity: 0.3; }
+@media (hover: hover) {
+  .hotspot-tank:hover .tank-glass-highlight { opacity: 0.22; }
+}
+.tank-tap-ripple {
+  position: absolute; width: 22px; height: 22px; pointer-events: none; opacity: 0;
+  transform: translate(-50%, -50%);
+  background: #c6fff9;
+  clip-path: polygon(27% 0,73% 0,73% 9%,91% 9%,91% 27%,100% 27%,100% 73%,91% 73%,91% 91%,73% 91%,73% 100%,27% 100%,27% 91%,9% 91%,9% 73%,0 73%,0 27%,9% 27%,9% 9%,27% 9%,27% 18%,18% 18%,18% 27%,9% 27%,9% 73%,18% 73%,18% 82%,27% 82%,27% 91%,73% 91%,73% 82%,82% 82%,82% 73%,91% 73%,91% 27%,82% 27%,82% 18%,73% 18%,73% 9%,27% 9%);
+}
+.cat-pose, .cat-sprite, .cat-tint, .cat-hover { position: absolute; inset: 0; pointer-events: none; }
+.cat-pose {
+  opacity: 0;
+  mask: url('/wallpapers/animation/cat/motion-mask.png') 0 0 / 100% 100% no-repeat;
+}
+.hotspot-cat[data-state]:not([data-state='idle']) .cat-pose { opacity: 1; }
+.cat-sprite {
+  background-image: url('/wallpapers/animation/cat/day-meow.png');
+  background-size: 600% 100%;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+.dark .cat-sprite { background-image: url('/wallpapers/animation/cat/night-meow.png'); }
+.cat-tint, .cat-hover {
+  mask-image: url('/wallpapers/animation/cat/mask.png');
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+}
+/* Match the existing scene tint above the original artwork. */
+.cat-tint { background: color-mix(in srgb, var(--background) 20%, transparent); }
+.cat-hover { background: #fff4cf; opacity: 0; }
+@media (hover: hover) {
+  .hotspot-cat:enabled:hover .cat-hover { opacity: 0.08; }
+}
+.hotspot-cat:focus-visible .cat-hover { opacity: 0.08; }
+.hotspot-cat:disabled { cursor: default; }
 .hotspot-illumination { position: absolute; pointer-events: none; opacity: 0; transition: opacity 120ms steps(3, end); }
 .hotspot-pc .hotspot-illumination { background: #52eaff; box-shadow: inset 0 0 8px #52eaff, 0 0 6px rgba(82,234,255,0.35); }
 .hotspot-light .hotspot-illumination {

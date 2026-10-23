@@ -5,13 +5,23 @@ import { useTheme } from './ThemeContext'
 import { MusicPlayer } from '@/lib/music-player'
 import { UiSounds, hoverSoundKind } from '@/lib/ui-sounds'
 
-const AudioContext = createContext<{ player: MusicPlayer } | null>(null)
+interface CatSound {
+  prepare: () => Promise<void>
+  play: (delaySeconds: number) => void
+  stop: () => void
+}
+const AudioContext = createContext<{ player: MusicPlayer; catSound: CatSound } | null>(null)
 
 export function AudioProvider({ children }: { children: ReactNode }) {
   const { theme } = useTheme()
   const initialTheme = useRef(theme)
   const [player] = useState(() => new MusicPlayer())
-  const context = useMemo(() => ({ player }), [player])
+  const effects = useRef<UiSounds | null>(null)
+  const context = useMemo(() => ({ player, catSound: {
+    prepare: async () => { if (player.getSnapshot().effects) await effects.current?.prepareMeow() },
+    play: (delaySeconds: number) => { if (player.getSnapshot().effects) effects.current?.playMeow(delaySeconds) },
+    stop: () => effects.current?.stopMeow(),
+  } }), [player])
 
   useEffect(() => {
     const media = new Audio()
@@ -19,6 +29,8 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     try { storage = window.localStorage } catch { /* Storage can be blocked. */ }
     player.connect(media, initialTheme.current, storage)
     const sounds = new UiSounds()
+    effects.current = sounds
+    sounds.preloadMeow()
     let touchInput = false
     const selector = 'button, a[href], [role="button"], summary, input[type="range"], input[type="checkbox"]'
     const control = (target: EventTarget | null, includeSkills = false) => {
@@ -51,8 +63,8 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       if (event.detail > 0 && event.target instanceof Element && event.target.closest('.store-scene-viewport[data-panning="true"]')) return
       unlock(event)
       const element = control(event.target, true)
-      if (element && player.getSnapshot().effects) {
-        sounds.playFromGesture(element.dataset.hoverSound === 'skill' ? 'skill' : element.dataset.clickSound === 'switch' ? 'switch' : element.dataset.clickSound === 'fan' ? 'fan' : element.dataset.clickSound === 'zap' ? 'zap' : 'click')
+      if (element && element.dataset.clickSound !== 'off' && player.getSnapshot().effects) {
+        sounds.playFromGesture(element.dataset.hoverSound === 'skill' ? 'skill' : element.dataset.clickSound === 'switch' ? 'switch' : element.dataset.clickSound === 'fan' ? 'fan' : element.dataset.clickSound === 'zap' ? 'zap' : element.dataset.clickSound === 'bubble' ? 'bubble' : 'click')
       }
     }
     let effectsEnabled = player.getSnapshot().effects
@@ -75,6 +87,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       document.removeEventListener('focusin', focus)
       document.removeEventListener('click', click, true)
       sounds.dispose()
+      effects.current = null
       player.disconnect()
     }
   }, [player])
@@ -82,6 +95,13 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   useEffect(() => { void player.setTheme(theme) }, [player, theme])
 
   return <AudioContext.Provider value={context}>{children}</AudioContext.Provider>
+}
+
+// Stable service only: the cat does not subscribe to music progress updates.
+export function useCatSound() {
+  const context = useContext(AudioContext)
+  if (!context) throw new Error('useCatSound must be used within AudioProvider')
+  return context.catSound
 }
 
 export function useAudio() {

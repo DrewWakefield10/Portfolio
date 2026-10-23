@@ -74,3 +74,10 @@ export const interfaceCredits = [
   { creator: 'VT323 — Peter Hull', description: 'Pixel typeface by Peter Hull, served through Google Fonts.', href: 'https://fonts.google.com/specimen/VT323', linkLabel: 'VT323 on Google Fonts' },
   { creator: 'Lucide & contributors', description: 'Interface icons, including the music controls.', href: 'https://lucide.dev/license', linkLabel: 'Lucide credits & licenses' },
 ] as const
+
+export const catSoundCredit = {
+  creator: 'freemaster2',
+  title: 'Meow of a Siamese cat',
+  href: 'https://commons.wikimedia.org/wiki/File:Meow_of_a_Siamese_cat_-_freemaster2.wav',
+  license: 'https://creativecommons.org/publicdomain/zero/1.0/',
+} as const

@@ -589,7 +589,7 @@ async function verifyDesktopUi() {
   assert.ok(await evaluate(`document.querySelector('[data-window-id=works]').textContent.includes('Tech:')`))
   await screenshot('ui-work-day')
   await click('[data-window-id=works] .retro-window-body .retro-button')
-  assert.equal(await evaluate('document.querySelectorAll("[data-window-id=works] button[title]").length'), 4)
+  assert.deepEqual(await evaluate('Array.from(document.querySelectorAll("[data-window-id=works] button[title]"),e=>e.title)'), ['Lakbay', 'Retro Arcade', 'Portfolio Website'])
   await evaluate(`document.querySelector('[data-window-id=contact] .retro-scroll-content').focus()`)
   assert.equal(await evaluate('document.querySelectorAll("[data-window-id=contact] label").length'), 2)
   await screenshot('ui-contact-day')
@@ -767,7 +767,7 @@ async function verifyAboutInteractions() {
   }
   await screenshot('about-project-navigation')
   await click('[data-window-id=works] .retro-window-body .retro-button')
-  assert.equal(await evaluate(`document.querySelectorAll('[data-window-id=works] button[title]').length`), 4)
+  assert.deepEqual(await evaluate(`Array.from(document.querySelectorAll('[data-window-id=works] button[title]'),e=>e.title)`), ['Lakbay', 'Retro Arcade', 'Portfolio Website'])
   await click('[data-window-id=works] [aria-label="Close window"]')
   await reveal('[data-experience-id="authentication-dashboard"]')
   const missing = await evaluate(`(() => {const r=document.querySelector('[data-experience-id="authentication-dashboard"]').getBoundingClientRect();return {x:r.left+10,y:r.top+10}})()`)

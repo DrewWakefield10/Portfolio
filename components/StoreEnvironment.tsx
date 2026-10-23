@@ -5,6 +5,8 @@ import scene from '@/lib/store-scene.json'
 import { clockAngles, localClock } from '@/lib/local-time'
 import { useFan } from '@/context/FanContext'
 import { useFanRotation } from './useFanRotation'
+import { useFishReaction } from './useFishReaction'
+import { FISH_SWIM_TEMPO } from '@/lib/fish-reaction'
 
 type Theme = 'light' | 'dark'
 interface StoreEnvironmentProps {
@@ -16,7 +18,6 @@ interface StoreEnvironmentProps {
 
 const themes = ['light', 'dark'] as const
 const directory = '/wallpapers/animation/'
-const fishSpeed = 1.4 * 1.6
 const sprites = ['day', 'night'].flatMap(mode => [...scene.fish.map(fish => fish.id), 'fan-hub', 'tank-foreground']
   .map(suffix => `${directory}${mode}-${suffix}.png`))
 
@@ -29,6 +30,7 @@ export function StoreEnvironment({ theme, active, onReady, onError }: StoreEnvir
   const { fan, clock, tank, zapper } = scene
   const { speed, ready } = useFan(fan.id)
   useFanRotation(rotor, speed, ready)
+  useFishReaction(root)
 
   useEffect(() => {
     let cancelled = false
@@ -110,22 +112,26 @@ export function StoreEnvironment({ theme, active, onReady, onError }: StoreEnvir
 
       <g clipPath={`url(#${clipId})`}>
         {scene.fish.map((fish, index) => (
-          <g key={fish.id} data-fish={fish.id} className="swimming-fish environmental-motion"
-            style={{ '--swim-x': `${fish.dx}px`, '--swim-y': `${fish.dy}px`,
-              '--swim-duration': `${fish.duration / fishSpeed}s`, '--swim-delay': `${-index * 3.7}s`,
-              '--fin-duration': `${fish.finDuration}s`, '--fin-delay': `${-index * 0.17}s`,
-              '--body-duration': `${2.3 + index * 0.31}s`,
-              '--fish-facing': (fish.dx > 0) === (fish.facing === 'right') ? 1 : -1 } as CSSProperties}>
-            <g className="fish-facing environmental-motion"
-              style={{ transformOrigin: `${fish.x + fish.width / 2}px ${fish.y + fish.height / 2}px` }}>
-              <g className="fish-body environmental-motion">
-                <g clipPath={`url(#${clipId}-${fish.id}-body)`}>
-                  {themeImages(fish.id, fish.x, fish.y, fish.width, fish.height)}
-                </g>
-                <g className="fish-tail environmental-motion"
-                  style={{ transformOrigin: `${fish.x + fish.tailAt}px ${fish.y + fish.height / 2}px` }}>
-                  <g clipPath={`url(#${clipId}-${fish.id}-tail)`}>
-                    {themeImages(fish.id, fish.x, fish.y, fish.width, fish.height)}
+          <g key={fish.id} className="fish-escape">
+            <g data-fish={fish.id} className="swimming-fish environmental-motion"
+              style={{ '--swim-x': `${fish.dx}px`, '--swim-y': `${fish.dy}px`,
+                '--swim-duration': `${fish.duration / FISH_SWIM_TEMPO}s`, '--swim-delay': `${-index * 3.7}s`,
+                '--fin-duration': `${fish.finDuration}s`, '--fin-delay': `${-index * 0.17}s`,
+                '--body-duration': `${2.3 + index * 0.31}s`,
+                '--fish-facing': (fish.dx > 0) === (fish.facing === 'right') ? 1 : -1 } as CSSProperties}>
+              <g className="fish-facing environmental-motion"
+                style={{ transformOrigin: `${fish.x + fish.width / 2}px ${fish.y + fish.height / 2}px` }}>
+                <g className="fish-heading" style={{ transformOrigin: `${fish.x + fish.width / 2}px ${fish.y + fish.height / 2}px` }}>
+                  <g className="fish-body environmental-motion">
+                    <g clipPath={`url(#${clipId}-${fish.id}-body)`}>
+                      {themeImages(fish.id, fish.x, fish.y, fish.width, fish.height)}
+                    </g>
+                    <g className="fish-tail environmental-motion"
+                      style={{ transformOrigin: `${fish.x + fish.tailAt}px ${fish.y + fish.height / 2}px` }}>
+                      <g clipPath={`url(#${clipId}-${fish.id}-tail)`}>
+                        {themeImages(fish.id, fish.x, fish.y, fish.width, fish.height)}
+                      </g>
+                    </g>
                   </g>
                 </g>
               </g>

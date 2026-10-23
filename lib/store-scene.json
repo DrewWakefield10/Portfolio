@@ -14,6 +14,8 @@
     "fan": { "x": 812, "y": 111, "width": 124, "height": 150 },
     "fanControl": { "x": 850, "y": 237, "width": 48, "height": 18 },
     "zapper": { "x": 1030, "y": 754, "width": 86, "height": 150 },
+    "cat": { "x": 28, "y": 682, "width": 252, "height": 83 },
+    "tank": { "x": 1163, "y": 434, "width": 370, "height": 231 },
     "lights": [
       { "id": "left", "x": 236, "y": 77, "width": 124, "height": 92 },
       { "id": "right", "x": 1356, "y": 78, "width": 126, "height": 90 }

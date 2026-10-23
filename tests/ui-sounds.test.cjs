@@ -22,6 +22,15 @@ class FakeContext {
   destination = {}
   oscillators = []
   gains = []
+  buffers = []
+  decodeAudioData() { return Promise.resolve({ duration: 1.12 }) }
+  createBufferSource() {
+    const node = { starts: [], stops: [], connect() {}, disconnected: false,
+      disconnect() { this.disconnected = true },
+      start(time) { this.starts.push(time) }, stop(time) { this.stops.push(time) } }
+    this.buffers.push(node)
+    return node
+  }
   constructor() { FakeContext.instances.push(this) }
   createGain() {
     const node = { gain: new Parameter(), disconnected: false, connect() {}, disconnect() { this.disconnected = true } }
@@ -29,7 +38,7 @@ class FakeContext {
     return node
   }
   createOscillator() {
-    const node = { frequency: new Parameter(), stops: [], connect() {}, disconnect() {}, start() {}, stop(time) { this.stops.push(time) } }
+    const node = { frequency: new Parameter(), starts: [], stops: [], connect() {}, disconnect() {}, start(time) { this.starts.push(time) }, stop(time) { this.stops.push(time) } }
     this.oscillators.push(node)
     return node
   }
@@ -37,6 +46,82 @@ class FakeContext {
   close() { this.state = 'closed'; return Promise.resolve() }
 }
 global.AudioContext = FakeContext
+
+test('bubble sounds use three staggered rising bloops, a 200ms cooldown and shared voice cleanup', () => {
+  const sounds = new UiSounds()
+  sounds.unlock()
+  const context = FakeContext.instances.at(-1)
+  sounds.play('bubble')
+  assert.equal(context.oscillators.length, 3)
+  assert.ok(context.oscillators.every(o => o.type === 'sine'))
+  assert.deepEqual(context.oscillators.map(o => o.starts[0]), [0, 0.075, 0.16])
+  assert.ok(context.oscillators.every(o => o.frequency.events[1].value > o.frequency.value), 'each bubble rises in pitch')
+  context.currentTime = 0.19
+  sounds.play('bubble')
+  assert.equal(context.oscillators.length, 3)
+  context.currentTime = 0.21
+  sounds.play('bubble')
+  assert.equal(context.oscillators.length, 6)
+  for (const tone of UI_TONES.bubble) {
+    assert.ok(tone.duration <= 0.35)
+    assert.ok(tone.peak * 2 < Math.min(...UI_TONES.click.map(t => t.peak)))
+  }
+  sounds.silence()
+  assert.equal(context.gains[4].gain.events.at(-1).value, 0.0001)
+  assert.equal(context.gains[4].gain.events.at(-1).constant, 0.002)
+  context.oscillators.forEach(o => o.onended())
+  assert.ok(context.gains.every(g => g.disconnected))
+  sounds.dispose()
+})
+
+test('recorded meow decodes once in the shared context, schedules once and cancels pending audio on mute/dispose', async () => {
+  const originalFetch = global.fetch
+  let requests = 0
+  global.fetch = async () => { requests++; return { ok: true, arrayBuffer: async () => new ArrayBuffer(4) } }
+  try {
+    const sounds = new UiSounds()
+    const before = FakeContext.instances.length
+    sounds.preloadMeow()
+    assert.equal(FakeContext.instances.length, before, 'preloading does not unlock audio or create a context')
+    await sounds.prepareMeow()
+    await sounds.prepareMeow()
+    const context = FakeContext.instances.at(-1)
+    context.currentTime = 4
+    sounds.playMeow(0.28)
+    sounds.playMeow(0.28)
+    assert.equal(requests, 1)
+    assert.equal(FakeContext.instances.length, before + 1)
+    assert.equal(context.buffers.length, 1, 'repeated requests never overlap meows')
+    assert.deepEqual(context.buffers[0].starts, [4.28], 'sound starts on mouth opening')
+    assert.equal(context.gains[0].gain.value, 0.25)
+    sounds.silence()
+    assert.deepEqual(context.buffers[0].stops, [4.02], 'muting cancels a source before its scheduled start')
+    context.buffers[0].onended()
+    assert.equal(context.buffers[0].disconnected, true)
+    context.currentTime = 6
+    sounds.playMeow(0.28)
+    assert.equal(context.buffers.length, 2)
+    sounds.dispose()
+    sounds.playMeow(0)
+    assert.equal(context.buffers.length, 2)
+    assert.equal(context.state, 'closed')
+  } finally { global.fetch = originalFetch }
+})
+
+test('unavailable meow audio fails quietly without blocking other UI sounds', async () => {
+  const originalFetch = global.fetch
+  global.fetch = async () => { throw Error('offline') }
+  try {
+    const sounds = new UiSounds()
+    await sounds.prepareMeow()
+    const context = FakeContext.instances.at(-1)
+    sounds.playMeow(0.28)
+    assert.equal(context.buffers.length, 0)
+    sounds.play('zap')
+    assert.equal(context.oscillators.length, 1)
+    sounds.dispose()
+  } finally { global.fetch = originalFetch }
+})
 
 test('zaps sweep down quietly, bypass hover throttling and release rather than stack', () => {
   const sounds = new UiSounds()

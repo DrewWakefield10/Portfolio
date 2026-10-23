@@ -1,4 +1,9 @@
 export const UI_TONES = {
+  bubble: [
+    { start: 380, end: 980, duration: 0.30, peak: 0.028 },
+    { start: 440, end: 1120, duration: 0.30, peak: 0.026 },
+    { start: 330, end: 900, duration: 0.30, peak: 0.027 },
+  ],
   zap: [
     { start: 1400, end: 110, duration: 0.090, peak: 0.028 },
     { start: 1600, end: 130, duration: 0.080, peak: 0.026 },
@@ -58,9 +63,70 @@ export class UiSounds {
   private voice: { gain: GainNode; oscillators: OscillatorNode[] } | null = null
   private lastHover = -Infinity
   private lastClick = -Infinity
+  private lastBubble = -Infinity
   private disposed = false
   private generation = 0
   private variation: Partial<Record<UiSoundKind, number>> = {}
+  private meowRequest: AbortController | null = null
+  private meowBytes: Promise<ArrayBuffer | null> | null = null
+  private meowBuffer: AudioBuffer | null = null
+  private meowDecoding: Promise<void> | null = null
+  private meowVoice: { source: AudioBufferSourceNode; gain: GainNode } | null = null
+
+  preloadMeow() {
+    if (this.disposed || this.meowBytes) return
+    this.meowRequest = new AbortController()
+    const request = this.meowRequest
+    const timeout = setTimeout(() => request.abort(), 8000)
+    this.meowBytes = fetch('/sounds/cat-meow.mp3', { signal: request.signal })
+      .then(response => response.ok ? response.arrayBuffer() : null).catch(() => null)
+      .finally(() => clearTimeout(timeout))
+  }
+
+  async prepareMeow() {
+    await this.unlock()
+    const context = this.context
+    if (!context || this.disposed) return
+    this.preloadMeow()
+    this.meowDecoding ??= (async () => {
+      const bytes = await this.meowBytes
+      if (!bytes || this.disposed) return
+      try {
+        const buffer = await context.decodeAudioData(bytes)
+        if (!this.disposed) this.meowBuffer = buffer
+      } catch { /* The cat can still animate if audio is unavailable. */ }
+    })()
+    await this.meowDecoding
+  }
+
+  playMeow(delaySeconds: number) {
+    const context = this.context
+    if (this.disposed || !context || context.state !== 'running' || !this.meowBuffer || this.meowVoice) return
+    const source = context.createBufferSource()
+    const gain = context.createGain()
+    source.buffer = this.meowBuffer
+    gain.gain.setValueAtTime(0.25, context.currentTime)
+    source.connect(gain)
+    gain.connect(context.destination)
+    const voice = { source, gain }
+    this.meowVoice = voice
+    source.onended = () => {
+      source.disconnect()
+      gain.disconnect()
+      if (this.meowVoice === voice) this.meowVoice = null
+    }
+    source.start(context.currentTime + delaySeconds)
+  }
+
+  stopMeow() {
+    const voice = this.meowVoice
+    if (!voice) return
+    this.meowVoice = null
+    // Also cancels a source scheduled for a future mouth-opening frame.
+    voice.gain.gain.cancelScheduledValues(this.context?.currentTime ?? 0)
+    voice.gain.gain.setTargetAtTime(0.0001, this.context?.currentTime ?? 0, 0.004)
+    try { voice.source.stop((this.context?.currentTime ?? 0) + 0.02) } catch {}
+  }
 
   unlock = () => {
     if (this.disposed) return Promise.resolve()
@@ -85,11 +151,13 @@ export class UiSounds {
     const context = this.context
     if (!context || context.state !== 'running' || this.disposed) return
     const now = context.currentTime
-    const activation = kind === 'click' || kind === 'switch' || kind === 'fan' || kind === 'zap'
+    const activation = kind === 'click' || kind === 'switch' || kind === 'fan' || kind === 'zap' || kind === 'bubble'
+    if (kind === 'bubble' && now - this.lastBubble < 0.2) return
     if (!activation && (now - this.lastHover < 0.09 || now - this.lastClick < 0.12)) return
     if (activation && now - this.lastClick < 0.045) return
     if (activation) this.lastClick = now
     else this.lastHover = now
+    if (kind === 'bubble') this.lastBubble = now
 
     // Release the previous voice rather than stacking tones or truncating a waveform.
     if (this.voice) {
@@ -104,30 +172,45 @@ export class UiSounds {
     const tone = tones[variation % tones.length]
     const { duration, peak } = tone
     const gain = context.createGain()
-    const oscillators = [context.createOscillator()]
+    const oscillators = Array.from({ length: kind === 'bubble' ? 3 : 1 }, () => context.createOscillator())
     gain.gain.setValueAtTime(0.0001, now)
     gain.gain.exponentialRampToValueAtTime(peak, now + 0.006)
+    if (kind === 'bubble') gain.gain.setValueAtTime(peak, now + 0.23)
     gain.gain.exponentialRampToValueAtTime(0.0001, now + duration)
     gain.connect(context.destination)
     const voice = { gain, oscillators }
     this.voice = voice
-    oscillators.forEach(oscillator => {
+    oscillators.forEach((oscillator, index) => {
       oscillator.type = kind === 'zap' ? 'sawtooth' : kind === 'skill' || kind === 'switch' || kind === 'phone' || kind === 'paper' || kind === 'fan' ? 'triangle' : 'sine'
-      oscillator.frequency.setValueAtTime(tone.start, now)
-      oscillator.frequency.exponentialRampToValueAtTime(tone.end, now + duration * 0.65)
-      oscillator.connect(gain)
+      const starts = now + (kind === 'bubble' ? [0, 0.075, 0.16][index] : 0)
+      const length = kind === 'bubble' ? 0.1 + index * 0.01 : duration
+      oscillator.frequency.setValueAtTime(tone.start * (kind === 'bubble' ? 1 + index * 0.18 : 1), starts)
+      oscillator.frequency.exponentialRampToValueAtTime(tone.end * (kind === 'bubble' ? 1 + index * 0.12 : 1), starts + length * (kind === 'bubble' ? 0.75 : 0.65))
+      // Each rounded bloop gets its own pitch rise and envelope in the shared voice.
+      const envelope = kind === 'bubble' ? context.createGain() : null
+      if (envelope) {
+        envelope.gain.setValueAtTime(0.0001, starts)
+        envelope.gain.exponentialRampToValueAtTime(0.85 - index * 0.12, starts + 0.012)
+        envelope.gain.exponentialRampToValueAtTime(0.0001, starts + length)
+        oscillator.connect(envelope)
+        envelope.connect(gain)
+      } else oscillator.connect(gain)
       oscillator.onended = () => {
         oscillator.disconnect()
-        gain.disconnect()
-        if (this.voice === voice) this.voice = null
+        envelope?.disconnect()
+        if (index === oscillators.length - 1) {
+          gain.disconnect()
+          if (this.voice === voice) this.voice = null
+        }
       }
-      oscillator.start(now)
-      oscillator.stop(now + duration + 0.01)
+      oscillator.start(starts)
+      oscillator.stop(starts + length + 0.01)
     })
   }
 
   silence() {
     this.generation++
+    this.stopMeow()
     const context = this.context
     if (!context || !this.voice) return
     this.voice.gain.gain.cancelScheduledValues(context.currentTime)
@@ -137,6 +220,8 @@ export class UiSounds {
   dispose() {
     this.disposed = true
     this.silence()
+    this.meowRequest?.abort()
+    this.meowBuffer = null
     if (this.context) void this.context.close().catch(() => {})
     this.context = null
     this.voice = null

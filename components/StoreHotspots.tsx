@@ -6,6 +6,8 @@ import { useWindowManager } from '@/context/WindowContext'
 import scene from '@/lib/store-scene.json'
 import { useFan } from '@/context/FanContext'
 import { nextFanSpeed } from '@/lib/fan'
+import { CatHotspot } from './CatHotspot'
+import { AquariumHotspot } from './AquariumHotspot'
 
 type Rectangle = { x: number; y: number; width: number; height: number }
 const position = (rect: Rectangle, parent: Rectangle): CSSProperties => ({
@@ -72,6 +74,8 @@ export function StoreHotspots() {
           onClick={zap}>
           <span className="zapper-click-flash" style={position(scene.zapper, scene.interactions.zapper)} aria-hidden="true" />
         </button>
+        <CatHotspot style={position(scene.interactions.cat, canvas)} />
+        <AquariumHotspot style={position(scene.interactions.tank, canvas)} />
         {objects.map(object => {
           const open = getWindow(object.windowId)?.isOpen ?? false
           return (

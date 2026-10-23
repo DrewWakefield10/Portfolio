@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react'
 import { RetroScrollArea } from '@/components/RetroScrollArea'
-import { creativeCredits, interfaceCredits, musicCredits } from '@/lib/credits'
+import { catSoundCredit, creativeCredits, interfaceCredits, musicCredits } from '@/lib/credits'
 
 function SourceLink({ href, children }: { href: string; children: ReactNode }) {
   return <a href={href} target="_blank" rel="noopener noreferrer"
@@ -58,7 +58,16 @@ export function SourcesWindow() {
             </li>
           ))}
         </ul>
-        <p className="mt-3 text-base text-foreground/80">Additional image/icon sources are still being confirmed. Interface sound effects were synthesized for this portfolio.</p>
+        <p className="mt-3 text-base text-foreground/80">Additional image/icon sources are still being confirmed. Button tones were synthesized for this portfolio.</p>
+      </section>
+
+      <section aria-labelledby="credit-cat">
+        <h3 id="credit-cat" className="window-section-heading">CAT.MEOW</h3>
+        <p className="mt-2">{catSoundCredit.title} by {catSoundCredit.creator}. A natural recording, trimmed, gently filtered, softened, and faded for this portfolio.</p>
+        <div className="flex flex-wrap gap-x-4">
+          <SourceLink href={catSoundCredit.href}>Original recording</SourceLink>
+          <SourceLink href={catSoundCredit.license}>CC0 1.0 public domain</SourceLink>
+        </div>
       </section>
 
       <footer className="border-t border-accent/30 pt-4">
