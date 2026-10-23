@@ -2,12 +2,22 @@ export interface Project {
   id: string
   title: string
   description: string
+  detailDescription?: string
   tech: readonly string[]
   github?: string
   demo?: string
 }
 
 export const projects = [
+  {
+    id: 'lakbay',
+    title: 'Lakbay',
+    description: 'Discover Philippine destinations, cafés, and food spots and plan personalized itineraries.',
+    detailDescription: 'Lakbay helps travelers explore destinations across the Philippines and organize them into personalized itineraries. It combines destination discovery, category-based recommendations, saved places, and travel videos to help users decide where to go.',
+    tech: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS'],
+    github: 'https://github.com/DrewWakefield10/Itenerary-Plannerww',
+    demo: 'https://lakbay-itinerary-planner-psi.vercel.app/',
+  },
   {
     id: '1',
     title: 'Retro Arcade',
@@ -23,22 +33,6 @@ export const projects = [
     tech: ['Next.js', 'React', 'Tailwind CSS'],
     github: 'https://github.com',
     demo: 'https://example.com',
-  },
-  {
-    id: '3',
-    title: 'Task Manager',
-    description: 'Full-stack task management application with real-time updates',
-    tech: ['Next.js', 'PostgreSQL', 'Real-time'],
-    github: 'https://github.com',
-    demo: 'https://demo.example.com',
-  },
-  {
-    id: '4',
-    title: 'Data Dashboard',
-    description: 'Analytics dashboard with interactive charts and reports',
-    tech: ['React', 'D3.js', 'Node.js'],
-    github: 'https://github.com',
-    demo: 'https://demo.example.com',
   },
 ] as const satisfies readonly Project[]
 

@@ -24,7 +24,7 @@ export function WorksWindow() {
           <div>
             <h3 className="window-section-heading font-bold">{selectedProject.title}</h3>
             <p className="leading-relaxed mt-2">
-              {selectedProject.description}
+              {selectedProject.detailDescription ?? selectedProject.description}
             </p>
           </div>
           <div>
