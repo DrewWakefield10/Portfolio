@@ -15,7 +15,7 @@ export const projects = [
     description: 'Discover Philippine destinations, cafés, and food spots and plan personalized itineraries.',
     detailDescription: 'Lakbay helps travelers explore destinations across the Philippines and organize them into personalized itineraries. It combines destination discovery, category-based recommendations, saved places, and travel videos to help users decide where to go.',
     tech: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS'],
-    github: 'https://github.com/DrewWakefield10/Itenerary-Plannerww',
+    github: 'https://github.com/DrewWakefield10/Itenerary-Planner',
     demo: 'https://lakbay-itinerary-planner-psi.vercel.app/',
   },
   {
