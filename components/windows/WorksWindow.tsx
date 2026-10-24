@@ -58,7 +58,7 @@ export function WorksWindow() {
                 rel="noopener noreferrer"
                 className="retro-button"
               >
-                Demo
+                Website
               </a>
             )}
           </div>
