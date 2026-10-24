@@ -6,10 +6,9 @@
       <text x="312" y="281">ドリュー</text><text x="312" y="298">の</text>
       <text x="312" y="315">ポート</text><text x="312" y="332">フォリオ</text>
     </g>
-    <path d="M647 736 H694 V783 H647Z" fill="#435b68"/>
-    <g fill="#f5edcf" font-size="10" font-weight="bold">
-      <text x="670.5" y="747">ドリュー</text><text x="670.5" y="758">の</text>
-      <text x="670.5" y="769">ポート</text><text x="670.5" y="780">フォリオ</text>
+    <g id="mailbox-sign">
+      <path d="M647 736 H694 V783 H647Z" fill="#435b68"/>
+      <text x="670.5" y="764" fill="#f5edcf" font-size="13" font-weight="bold">メール</text>
     </g>
     <g id="welcome-sign">
       <path d="M326 711 H607 V757 H326Z" fill="#f6f0d9"/>

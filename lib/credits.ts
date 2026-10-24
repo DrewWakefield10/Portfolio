@@ -8,7 +8,7 @@ export const creativeCredits = [
   },
   {
     id: 'inspiration', title: 'INSPIRATION.WEB', creator: 'shar’s desktop',
-    description: 'This portfolio’s retro desktop concept and windowed browsing experience were inspired by shar’s desktop.',
+    description: 'This portfolio’s concept and windowed browsing experience were inspired by shar’s desktop.',
     href: 'https://www.sharyap.com/', linkLabel: 'Explore shar’s desktop',
   },
 ] as const
