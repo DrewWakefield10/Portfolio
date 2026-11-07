@@ -47,7 +47,7 @@ function zap(event: MouseEvent<HTMLButtonElement>) {
 
 export function StoreHotspots() {
   const { theme, toggleTheme } = useTheme()
-  const { getWindow, toggleWindow, updatePosition } = useWindowManager()
+  const { getWindow, openWindow, toggleWindow, updatePosition } = useWindowManager()
   const homeOpen = getWindow('home')?.isOpen ?? false
   const { speed: fanSpeed, cycleSpeed } = useFan(scene.fan.id)
   return (
@@ -76,6 +76,14 @@ export function StoreHotspots() {
         </button>
         <CatHotspot style={position(scene.interactions.cat, canvas)} />
         <AquariumHotspot style={position(scene.interactions.tank, canvas)} />
+        <button id="store-welcome-sign" type="button" className="store-hotspot hotspot-object hotspot-welcome-sign"
+          data-wallpaper-object="welcome-sign" data-hover-sound="paper"
+          style={position(scene.interactions.welcomeSign, canvas)}
+          aria-label="Open About.txt via welcome sign" aria-controls="desktop-window-about"
+          aria-expanded={getWindow('about')?.isOpen ?? false}
+          onClick={event => { illuminate(event); openWindow('about') }}>
+          <span className="hotspot-illumination" aria-hidden="true" />
+        </button>
         {objects.map(object => {
           const open = getWindow(object.windowId)?.isOpen ?? false
           return (

@@ -40,21 +40,22 @@
 }
 
 .dark {
+  /* Aquarium/zapper turquoise stays in the highlights over subdued blue glass. */
   color-scheme: dark;
-  --background: #0f1419;
-  --foreground: #e0e0e0;
-  --accent: #00d4ff;
-  --accent-hover: #00a8cc;
-  --border: #00d4ff;
-  --window-bg: #0a2342;
-  --window-border: #00d4ff;
-  --taskbar: #0f1419;
-  --window-glass-rgb: 10, 35, 66;
-  --window-title-start: #00d4ff;
-  --window-title-end: #00a8cc;
-  --window-title-foreground: #0a2342;
-  --interest-icon-color: #00b9e4;
-  --interest-cloud-fill: #102f50;
+  --background: #0e2029;
+  --foreground: #dceff0;
+  --accent: #76d4dc;
+  --accent-hover: #56b8c4;
+  --border: #5797a6;
+  --window-bg: #10313e;
+  --window-border: #5797a6;
+  --taskbar: #0e2029;
+  --window-glass-rgb: 16, 49, 62;
+  --window-title-start: #245e70;
+  --window-title-end: #1a4256;
+  --window-title-foreground: #dceff0;
+  --interest-icon-color: #65bccb;
+  --interest-cloud-fill: #163b48;
 }
 
 @layer base {
@@ -526,17 +527,6 @@ html:not(.dark) .launcher-icon img {
 .store-hotspot:hover .hotspot-detail, .store-hotspot:focus-visible .hotspot-detail { opacity: 0.12; }
 .retro-info-window {
   width: min(252px, calc(100vw - 24px));
-}
-.dark .retro-info-window {
-  --accent: #00d4ff;
-  --accent-hover: #00a8cc;
-  --foreground: #dff9ff;
-  --window-bg: #0a2342;
-  --window-border: #00a8cc;
-  --window-glass-rgb: 10, 35, 66;
-  --window-title-start: #164c66;
-  --window-title-end: #123955;
-  --window-title-foreground: #b9f4ff;
 }
 .retro-info-window[data-window-id='calendar'] { width: min(300px, calc(100vw - 24px)); }
 .retro-info-window .retro-window-header { font-size: 18px; padding: 4px 8px; }
